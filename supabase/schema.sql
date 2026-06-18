@@ -41,3 +41,23 @@ $$ language 'plpgsql';
 
 CREATE TRIGGER update_cards_updated_at BEFORE UPDATE ON public.cards
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- ==========================================
+-- STORAGE BUCKET & POLICIES FOR CARD MEDIA
+-- ==========================================
+
+-- Create storage bucket for card media if it doesn't exist
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('card-media', 'card-media', true)
+ON CONFLICT (id) DO NOTHING;
+
+-- Enable public read access to card-media objects
+DROP POLICY IF EXISTS "Public Read Access" ON storage.objects;
+CREATE POLICY "Public Read Access" ON storage.objects
+    FOR SELECT USING (bucket_id = 'card-media');
+
+-- Enable public insert access to card-media objects (uploads)
+DROP POLICY IF EXISTS "Public Insert Access" ON storage.objects;
+CREATE POLICY "Public Insert Access" ON storage.objects
+    FOR INSERT WITH CHECK (bucket_id = 'card-media');
+
