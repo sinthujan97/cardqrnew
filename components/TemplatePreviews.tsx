@@ -69,7 +69,7 @@ export function BusinessPreview({ data }: { data: BusinessCardData }) {
         variants={containerVariants}
         initial="hidden"
         animate="show"
-        className="flex-1 px-6 pb-8 flex flex-col items-center"
+        className="flex-1 px-6 pb-8 flex flex-col items-center overflow-y-auto no-scrollbar w-full"
       >
         {/* Avatar Image */}
         <motion.div 
@@ -398,7 +398,7 @@ export function EventPreview({ data, slug = '' }: { data: EventCardData; slug?: 
   const { month, day } = getCalendarDate();
 
   return (
-    <div className="w-full flex-1 flex flex-col bg-white overflow-hidden">
+    <div className="w-full flex-1 flex flex-col bg-white overflow-y-auto no-scrollbar">
       {/* Cover Banner */}
       <motion.div 
         initial={{ opacity: 0, scale: 1.05 }}
@@ -599,7 +599,7 @@ export function LinkPreview({ data }: { data: LinkCardData }) {
         variants={containerVariants}
         initial="hidden"
         animate="show"
-        className="flex-1 px-5 pb-8 flex flex-col items-center"
+        className="flex-1 px-5 pb-8 flex flex-col items-center overflow-y-auto no-scrollbar w-full"
       >
         {/* Profile Image */}
         <motion.div 
@@ -689,7 +689,7 @@ export function WifiPreview({ data }: { data: WiFiCardData }) {
         <div className="w-10 h-1.5 bg-[#E4E4E7] rounded-full" />
       </div>
 
-      <div className="flex-1 px-6 pb-8 flex flex-col items-center justify-between">
+      <div className="flex-1 px-6 pb-8 flex flex-col items-center overflow-y-auto no-scrollbar w-full justify-start gap-4">
         {/* Top Space / Icon */}
         <div className="w-full flex flex-col items-center mt-6">
           {/* Animated WiFi pulse container */}
