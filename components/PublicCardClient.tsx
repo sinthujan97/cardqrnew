@@ -154,7 +154,7 @@ export default function PublicCardClient({ card }: PublicCardClientProps) {
               transition={{ delay: 0.8 }}
               className="text-[9px] text-white/40 font-bold uppercase tracking-widest pointer-events-none text-center bg-white/5 border border-white/10 px-3.5 py-1.5 rounded-full"
             >
-              Tap card to flip • Tilt to rotate
+              Press & slide to tilt
             </motion.div>
           </div>
         )}

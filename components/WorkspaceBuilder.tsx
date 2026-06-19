@@ -10,7 +10,7 @@ import {
 import { getInitialData, TemplateType } from '@/lib/templates';
 import { CardData } from '@/lib/db';
 import TemplateForm from '@/components/TemplateForms';
-import TemplatePreview from '@/components/TemplatePreviews';
+import PhysicalCard from '@/components/PhysicalCard';
 import PhoneMockup from '@/components/PhoneMockup';
 import QRGenerator from '@/components/QRGenerator';
 import { createCardAction, updateCardAction, checkSlugAvailability } from '@/app/actions/card-actions';
@@ -248,8 +248,36 @@ export default function WorkspaceBuilder({ initialCard }: WorkspaceBuilderProps)
 
         {/* Right Side: Simulator Preview (Desktop only) */}
         <section className="hidden md:flex w-[380px] border-l border-black/5 bg-[#FAFAFA] flex-col justify-center py-6 shrink-0 h-full overflow-y-auto no-scrollbar">
-          <PhoneMockup>
-            <TemplatePreview type={template} data={formData} />
+          <PhoneMockup dark={true}>
+            <div className="relative w-full h-full flex-1 flex flex-col items-center justify-center overflow-hidden bg-[#09090B]">
+              {/* Camera-style focus background details */}
+              <div className="absolute inset-0 bg-[#09090B] bg-[radial-gradient(#1f1f23_1px,transparent_1px)] bg-[size:16px_16px] opacity-40 pointer-events-none" />
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.03)_0%,_transparent_70%)] pointer-events-none" />
+              
+              {/* Viewfinder borders customized for small simulator screen */}
+              <div className="absolute inset-4 pointer-events-none z-0 border border-white/5 rounded-2xl">
+                <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-white/20 rounded-tl-md" />
+                <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-white/20 rounded-tr-md" />
+                <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-white/20 rounded-bl-md" />
+                <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-white/20 rounded-br-md" />
+                
+                {/* Live Scan Mode label */}
+                <div className="absolute top-2 left-2 flex items-center gap-1 text-[8px] font-bold tracking-wider text-white/30 uppercase">
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                  <span>Scan Preview</span>
+                </div>
+              </div>
+
+              {/* Physical card centered with scale adjustment */}
+              <div className="flex-1 flex flex-col items-center justify-center z-10 scale-90 -my-6 origin-center">
+                <PhysicalCard card={{ templateType: template, data: formData, slug: slug || 'preview' }} />
+                
+                {/* Hint indicator */}
+                <span className="text-[8px] text-white/30 font-bold uppercase tracking-wider mt-4">
+                  Press & slide to tilt
+                </span>
+              </div>
+            </div>
           </PhoneMockup>
         </section>
       </main>
@@ -269,8 +297,30 @@ export default function WorkspaceBuilder({ initialCard }: WorkspaceBuilderProps)
               </button>
             </div>
             <div className="flex-1 overflow-y-auto pb-6">
-              <PhoneMockup animate={false}>
-                <TemplatePreview type={template} data={formData} />
+              <PhoneMockup animate={false} dark={true}>
+                <div className="relative w-full h-full flex-1 flex flex-col items-center justify-center overflow-hidden bg-[#09090B]">
+                  <div className="absolute inset-0 bg-[#09090B] bg-[radial-gradient(#1f1f23_1px,transparent_1px)] bg-[size:16px_16px] opacity-40 pointer-events-none" />
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.03)_0%,_transparent_70%)] pointer-events-none" />
+                  
+                  <div className="absolute inset-4 pointer-events-none z-0 border border-white/5 rounded-2xl">
+                    <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-white/20 rounded-tl-md" />
+                    <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-white/20 rounded-tr-md" />
+                    <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-white/20 rounded-bl-md" />
+                    <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-white/20 rounded-br-md" />
+                    
+                    <div className="absolute top-2 left-2 flex items-center gap-1 text-[8px] font-bold tracking-wider text-white/30 uppercase">
+                      <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                      <span>Scan Preview</span>
+                    </div>
+                  </div>
+
+                  <div className="flex-1 flex flex-col items-center justify-center z-10 scale-90 -my-6 origin-center">
+                    <PhysicalCard card={{ templateType: template, data: formData, slug: slug || 'preview' }} />
+                    <span className="text-[8px] text-white/30 font-bold uppercase tracking-wider mt-4">
+                      Press & slide to tilt
+                    </span>
+                  </div>
+                </div>
               </PhoneMockup>
             </div>
           </div>
