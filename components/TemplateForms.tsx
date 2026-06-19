@@ -48,8 +48,12 @@ const resizeImage = (base64Str: string, maxSide = 800): Promise<string> => {
 
       ctx.drawImage(img, 0, 0, width, height);
       
-      // Output as compressed JPEG at 0.82 quality
-      const resizedBase64 = canvas.toDataURL('image/jpeg', 0.82);
+      // Detect if PNG/WebP format with potential transparency, and preserve it to prevent black background artifacts
+      const isPNG = base64Str.startsWith('data:image/png') || base64Str.startsWith('data:image/webp');
+      const mimeType = isPNG ? 'image/png' : 'image/jpeg';
+      
+      // Output as compressed format (quality parameter is ignored for image/png)
+      const resizedBase64 = canvas.toDataURL(mimeType, isPNG ? undefined : 0.82);
       resolve(resizedBase64);
     };
     img.onerror = () => {
