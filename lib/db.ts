@@ -194,7 +194,23 @@ export async function uploadImage(fileBase64: string, fileName: string): Promise
   }
   const buffer = Buffer.from(matches[2], 'base64');
   
-  if (supabase) {
+  const vercelBlobToken = process.env.BLOB_READ_WRITE_TOKEN;
+  if (vercelBlobToken) {
+    // Generate clean file path
+    const fileExt = fileName.split('.').pop() || 'jpg';
+    const filePath = `${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
+    
+    // Dynamically import put from @vercel/blob
+    const { put } = await import('@vercel/blob');
+    
+    const blob = await put(filePath, buffer, {
+      access: 'public',
+      contentType: matches[1],
+      token: vercelBlobToken
+    });
+    
+    return blob.url;
+  } else if (supabase) {
     // Generate clean file path
     const fileExt = fileName.split('.').pop() || 'png';
     const filePath = `${Math.random().toString(36).substring(2, 15)}.${fileExt}`;

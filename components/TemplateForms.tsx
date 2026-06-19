@@ -9,6 +9,55 @@ interface FormProps<T> {
   onChange: (newData: T) => void;
 }
 
+// Helper: Scale down a base64 image client-side using canvas to optimize mobile footprint
+const resizeImage = (base64Str: string, maxSide = 800): Promise<string> => {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.src = base64Str;
+    img.onload = () => {
+      let width = img.width;
+      let height = img.height;
+
+      // If already smaller than maxSide, no need to resize
+      if (width <= maxSide && height <= maxSide) {
+        resolve(base64Str);
+        return;
+      }
+
+      if (width > height) {
+        if (width > maxSide) {
+          height = Math.round((height * maxSide) / width);
+          width = maxSide;
+        }
+      } else {
+        if (height > maxSide) {
+          width = Math.round((width * maxSide) / height);
+          height = maxSide;
+        }
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        resolve(base64Str);
+        return;
+      }
+
+      ctx.drawImage(img, 0, 0, width, height);
+      
+      // Output as compressed JPEG at 0.82 quality
+      const resizedBase64 = canvas.toDataURL('image/jpeg', 0.82);
+      resolve(resizedBase64);
+    };
+    img.onerror = () => {
+      resolve(base64Str);
+    };
+  });
+};
+
 // Helper: Convert file to Base64 for instant client-side preview and server-side saving
 const handleImageFileChange = async (
   e: React.ChangeEvent<HTMLInputElement>,
@@ -17,15 +66,19 @@ const handleImageFileChange = async (
   const file = e.target.files?.[0];
   if (!file) return;
 
-  // 1. Instant client-side preview using base64
   const reader = new FileReader();
   reader.onload = async (event) => {
-    const base64 = event.target?.result as string;
-    onDone(base64); // Render base64 in simulator instantly
+    const originalBase64 = event.target?.result as string;
+    
+    // Scale and compress the image first
+    const scaledBase64 = await resizeImage(originalBase64, 800);
+    
+    // 1. Instant client-side preview using scaled base64
+    onDone(scaledBase64); // Render scaled base64 in simulator instantly
     
     // 2. Proactive upload to storage (server action)
     try {
-      const res = await uploadImageAction(base64, file.name);
+      const res = await uploadImageAction(scaledBase64, file.name);
       if (res.success && res.data) {
         onDone(res.data); // Update with permanent URL
       }
