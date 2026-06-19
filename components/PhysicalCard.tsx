@@ -1,7 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect, useRef, useState } from 'react';
 import TemplatePreview from '@/components/TemplatePreviews';
 
 interface PhysicalCardProps {
@@ -13,206 +12,266 @@ interface PhysicalCardProps {
 }
 
 export default function PhysicalCard({ card }: PhysicalCardProps) {
-  const wrapperRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const sheenRef = useRef<HTMLDivElement>(null);
   const bloomRef = useRef<HTMLDivElement>(null);
-  
+
   const currentRotation = useRef({ x: 0, y: 0 });
   const targetRotation = useRef({ x: 0, y: 0 });
-  const isPressed = useRef(false);
+  
+  const currentLift = useRef(0);
+  const targetLift = useRef(0);
+  const currentScale = useRef(1);
+  const targetScale = useRef(1);
 
-  // Helper to calculate tilt coordinates based on cursor/finger relative position
-  const updateTilt = (clientX: number, clientY: number) => {
-    const wrapper = wrapperRef.current;
-    if (!wrapper) return;
+  const [reducedMotion, setReducedMotion] = useState(false);
+  const [accentColor, setAccentColor] = useState('#8B5CF6');
 
-    const rect = wrapper.getBoundingClientRect();
-    const cardWidth = rect.width;
-    const cardHeight = rect.height;
-    const cardCenterX = rect.left + cardWidth / 2;
-    const cardCenterY = rect.top + cardHeight / 2;
-
-    // Distance from center (-1 to 1) relative to half the card size
-    const dx = (clientX - cardCenterX) / (cardWidth / 2);
-    const dy = (clientY - cardCenterY) / (cardHeight / 2);
-
-    // Clamp mapping to prevent excessive rotations if dragged outside bounds
-    const clampedDx = Math.min(Math.max(dx, -1.5), 1.5);
-    const clampedDy = Math.min(Math.max(dy, -1.5), 1.5);
-
-    // Subtle tilt limit: max tilt rotateX: 6deg, rotateY: 6deg
-    targetRotation.current = {
-      x: -clampedDy * 6,
-      y: clampedDx * 6
-    };
-  };
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    if (e.button !== 0) return; // Only respond to primary click
-    isPressed.current = true;
-    updateTilt(e.clientX, e.clientY);
-  };
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    isPressed.current = true;
-    if (e.touches.length > 0) {
-      updateTilt(e.touches[0].clientX, e.touches[0].clientY);
+  // Determine bloom background accent color
+  const getBloomColor = () => {
+    switch (card.templateType) {
+      case 'business': return '#BF953F';
+      case 'menu': return '#FF6B00';
+      case 'event': return '#EC4899';
+      case 'link': return '#1D9E75';
+      case 'wifi': return '#378ADD';
+      case 'catalog': return accentColor; // Can be dynamic via accentColor picker
+      default: return '#8B5CF6';
     }
   };
 
-  // Setup global window listeners to track movement and release during a press
+  const getEdgeShadow = () => {
+    switch (card.templateType) {
+      case 'business': return 'inset -4px -4px 0 rgba(10,10,30,0.6)';
+      case 'menu': return 'inset -4px -4px 0 rgba(28,10,0,0.6)';
+      case 'event': return 'inset -4px -4px 0 rgba(236,72,153,0.5)';
+      case 'link': return 'inset -4px -4px 0 rgba(29,158,117,0.5)';
+      case 'wifi': return 'inset -4px -4px 0 rgba(55,138,221,0.5)';
+      case 'catalog': return `inset -4px -4px 0 ${accentColor}80`;
+      default: return 'inset -4px -4px 0 rgba(0,0,0,0.3)';
+    }
+  };
+
+  const bloomColor = getBloomColor();
+  const edgeShadow = getEdgeShadow();
+
   useEffect(() => {
     if (typeof window === 'undefined') return;
-
-    const handleGlobalMouseMove = (e: MouseEvent) => {
-      if (!isPressed.current) return;
-      updateTilt(e.clientX, e.clientY);
+    
+    // Check prefers-reduced-motion
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setReducedMotion(mediaQuery.matches);
+    
+    const handleMediaQueryChange = (e: MediaQueryListEvent) => {
+      setReducedMotion(e.matches);
     };
-
-    const handleGlobalTouchMove = (e: TouchEvent) => {
-      if (!isPressed.current) return;
-      if (e.touches.length > 0) {
-        updateTilt(e.touches[0].clientX, e.touches[0].clientY);
-      }
-    };
-
-    const handleGlobalRelease = () => {
-      isPressed.current = false;
-      targetRotation.current = { x: 0, y: 0 };
-    };
-
-    window.addEventListener('mousemove', handleGlobalMouseMove);
-    window.addEventListener('touchmove', handleGlobalTouchMove, { passive: true });
-    window.addEventListener('mouseup', handleGlobalRelease);
-    window.addEventListener('touchend', handleGlobalRelease);
-    window.addEventListener('touchcancel', handleGlobalRelease);
-
-    return () => {
-      window.removeEventListener('mousemove', handleGlobalMouseMove);
-      window.removeEventListener('touchmove', handleGlobalTouchMove);
-      window.removeEventListener('mouseup', handleGlobalRelease);
-      window.removeEventListener('touchend', handleGlobalRelease);
-      window.removeEventListener('touchcancel', handleGlobalRelease);
-    };
+    
+    mediaQuery.addEventListener('change', handleMediaQueryChange);
+    return () => mediaQuery.removeEventListener('change', handleMediaQueryChange);
   }, []);
 
-  // requestAnimationFrame loop for lerped physics
+  // Monitor dynamic CSS custom properties (like product catalog's --accent-color updates)
   useEffect(() => {
+    const cardEl = cardRef.current;
+    if (!cardEl) return;
+
+    const observer = new MutationObserver(() => {
+      const computedColor = cardEl.style.getPropertyValue('--accent-color');
+      if (computedColor) {
+        setAccentColor(computedColor.trim());
+      }
+    });
+
+    observer.observe(cardEl, { attributes: true, attributeFilter: ['style'] });
+    return () => observer.disconnect();
+  }, []);
+
+  // Interaction handlers
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (reducedMotion) return;
+    const container = containerRef.current;
+    if (!container) return;
+
+    const rect = container.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+
+    const rotateX = (e.clientY - centerY) / 10;
+    const rotateY = (e.clientX - centerX) / -10;
+
+    // Clamp rotation to ±15deg
+    targetRotation.current = {
+      x: Math.min(Math.max(rotateX, -15), 15),
+      y: Math.min(Math.max(rotateY, -15), 15),
+    };
+  };
+
+  const handleMouseEnter = () => {
+    targetLift.current = 24;
+    targetScale.current = 1.03;
+    if (cardRef.current) {
+      cardRef.current.style.boxShadow = `${edgeShadow}, 0 40px 80px rgba(0,0,0,0.5)`;
+    }
+  };
+
+  const handleMouseLeave = () => {
+    targetRotation.current = { x: 0, y: 0 };
+    targetLift.current = 0;
+    targetScale.current = 1;
+    if (cardRef.current) {
+      cardRef.current.style.boxShadow = `${edgeShadow}, 0 4px 20px rgba(0,0,0,0.08)`;
+    }
+  };
+
+  const handleTouchStart = () => {
+    targetLift.current = 24;
+    targetScale.current = 1.03;
+    if (cardRef.current) {
+      cardRef.current.style.boxShadow = `${edgeShadow}, 0 40px 80px rgba(0,0,0,0.5)`;
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (reducedMotion) return;
+    const container = containerRef.current;
+    if (!container || e.touches.length === 0) return;
+
+    const rect = container.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+
+    const touch = e.touches[0];
+    const rotateX = (touch.clientY - centerY) / 10;
+    const rotateY = (touch.clientX - centerX) / -10;
+
+    targetRotation.current = {
+      x: Math.min(Math.max(rotateX, -15), 15),
+      y: Math.min(Math.max(rotateY, -15), 15),
+    };
+  };
+
+  // Gyroscope tracking for mobile orientation
+  useEffect(() => {
+    if (typeof window === 'undefined' || reducedMotion) return;
+
+    const handleOrientation = (e: DeviceOrientationEvent) => {
+      if (e.beta === null || e.gamma === null) return;
+
+      const pitch = Math.min(Math.max(e.beta - 45, -20), 20);
+      const roll = Math.min(Math.max(e.gamma, -20), 20);
+
+      // Clamp to ±15deg
+      targetRotation.current = {
+        x: Math.min(Math.max(-pitch * 0.75, -15), 15),
+        y: Math.min(Math.max(roll * 0.75, -15), 15),
+      };
+    };
+
+    window.addEventListener('deviceorientation', handleOrientation);
+    return () => window.removeEventListener('deviceorientation', handleOrientation);
+  }, [reducedMotion]);
+
+  // RequestAnimationFrame physics loop
+  useEffect(() => {
+    if (reducedMotion) {
+      if (cardRef.current) {
+        cardRef.current.style.transform = `perspective(1200px) translateZ(0px) scale(1) rotateX(0deg) rotateY(0deg)`;
+        cardRef.current.style.setProperty('--tilt-x', '0');
+        cardRef.current.style.setProperty('--tilt-y', '0');
+      }
+      return;
+    }
+
     let animId: number;
 
     const update = () => {
       currentRotation.current.x += (targetRotation.current.x - currentRotation.current.x) * 0.08;
       currentRotation.current.y += (targetRotation.current.y - currentRotation.current.y) * 0.08;
 
+      currentLift.current += (targetLift.current - currentLift.current) * 0.1;
+      currentScale.current += (targetScale.current - currentScale.current) * 0.1;
+
       const { x, y } = currentRotation.current;
+      const lift = currentLift.current;
+      const scale = currentScale.current;
 
-      // Apply transformations to ref
       if (cardRef.current) {
-        cardRef.current.style.transform = `rotateX(${x}deg) rotateY(${y}deg)`;
+        cardRef.current.style.transform = `perspective(1200px) translateZ(${lift}px) scale(${scale}) rotateX(${x}deg) rotateY(${y}deg)`;
+        cardRef.current.style.setProperty('--tilt-x', `${x}`);
+        cardRef.current.style.setProperty('--tilt-y', `${y}`);
       }
 
-      // Specular sheen highlight calculation (moves opposite to tilt direction)
-      const sx = 50 + y * 4.5;
-      const sy = 50 - x * 4.5;
+      const sx = 50 - y * 2;
+      const sy = 50 + x * 2;
       if (sheenRef.current) {
-        sheenRef.current.style.background = `radial-gradient(circle at ${sx}% ${sy}%, rgba(255, 255, 255, 0.4) 0%, transparent 60%)`;
+        sheenRef.current.style.background = `radial-gradient(circle at ${sx}% ${sy}%, rgba(255, 255, 255, 0.18) 0%, transparent 55%)`;
       }
 
-      // Backdrop light bloom matching tilt
-      const bx = y * 1.8;
-      const by = -x * 1.8;
+      const bx = -y * 1.5;
+      const by = x * 1.5;
       if (bloomRef.current) {
-        bloomRef.current.style.transform = `translate3d(calc(-50% + ${bx}px), calc(-50% + ${by}px), -120px)`;
+        bloomRef.current.style.transform = `translate3d(calc(-50% + ${bx}px), calc(-50% + ${by}px), 0px)`;
       }
-
-      // Shimmer foil position updates
-      const foilTexts = document.querySelectorAll('.foil-foil-effect');
-      foilTexts.forEach((el) => {
-        const htmlEl = el as HTMLElement;
-        htmlEl.style.backgroundPosition = `${50 + y * 3}% ${50 - x * 3}%`;
-      });
 
       animId = requestAnimationFrame(update);
     };
 
     animId = requestAnimationFrame(update);
     return () => cancelAnimationFrame(animId);
-  }, []);
+  }, [reducedMotion, edgeShadow, accentColor]);
 
   return (
     <div className="relative w-full max-w-[340px] h-[540px] flex items-center justify-center z-10">
-      
-      {/* 1. Dynamic light bloom background */}
+      {/* 1. Background Bloom */}
       <div 
         ref={bloomRef}
-        className="absolute top-1/2 left-1/2 w-[460px] h-[460px] rounded-full bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.04)_0%,_rgba(255,255,255,0.01)_40%,_transparent_70%)] pointer-events-none z-0"
+        className="absolute top-1/2 left-1/2 w-[460px] h-[460px] rounded-full pointer-events-none z-0 filter blur-[50px] transition-colors duration-300"
         style={{
+          background: `radial-gradient(circle at center, ${bloomColor} 0%, transparent 70%)`,
+          opacity: 0.15,
           transform: 'translate3d(-50%, -50%, -120px)',
-          transition: 'transform 0.1s ease-out'
         }}
       />
 
-      {/* 3D Perspective card viewport */}
+      {/* 2. Float Wrapper */}
       <div 
-        ref={wrapperRef}
-        onMouseDown={handleMouseDown}
+        ref={containerRef}
+        onMouseMove={handleMouseMove}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
         onTouchStart={handleTouchStart}
-        className="relative w-[320px] h-[500px] select-none cursor-grab active:cursor-grabbing"
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleMouseLeave}
+        className={`relative w-[320px] h-[500px] select-none ${reducedMotion ? '' : 'float-card'}`}
         style={{
           perspective: '1200px',
-          transformStyle: 'preserve-3d',
         }}
       >
-        <motion.div
+        {/* 3. Interactive Card */}
+        <div
           ref={cardRef}
-          className="relative w-full h-full transition-transform duration-500 shadow-2xl select-none"
+          className="relative w-full h-full select-none rounded-[20px] overflow-hidden flex flex-col transition-shadow duration-300 ease-out"
           style={{
             transformStyle: 'preserve-3d',
-            transform: 'rotateX(0deg) rotateY(0deg)'
-          }}
-          animate={{
-            y: [-4, 4, -4]
-          }}
-          transition={{
-            duration: 4,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-          whileHover={{
-            scale: 1.025,
-            z: 15
+            willChange: 'transform',
+            boxShadow: `${edgeShadow}, 0 4px 20px rgba(0,0,0,0.08)`,
           }}
         >
-          {/* Stacked voxel layers sandwiched to simulate 3D thickness (3px) */}
-          <div className="absolute inset-0 bg-zinc-400 dark:bg-zinc-800 rounded-[24px] pointer-events-none" style={{ transform: 'translateZ(-0.4px)' }} />
-          <div className="absolute inset-0 bg-zinc-500 dark:bg-zinc-700 rounded-[24px] pointer-events-none" style={{ transform: 'translateZ(-0.8px)' }} />
-          <div className="absolute inset-0 bg-zinc-600 dark:bg-zinc-600 rounded-[24px] pointer-events-none" style={{ transform: 'translateZ(-1.2px)' }} />
-          <div className="absolute inset-0 bg-zinc-700 dark:bg-zinc-500 rounded-[24px] pointer-events-none" style={{ transform: 'translateZ(-1.6px)' }} />
-          <div className="absolute inset-0 bg-zinc-800 dark:bg-zinc-400 rounded-[24px] pointer-events-none" style={{ transform: 'translateZ(-2.0px)' }} />
-
-          {/* SINGLE FRONT FACE CONTAINING THE SCROLLABLE CARD LAYOUT */}
-          <div 
-            className="absolute inset-0 rounded-[24px] overflow-hidden border border-black/10 shadow-lg flex flex-col bg-white"
-            style={{ 
-              transform: 'translateZ(0px)',
-            }}
-          >
-            {/* Render the unified TemplatePreview layout */}
-            <div className="flex-1 flex flex-col min-h-0 overflow-hidden relative">
-              <TemplatePreview type={card.templateType} data={card.data} slug={card.slug} />
-            </div>
-
-            {/* Specular sheen overlay */}
-            <div 
-              ref={sheenRef}
-              className="absolute inset-0 pointer-events-none mix-blend-overlay z-20"
-              style={{
-                transition: 'background 0.05s ease-out'
-              }}
-            />
+          {/* Card template content */}
+          <div className="flex-1 flex flex-col min-h-0 overflow-hidden relative">
+            <TemplatePreview type={card.templateType} data={card.data} slug={card.slug} />
           </div>
-        </motion.div>
+
+          {/* Gloss Sheen Overlay */}
+          <div 
+            ref={sheenRef}
+            className="absolute inset-0 pointer-events-none mix-blend-overlay z-20 rounded-[20px]"
+            style={{
+              borderRadius: 'inherit',
+            }}
+          />
+        </div>
       </div>
     </div>
   );

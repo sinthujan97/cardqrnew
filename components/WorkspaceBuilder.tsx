@@ -274,7 +274,7 @@ export default function WorkspaceBuilder({ initialCard }: WorkspaceBuilderProps)
                 
                 {/* Hint indicator */}
                 <span className="text-[8px] text-white/30 font-bold uppercase tracking-wider mt-4">
-                  Press & slide to tilt
+                  Move mouse to rotate
                 </span>
               </div>
             </div>
@@ -317,7 +317,7 @@ export default function WorkspaceBuilder({ initialCard }: WorkspaceBuilderProps)
                   <div className="flex-1 flex flex-col items-center justify-center z-10 scale-90 -my-6 origin-center">
                     <PhysicalCard card={{ templateType: template, data: formData, slug: slug || 'preview' }} />
                     <span className="text-[8px] text-white/30 font-bold uppercase tracking-wider mt-4">
-                      Press & slide to tilt
+                      Move mouse to rotate
                     </span>
                   </div>
                 </div>

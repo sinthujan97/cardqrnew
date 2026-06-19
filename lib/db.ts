@@ -194,7 +194,7 @@ export async function uploadImage(fileBase64: string, fileName: string): Promise
   }
   const buffer = Buffer.from(matches[2], 'base64');
   
-  const vercelBlobToken = process.env.BLOB_READ_WRITE_TOKEN;
+  const vercelBlobToken = process.env.BLOB_READ_WRITE_TOKEN?.replace(/['"]/g, '').trim();
   if (vercelBlobToken) {
     // Generate clean file path
     const fileExt = fileName.split('.').pop() || 'jpg';
