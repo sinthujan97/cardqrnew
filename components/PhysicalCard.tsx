@@ -97,13 +97,13 @@ export default function PhysicalCard({ card }: PhysicalCardProps) {
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
 
-    const rotateX = (e.clientY - centerY) / 10;
-    const rotateY = (e.clientX - centerX) / -10;
+    const rotateX = (e.clientY - centerY) / 25;
+    const rotateY = (e.clientX - centerX) / -20;
 
-    // Clamp rotation to ±15deg
+    // Clamp rotation to ±6deg
     targetRotation.current = {
-      x: Math.min(Math.max(rotateX, -15), 15),
-      y: Math.min(Math.max(rotateY, -15), 15),
+      x: Math.min(Math.max(rotateX, -6), 6),
+      y: Math.min(Math.max(rotateY, -6), 6),
     };
   };
 
@@ -142,12 +142,12 @@ export default function PhysicalCard({ card }: PhysicalCardProps) {
     const centerY = rect.top + rect.height / 2;
 
     const touch = e.touches[0];
-    const rotateX = (touch.clientY - centerY) / 10;
-    const rotateY = (touch.clientX - centerX) / -10;
+    const rotateX = (touch.clientY - centerY) / 25;
+    const rotateY = (touch.clientX - centerX) / -20;
 
     targetRotation.current = {
-      x: Math.min(Math.max(rotateX, -15), 15),
-      y: Math.min(Math.max(rotateY, -15), 15),
+      x: Math.min(Math.max(rotateX, -6), 6),
+      y: Math.min(Math.max(rotateY, -6), 6),
     };
   };
 
@@ -161,10 +161,10 @@ export default function PhysicalCard({ card }: PhysicalCardProps) {
       const pitch = Math.min(Math.max(e.beta - 45, -20), 20);
       const roll = Math.min(Math.max(e.gamma, -20), 20);
 
-      // Clamp to ±15deg
+      // Clamp to ±6deg
       targetRotation.current = {
-        x: Math.min(Math.max(-pitch * 0.75, -15), 15),
-        y: Math.min(Math.max(roll * 0.75, -15), 15),
+        x: Math.min(Math.max(-pitch * 0.3, -6), 6),
+        y: Math.min(Math.max(roll * 0.3, -6), 6),
       };
     };
 
