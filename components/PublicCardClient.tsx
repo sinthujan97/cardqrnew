@@ -132,7 +132,7 @@ export default function PublicCardClient({ card }: PublicCardClientProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -30 }}
             transition={{ duration: 0.25 }}
-            className="w-full h-[88vh] md:h-[680px] md:max-w-[360px] bg-white rounded-t-[32px] md:rounded-[32px] shadow-2xl z-10 flex flex-col border border-black/5 overflow-hidden fixed bottom-0 md:relative"
+            className="w-full h-dvh md:h-[680px] md:max-w-[360px] bg-white rounded-t-[32px] md:rounded-[32px] shadow-2xl z-10 flex flex-col border border-black/5 overflow-hidden fixed bottom-0 md:relative"
           >
             {/* Native sheet handle */}
             <div className="w-full flex justify-center py-3 shrink-0">
@@ -157,7 +157,7 @@ export default function PublicCardClient({ card }: PublicCardClientProps) {
                 : { opacity: 1, y: "0%" }
             }
             transition={{ type: "spring", stiffness: 100, damping: 16 }}
-            className="w-full h-[88vh] md:h-[680px] md:max-w-[360px] bg-white rounded-t-[32px] md:rounded-[32px] shadow-2xl z-10 flex flex-col border border-black/5 overflow-hidden fixed bottom-0 md:relative"
+            className="w-full h-dvh md:h-[680px] md:max-w-[360px] bg-white rounded-t-[32px] md:rounded-[32px] shadow-2xl z-10 flex flex-col border border-black/5 overflow-hidden fixed bottom-0 md:relative"
           >
             {/* Scroll bounds handled internally. Desktop has rounded-b, mobile goes to edge */}
             <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
