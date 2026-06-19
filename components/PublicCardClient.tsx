@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Camera, RefreshCw, QrCode } from 'lucide-react';
 import { CardData } from '@/lib/db';
-import TemplatePreview from '@/components/TemplatePreviews';
+import PhysicalCard from '@/components/PhysicalCard';
 
 interface PublicCardClientProps {
   card: CardData;
@@ -132,9 +132,9 @@ export default function PublicCardClient({ card }: PublicCardClientProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -30 }}
             transition={{ duration: 0.25 }}
-            className="w-full h-dvh md:h-[680px] md:max-w-[360px] bg-white rounded-t-[32px] md:rounded-[32px] shadow-2xl z-10 flex flex-col border border-black/5 overflow-hidden fixed bottom-0 md:relative"
+            className="w-[320px] h-[500px] bg-white rounded-[24px] shadow-2xl z-10 flex flex-col border border-black/5 overflow-hidden relative"
           >
-            {/* Native sheet handle */}
+            {/* Native card handle spacer */}
             <div className="w-full flex justify-center py-3 shrink-0">
               <div className="w-10 h-1.5 bg-zinc-200 rounded-full" />
             </div>
@@ -143,27 +143,20 @@ export default function PublicCardClient({ card }: PublicCardClientProps) {
             </div>
           </motion.div>
         ) : (
-          /* Actual Card (iOS Bottom Sheet Style) */
-          <motion.div
-            key="card"
-            initial={
-              typeof window !== 'undefined' && window.innerWidth >= 768
-                ? { opacity: 0, scale: 0.95, y: 20 } // Desktop entry
-                : { opacity: 0, y: "100%" } // Mobile bottom entry
-            }
-            animate={
-              typeof window !== 'undefined' && window.innerWidth >= 768
-                ? { opacity: 1, scale: 1, y: 0 }
-                : { opacity: 1, y: "0%" }
-            }
-            transition={{ type: "spring", stiffness: 100, damping: 16 }}
-            className="w-full h-dvh md:h-[680px] md:max-w-[360px] bg-white rounded-t-[32px] md:rounded-[32px] shadow-2xl z-10 flex flex-col border border-black/5 overflow-hidden fixed bottom-0 md:relative"
-          >
-            {/* Scroll bounds handled internally. Desktop has rounded-b, mobile goes to edge */}
-            <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
-              <TemplatePreview type={card.templateType} data={card.data} slug={card.slug} />
-            </div>
-          </motion.div>
+          /* Actual Card (Immersive 3D Experience) */
+          <div className="flex flex-col items-center gap-6 z-10">
+            <PhysicalCard card={card} />
+            
+            {/* Soft hint overlay at bottom */}
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 0.5, y: 0 }}
+              transition={{ delay: 0.8 }}
+              className="text-[9px] text-white/40 font-bold uppercase tracking-widest pointer-events-none text-center bg-white/5 border border-white/10 px-3.5 py-1.5 rounded-full"
+            >
+              Tap card to flip • Tilt to rotate
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </div>
