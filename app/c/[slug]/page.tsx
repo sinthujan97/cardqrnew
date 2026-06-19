@@ -1,10 +1,16 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import Link from 'next/link';
 import { Metadata } from 'next';
 import { getCardBySlug } from '@/lib/db';
 import PublicCardClient from '@/components/PublicCardClient';
 import { AlertCircle, ArrowLeft } from 'lucide-react';
-export const dynamic = 'force-dynamic';
+
+export const unstable_instant = {
+  prefetch: 'runtime',
+  samples: [
+    { params: { slug: 'preview' } }
+  ]
+};
 
 interface PublicCardPageProps {
   params: Promise<{
@@ -59,11 +65,32 @@ export async function generateMetadata({ params }: PublicCardPageProps): Promise
 }
 
 export default async function PublicCardPage({ params }: PublicCardPageProps) {
-  const resolvedParams = await params;
-  const slug = resolvedParams.slug;
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#09090B] flex items-center justify-center select-none relative overflow-hidden">
+        <div className="absolute inset-0 bg-[#09090B] bg-[radial-gradient(#1f1f23_1px,transparent_1px)] bg-[size:20px_20px] opacity-40 pointer-events-none" />
+        <div className="w-[320px] h-[500px] bg-white rounded-[24px] shadow-2xl z-10 flex flex-col border border-black/5 overflow-hidden relative animate-pulse">
+          <div className="w-full flex justify-center py-3 shrink-0">
+            <div className="w-10 h-1.5 bg-zinc-200 rounded-full" />
+          </div>
+          <div className="flex-1 p-6 flex flex-col items-center gap-5 animate-pulse">
+            <div className="w-24 h-24 rounded-full bg-zinc-200 mt-6" />
+            <div className="w-32 h-4.5 bg-zinc-200 rounded-md" />
+            <div className="w-48 h-3 bg-zinc-200 rounded-md" />
+          </div>
+        </div>
+      </div>
+    }>
+      {params.then(({ slug }) => (
+        <CardLoader slug={slug} />
+      ))}
+    </Suspense>
+  );
+}
+
+async function CardLoader({ slug }: { slug: string }) {
   const card = await getCardBySlug(slug);
 
-  // Card not found error template
   if (!card) {
     return (
       <div className="min-h-screen bg-[#FAFAFA] flex flex-col items-center justify-center p-6 text-center font-sans select-none">

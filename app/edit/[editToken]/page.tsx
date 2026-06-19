@@ -1,9 +1,15 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import Link from 'next/link';
 import { getCardByEditToken } from '@/lib/db';
 import WorkspaceBuilder from '@/components/WorkspaceBuilder';
 import { AlertCircle, PlusCircle } from 'lucide-react';
-export const dynamic = 'force-dynamic';
+
+export const unstable_instant = {
+  prefetch: 'runtime',
+  samples: [
+    { params: { editToken: 'preview' } }
+  ]
+};
 
 interface EditCardPageProps {
   params: Promise<{
@@ -12,9 +18,24 @@ interface EditCardPageProps {
 }
 
 export default async function EditCardPage({ params }: EditCardPageProps) {
-  const resolvedParams = await params;
-  const editToken = resolvedParams.editToken;
-  
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#FAFAFA] flex flex-col items-center justify-center p-6 text-center font-sans select-none animate-pulse">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-14 h-14 bg-zinc-200 rounded-full mb-2" />
+          <div className="w-48 h-6 bg-zinc-200 rounded-md" />
+          <div className="w-64 h-3 bg-zinc-100 rounded-md" />
+        </div>
+      </div>
+    }>
+      {params.then(({ editToken }) => (
+        <EditLoader editToken={editToken} />
+      ))}
+    </Suspense>
+  );
+}
+
+async function EditLoader({ editToken }: { editToken: string }) {
   // Fetch card data server-side
   const card = await getCardByEditToken(editToken);
 

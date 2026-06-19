@@ -748,7 +748,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto w-full flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-1.5">
             <span className="font-black text-primary text-xs">CardQR</span>
-            <span>© {new Date().getFullYear()} CardQR Inc. All rights reserved.</span>
+            <span>© 2026 CardQR Inc. All rights reserved.</span>
           </div>
           <div className="flex gap-4">
             <a href="#" className="hover:text-primary transition-all font-semibold">Terms of Service</a>
