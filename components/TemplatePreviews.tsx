@@ -4,12 +4,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { 
   Phone, Mail, MessageSquare, MapPin, Clock, Wifi, Copy, Check, 
   ChevronRight, Share2, Plus, Minus, ShoppingBag, Eye, EyeOff, 
-  Globe, ExternalLink, 
+  Globe, ExternalLink, X,
   Star, Shield, Send, Sparkles, ArrowRight
 } from 'lucide-react';
 import QRCode from 'qrcode';
 import { 
-  BusinessCardData, RestaurantMenuData, EventCardData, 
+  BusinessCardData, RestaurantMenuData, MenuItem, EventCardData, 
   LinkCardData, WiFiCardData, ProductCatalogData 
 } from '@/lib/templates';
 import { submitRsvpAction } from '@/app/actions/card-actions';
@@ -58,7 +58,7 @@ function CardCornerQR({ value, size = 40, dark = true }: { value: string; size?:
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    if (!canvasRef.current) return;
+    if (!canvasRef.current || !value || !value.trim()) return;
     QRCode.toCanvas(
       canvasRef.current,
       value,
@@ -264,8 +264,11 @@ export function BusinessPreview({ data, slug = '' }: { data: BusinessCardData; s
 // -------------------------------------------------------------
 export function MenuPreview({ data, slug = '' }: { data: RestaurantMenuData; slug?: string }) {
   const [activeCategory, setActiveCategory] = useState(data.categories?.[0]?.id || '');
-  const [featuredDishIndex, setFeaturedDishIndex] = useState(0);
   const [fadeState, setFadeState] = useState(true);
+
+  // Waiter Order Cart State
+  const [cart, setCart] = useState<Record<string, number>>({});
+  const [showOrderList, setShowOrderList] = useState(false);
 
   const qrValue = typeof window !== 'undefined' 
     ? `${window.location.origin}/c/${slug || 'preview'}` 
@@ -276,53 +279,113 @@ export function MenuPreview({ data, slug = '' }: { data: RestaurantMenuData; slu
   // Get active category structure
   const currentCategory = data.categories?.find(cat => cat.id === activeCategory);
   const categoryDishes = currentCategory?.items || [];
-  const featuredDish = categoryDishes[featuredDishIndex] || categoryDishes[0];
+
+  // Synchronize activeCategory if data.categories changes or current category doesn't exist anymore
+  useEffect(() => {
+    if (data.categories && data.categories.length > 0) {
+      const exists = data.categories.some(cat => cat.id === activeCategory);
+      if (!exists) {
+        setActiveCategory(data.categories[0].id);
+      }
+    } else {
+      setActiveCategory('');
+    }
+  }, [data.categories, activeCategory]);
+
+  // Memoized map of all menu items across categories for fast lookup
+  const allItemsMap = React.useMemo(() => {
+    const map = new Map<string, MenuItem>();
+    data.categories?.forEach(cat => {
+      cat.items?.forEach(item => {
+        map.set(item.id, item);
+      });
+    });
+    return map;
+  }, [data.categories]);
 
   const handleCategoryChange = (catId: string) => {
     setFadeState(false);
     setTimeout(() => {
       setActiveCategory(catId);
-      setFeaturedDishIndex(0);
       setFadeState(true);
     }, 150);
   };
 
-  const handleDishChange = (idx: number) => {
-    setFadeState(false);
-    setTimeout(() => {
-      setFeaturedDishIndex(idx);
-      setFadeState(true);
-    }, 150);
+  const updateCartQty = (id: string, delta: number) => {
+    setCart(prev => {
+      const currentQty = prev[id] || 0;
+      const newQty = Math.max(0, currentQty + delta);
+      return {
+        ...prev,
+        [id]: newQty
+      };
+    });
   };
 
-  const getWhatsAppOrderLink = (dishName: string, price: string) => {
-    const text = encodeURIComponent(`Hi! I would like to order "${dishName}" (${currency}${price}) from Gusto Bistro.`);
-    return `https://wa.me/15550192834?text=${text}`; // Static number or custom configs
-  };
+  // Calculate cart total price
+  const cartTotal = React.useMemo(() => {
+    let total = 0;
+    Object.entries(cart).forEach(([id, qty]) => {
+      const item = allItemsMap.get(id);
+      if (item) {
+        const priceNum = parseFloat(item.price) || 0;
+        total += priceNum * qty;
+      }
+    });
+    return total.toFixed(2);
+  }, [cart, allItemsMap]);
+
+  // Calculate total item count in cart
+  const totalCartItemsCount = React.useMemo(() => {
+    return Object.values(cart).reduce((a, b) => a + b, 0);
+  }, [cart]);
 
   return (
-    <div className="w-full h-full flex-1 flex flex-col bg-[#1C0A00] text-amber-50 select-none p-4 relative overflow-hidden font-sans">
-      <div className="absolute inset-0 bg-radial-gradient(circle_at_top,_rgba(255,107,0,0.03)_0%,_transparent_60%) pointer-events-none" />
+    <div className="w-full h-full flex-1 flex flex-col bg-[#1C0A00] text-amber-50 select-none relative overflow-hidden font-sans">
       
-      {/* Restaurant Header */}
-      <div className="flex flex-col items-center text-center shrink-0 z-10">
-        <h1 className="text-lg font-black tracking-tight font-serif italic text-amber-500">
+      {/* 1. Cover Image Banner */}
+      <div className="relative w-full h-24 bg-black/40 shrink-0 border-b border-white/5">
+        {data.coverImage ? (
+          <img src={data.coverImage} alt="Cover" className="w-full h-full object-cover" />
+        ) : (
+          <div className="w-full h-full bg-[radial-gradient(circle,_#3a1600_0%,_#1C0A00_100%)]" />
+        )}
+        {/* Overlay gradient to blend bottom */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#1C0A00] via-[#1C0A00]/20 to-black/40" />
+
+        {/* Brand Logo overlapping bottom edge */}
+        <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 z-20">
+          {data.logo ? (
+            <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-[#1C0A00] bg-zinc-900 shadow-md">
+              <img src={data.logo} alt="Logo" className="w-full h-full object-cover" />
+            </div>
+          ) : (
+            <div className="w-12 h-12 rounded-full border-2 border-[#1C0A00] bg-amber-900/50 flex items-center justify-center text-amber-400 font-black text-xs shadow-md">
+              {data.restaurantName ? data.restaurantName.charAt(0) : 'G'}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* 2. Restaurant Header Info */}
+      <div className="pt-7 pb-2 px-4 flex flex-col items-center text-center shrink-0 z-10">
+        <h1 className="text-sm font-black tracking-tight font-serif italic text-amber-500">
           {data.restaurantName || 'Gusto Bistro'}
         </h1>
-        <p className="text-[8.5px] text-amber-100/50 mt-0.5 leading-tight truncate max-w-[240px]">
+        <p className="text-[8px] text-amber-100/50 mt-0.5 leading-tight truncate max-w-[240px]">
           {data.description || 'Contemporary Culinary Art'}
         </p>
       </div>
 
       {/* Category Selection Row */}
-      <div className="flex gap-1.5 justify-center py-2.5 overflow-x-auto no-scrollbar shrink-0 z-15">
+      <div className="flex gap-1.5 justify-center px-4 pb-2.5 overflow-x-auto no-scrollbar shrink-0 z-15">
         {data.categories?.map((cat) => {
           const isActive = cat.id === activeCategory;
           return (
             <button
               key={cat.id}
               onClick={() => handleCategoryChange(cat.id)}
-              className={`h-6 px-2.5 text-[8.5px] font-black rounded-full transition-all shrink-0 cursor-pointer ${
+              className={`h-5.5 px-2.5 text-[8px] font-black rounded-full transition-all shrink-0 cursor-pointer ${
                 isActive 
                   ? 'bg-amber-600 text-white' 
                   : 'bg-white/5 border border-white/5 text-amber-200/70 hover:bg-white/10'
@@ -334,73 +397,180 @@ export function MenuPreview({ data, slug = '' }: { data: RestaurantMenuData; slu
         })}
       </div>
 
-      {/* Dish Area (Swaps inline with fade animation) */}
-      <div className="flex-1 flex flex-col min-h-0 z-10 py-1.5">
-        <div className={`flex-1 flex flex-col justify-between transition-opacity duration-150 ${fadeState ? 'opacity-100' : 'opacity-0'}`}>
-          {featuredDish ? (
-            <div className="flex-1 flex flex-col justify-center">
-              {/* Hero Image */}
-              <div className="relative w-full aspect-[16/9] max-h-32 rounded-xl overflow-hidden bg-black/40 border border-white/5 shrink-0 shadow-md">
-                {featuredDish.image ? (
-                  <img src={featuredDish.image} alt={featuredDish.name} className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-amber-500/20">
-                    <ShoppingBag className="w-8 h-8" />
-                  </div>
-                )}
-                {/* Vignette Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                
-                {/* Chef Special Badge */}
-                {featuredDish.tags?.includes('recommended') && (
-                  <div className="absolute top-2 right-2 bg-amber-500 text-black text-[7px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded shadow-sm">
-                    Chef Special
-                  </div>
-                )}
-              </div>
-
-              {/* Name & Price */}
-              <div className="mt-2.5 flex items-start justify-between shrink-0">
-                <h3 className="text-xs font-bold tracking-tight text-white line-clamp-1">{featuredDish.name}</h3>
-                <span className="text-xs font-black text-amber-500 shrink-0 ml-4">{currency}{featuredDish.price}</span>
-              </div>
-              
-              <p className="text-[10px] text-amber-100/60 leading-relaxed mt-1 line-clamp-2 shrink-0">
-                {featuredDish.description}
-              </p>
-
-              {/* Order via WhatsApp Trigger button */}
-              <div className="mt-3 shrink-0">
-                <a
-                  href={getWhatsAppOrderLink(featuredDish.name, featuredDish.price)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full h-8.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-black text-[9px] uppercase tracking-wider flex items-center justify-center gap-1.5 transition-colors cursor-pointer border-0 shadow-lg shadow-amber-900/40"
+      {/* Scrollable Dishes List (Vertical Scrollable) */}
+      <div className="flex-1 overflow-y-auto no-scrollbar z-10 px-4 pb-14 pt-1 flex flex-col gap-2">
+        <div className={`flex-1 flex flex-col gap-2 transition-opacity duration-150 ${fadeState ? 'opacity-100' : 'opacity-0'}`}>
+          {categoryDishes.length > 0 ? (
+            categoryDishes.map((dish) => {
+              const qtyInCart = cart[dish.id] || 0;
+              return (
+                <div 
+                  key={dish.id} 
+                  className="bg-black/25 border border-white/5 rounded-xl p-2 flex gap-2.5 items-center shrink-0 transition-all hover:bg-black/35"
                 >
-                  <MessageSquare className="w-3.5 h-3.5 fill-white text-amber-600" /> Order on WhatsApp
-                </a>
-              </div>
-            </div>
+                  {/* Dish Thumbnail */}
+                  <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-black/40 border border-white/5 shrink-0">
+                    {dish.image ? (
+                      <img src={dish.image} alt={dish.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-amber-500/10">
+                        <ShoppingBag className="w-5 h-5" />
+                      </div>
+                    )}
+                    {/* Chef Special Tag Overlay */}
+                    {dish.tags?.includes('recommended') && (
+                      <div className="absolute top-0.5 left-0.5 bg-amber-500 text-black text-[5px] font-black uppercase px-1 rounded-sm tracking-wide">
+                        ★
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Info Column */}
+                  <div className="flex-1 min-w-0 flex flex-col pr-1">
+                    <div className="flex items-baseline justify-between gap-2">
+                      <h4 className="text-[10px] font-extrabold text-white truncate leading-snug">{dish.name}</h4>
+                      <span className="text-[9.5px] font-black text-amber-500 font-mono shrink-0">{currency}{dish.price}</span>
+                    </div>
+                    <p className="text-[8px] text-amber-100/50 leading-normal line-clamp-2 mt-0.5">
+                      {dish.description}
+                    </p>
+                  </div>
+
+                  {/* Add to Cart / Adjuster Button on Right */}
+                  <div className="shrink-0 pr-1">
+                    {qtyInCart > 0 ? (
+                      <div className="flex items-center bg-black/40 rounded-lg border border-white/10 h-6.5 overflow-hidden">
+                        <button
+                          onClick={() => updateCartQty(dish.id, -1)}
+                          className="w-4.5 h-full flex items-center justify-center hover:bg-white/5 active:bg-white/10 text-amber-500 cursor-pointer"
+                        >
+                          <Minus className="w-1.5 h-1.5" />
+                        </button>
+                        <span className="w-4 text-center text-[8.5px] font-bold font-mono text-white">{qtyInCart}</span>
+                        <button
+                          onClick={() => updateCartQty(dish.id, 1)}
+                          className="w-4.5 h-full flex items-center justify-center hover:bg-white/5 active:bg-white/10 text-amber-500 cursor-pointer"
+                        >
+                          <Plus className="w-1.5 h-1.5" />
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => updateCartQty(dish.id, 1)}
+                        className="w-6.5 h-6.5 bg-amber-600 hover:bg-amber-500 text-white rounded-lg flex items-center justify-center transition-colors cursor-pointer border-0 shadow-sm"
+                        title="Add to Order Sheet"
+                      >
+                        <Plus className="w-3 h-3" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })
           ) : (
-            <div className="flex-1 flex items-center justify-center text-[10px] text-amber-100/30">No items available</div>
+            <div className="flex-1 flex items-center justify-center text-[9px] text-amber-100/30 py-10">
+              No items available in this category.
+            </div>
           )}
         </div>
-
-        {/* Carousel / Selectors below featured dish */}
-        {categoryDishes.length > 1 && (
-          <div className="flex gap-1.5 justify-center mt-3 shrink-0 overflow-x-auto no-scrollbar z-15">
-            {categoryDishes.map((dish, idx) => (
-              <button
-                key={dish.id}
-                onClick={() => handleDishChange(idx)}
-                className={`w-2 h-2 rounded-full transition-colors cursor-pointer ${
-                  featuredDishIndex === idx ? 'bg-amber-500' : 'bg-white/10 hover:bg-white/20'
-                }`}
-              />
-            ))}
-          </div>
-        )}
       </div>
+
+      {/* Floating Bar at bottom when cart has items */}
+      {!showOrderList && totalCartItemsCount > 0 && (
+        <div className="absolute bottom-4 left-4 right-4 z-20 animate-in slide-in-from-bottom duration-300">
+          <button
+            onClick={() => setShowOrderList(true)}
+            className="w-full h-10 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-black text-[10px] uppercase tracking-wider flex items-center justify-between px-4 transition-colors cursor-pointer border-0 shadow-lg shadow-black/50"
+          >
+            <div className="flex items-center gap-2">
+              <ShoppingBag className="w-4 h-4 text-white" />
+              <span>{totalCartItemsCount} Items Added</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <span>View Order</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </div>
+          </button>
+        </div>
+      )}
+
+      {/* Waiter Order Sheet Drawer Overlay */}
+      {showOrderList && (
+        <div className="absolute inset-0 z-30 bg-[#1C0A00] flex flex-col p-4 animate-in slide-in-from-bottom duration-300">
+          {/* Header */}
+          <div className="flex items-center justify-between border-b border-white/10 pb-2.5 shrink-0">
+            <div className="flex items-center gap-1.5">
+              <ShoppingBag className="w-4 h-4 text-amber-500" />
+              <h2 className="text-[11px] font-black uppercase tracking-wider text-white">Waiter Order Sheet</h2>
+            </div>
+            <button 
+              onClick={() => setShowOrderList(false)}
+              className="w-6 h-6 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-amber-250 hover:text-white cursor-pointer"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          {/* Scrollable Items List */}
+          <div className="flex-1 overflow-y-auto no-scrollbar py-3 flex flex-col gap-2.5">
+            {Object.entries(cart)
+              .filter(([_, qty]) => qty > 0)
+              .map(([id, qty]) => {
+                const item = allItemsMap.get(id);
+                if (!item) return null;
+                const priceNum = parseFloat(item.price) || 0;
+                const totalItemPrice = (priceNum * qty).toFixed(2);
+                
+                return (
+                  <div key={id} className="bg-white/5 border border-white/5 rounded-xl p-2.5 flex items-center justify-between shrink-0">
+                    <div className="flex-1 min-w-0 pr-3">
+                      <span className="text-[10.5px] font-bold text-white block truncate">{item.name}</span>
+                      <span className="text-[9px] text-amber-500/80 font-mono mt-0.5 block">{currency}{item.price} each</span>
+                    </div>
+                    
+                    <div className="flex items-center gap-3 shrink-0">
+                      <div className="flex items-center bg-black/40 rounded-lg border border-white/10 overflow-hidden">
+                        <button
+                          onClick={() => updateCartQty(id, -1)}
+                          className="w-5 h-5 flex items-center justify-center hover:bg-white/5 active:bg-white/10 text-amber-500 cursor-pointer"
+                        >
+                          <Minus className="w-2.5 h-2.5" />
+                        </button>
+                        <span className="w-5 text-center text-[9.5px] font-bold font-mono text-white">{qty}</span>
+                        <button
+                          onClick={() => updateCartQty(id, 1)}
+                          className="w-5 h-5 flex items-center justify-center hover:bg-white/5 active:bg-white/10 text-amber-500 cursor-pointer"
+                        >
+                          <Plus className="w-2.5 h-2.5" />
+                        </button>
+                      </div>
+                      
+                      <span className="text-[10px] font-bold font-mono text-white w-12 text-right shrink-0">{currency}{totalItemPrice}</span>
+                    </div>
+                  </div>
+                );
+              })}
+            {totalCartItemsCount === 0 && (
+              <div className="flex-1 flex flex-col items-center justify-center text-center text-[10px] text-amber-100/40 gap-1.5 py-10">
+                <ShoppingBag className="w-6 h-6 stroke-1" />
+                <span>Your order sheet is empty</span>
+              </div>
+            )}
+          </div>
+
+          {/* Footer Info & Summary */}
+          <div className="border-t border-white/10 pt-3 shrink-0 flex flex-col gap-2 bg-[#1C0A00]">
+            <div className="flex items-center justify-between">
+              <span className="text-[9px] uppercase font-bold text-amber-200/50">Total Value</span>
+              <span className="text-xs font-black font-mono text-amber-500">{currency}{cartTotal}</span>
+            </div>
+
+            <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-2 text-[8px] leading-normal text-amber-200 text-center font-medium">
+              Show this screen to your waiter when they arrive to place your order.
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

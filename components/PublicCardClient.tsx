@@ -47,61 +47,61 @@ export default function PublicCardClient({ card }: PublicCardClientProps) {
       case 'business':
         return (
           <div className="p-6 flex flex-col items-center gap-5 animate-pulse">
-            <div className="w-24 h-24 rounded-full bg-zinc-200 mt-6" />
-            <div className="w-32 h-4.5 bg-zinc-200 rounded-md" />
-            <div className="w-48 h-3 bg-zinc-200 rounded-md" />
-            <div className="w-full h-12 bg-zinc-100 rounded-xl mt-4" />
+            <div className="w-24 h-24 rounded-full bg-surface-2 mt-6" />
+            <div className="w-32 h-4.5 bg-surface-2 rounded-md" />
+            <div className="w-48 h-3 bg-surface-2 rounded-md" />
+            <div className="w-full h-12 bg-background rounded-xl mt-4" />
             <div className="grid grid-cols-4 gap-3 w-full mt-4">
-              <div className="h-14 bg-zinc-100 rounded-xl" />
-              <div className="h-14 bg-zinc-100 rounded-xl" />
-              <div className="h-14 bg-zinc-100 rounded-xl" />
-              <div className="h-14 bg-zinc-100 rounded-xl" />
+              <div className="h-14 bg-background rounded-xl" />
+              <div className="h-14 bg-background rounded-xl" />
+              <div className="h-14 bg-background rounded-xl" />
+              <div className="h-14 bg-background rounded-xl" />
             </div>
           </div>
         );
       case 'menu':
         return (
           <div className="flex flex-col gap-4 animate-pulse">
-            <div className="w-full h-36 bg-zinc-200" />
+            <div className="w-full h-36 bg-surface-2" />
             <div className="px-5 -mt-8 flex items-end gap-3">
-              <div className="w-16 h-16 rounded-xl bg-zinc-300 border-2 border-white shrink-0" />
-              <div className="w-32 h-4.5 bg-zinc-200 rounded-md mb-1" />
+              <div className="w-16 h-16 rounded-xl bg-[#24262b] border-2 border-surface shrink-0" />
+              <div className="w-32 h-4.5 bg-surface-2 rounded-md mb-1" />
             </div>
             <div className="px-5 flex gap-2 overflow-hidden mt-2">
-              <div className="w-16 h-7 bg-zinc-200 rounded-full shrink-0" />
-              <div className="w-20 h-7 bg-zinc-200 rounded-full shrink-0" />
-              <div className="w-16 h-7 bg-zinc-200 rounded-full shrink-0" />
+              <div className="w-16 h-7 bg-surface-2 rounded-full shrink-0" />
+              <div className="w-20 h-7 bg-surface-2 rounded-full shrink-0" />
+              <div className="w-16 h-7 bg-surface-2 rounded-full shrink-0" />
             </div>
             <div className="px-5 flex flex-col gap-3 mt-4">
-              <div className="h-20 bg-zinc-100 rounded-xl" />
-              <div className="h-20 bg-zinc-100 rounded-xl" />
+              <div className="h-20 bg-background rounded-xl" />
+              <div className="h-20 bg-background rounded-xl" />
             </div>
           </div>
         );
       case 'event':
         return (
           <div className="flex flex-col gap-4 animate-pulse">
-            <div className="w-full h-40 bg-zinc-200" />
+            <div className="w-full h-40 bg-surface-2" />
             <div className="px-5 -mt-6 flex gap-4">
-              <div className="w-12 h-14 bg-zinc-300 rounded-xl shrink-0" />
-              <div className="w-36 h-4 bg-zinc-200 rounded-md mt-2" />
+              <div className="w-12 h-14 bg-[#24262b] rounded-xl shrink-0" />
+              <div className="w-36 h-4 bg-surface-2 rounded-md mt-2" />
             </div>
             <div className="px-5 flex flex-col gap-3 mt-6">
-              <div className="w-full h-10 bg-zinc-100 rounded-xl" />
-              <div className="w-full h-10 bg-zinc-100 rounded-xl" />
-              <div className="w-full h-24 bg-zinc-100 rounded-xl mt-4" />
+              <div className="w-full h-10 bg-background rounded-xl" />
+              <div className="w-full h-10 bg-background rounded-xl" />
+              <div className="w-full h-24 bg-background rounded-xl mt-4" />
             </div>
           </div>
         );
       default:
         return (
           <div className="p-6 flex flex-col gap-4 animate-pulse">
-            <div className="w-16 h-16 rounded-xl bg-zinc-200 mt-6 mx-auto" />
-            <div className="w-36 h-5 bg-zinc-200 rounded-md mx-auto" />
-            <div className="w-48 h-3.5 bg-zinc-200 rounded-md mx-auto" />
-            <div className="w-full h-12 bg-zinc-100 rounded-xl mt-6" />
-            <div className="w-full h-12 bg-zinc-100 rounded-xl" />
-            <div className="w-full h-12 bg-zinc-100 rounded-xl" />
+            <div className="w-16 h-16 rounded-xl bg-surface-2 mt-6 mx-auto" />
+            <div className="w-36 h-5 bg-surface-2 rounded-md mx-auto" />
+            <div className="w-48 h-3.5 bg-surface-2 rounded-md mx-auto" />
+            <div className="w-full h-12 bg-background rounded-xl mt-6" />
+            <div className="w-full h-12 bg-background rounded-xl" />
+            <div className="w-full h-12 bg-background rounded-xl" />
           </div>
         );
     }
@@ -132,11 +132,11 @@ export default function PublicCardClient({ card }: PublicCardClientProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -30 }}
             transition={{ duration: 0.25 }}
-            className="w-[320px] h-[500px] bg-white rounded-[24px] shadow-2xl z-10 flex flex-col border border-black/5 overflow-hidden relative"
+            className="w-[320px] h-[500px] bg-surface rounded-[24px] shadow-2xl z-10 flex flex-col border border-border-default overflow-hidden relative"
           >
             {/* Native card handle spacer */}
             <div className="w-full flex justify-center py-3 shrink-0">
-              <div className="w-10 h-1.5 bg-zinc-200 rounded-full" />
+              <div className="w-10 h-1.5 bg-white/10 rounded-full" />
             </div>
             <div className="flex-1 overflow-y-auto no-scrollbar">
               {renderSkeleton()}
@@ -154,7 +154,7 @@ export default function PublicCardClient({ card }: PublicCardClientProps) {
               transition={{ delay: 0.8 }}
               className="text-[9px] text-white/40 font-bold uppercase tracking-widest pointer-events-none text-center bg-white/5 border border-white/10 px-3.5 py-1.5 rounded-full"
             >
-              Move mouse or tilt phone to rotate
+              Premium Digital Experience
             </motion.div>
           </div>
         )}

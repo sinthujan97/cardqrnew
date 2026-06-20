@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { 
   Briefcase, Utensils, Calendar, Link2, Wifi, ShoppingBag, 
   ArrowRight, ShieldCheck, RefreshCw, Zap, Sliders, Check, 
@@ -11,15 +11,15 @@ import {
 import PhoneMockup from '@/components/PhoneMockup';
 import QRGenerator from '@/components/QRGenerator';
 
-// FAQS data
-const FAQS = [
+// Default FAQs
+const DEFAULT_FAQS = [
   {
     question: "Do customers need to download an app?",
     answer: "No. CardQR destinations load directly in the phone's native browser overlay when scanned. The page layout is specifically optimized to look and feel exactly like a native app sheet, bypassing traditional website bars."
   },
   {
     question: "Can I edit my card details after printing the QR code?",
-    answer: "Yes, completely! When you publish a card, we generate a Secret Edit Link (e.g. cardqr.com/edit/xyz). Bookmark this link. You can use it to update menu items, phone numbers, or WiFI passwords anytime, and the QR code printed on paper stays exactly the same."
+    answer: "Yes, completely! When you publish a card, we generate a Secret Edit Link (e.g. cardqr.com/edit/xyz). Bookmark this link. You can use it to update menu items, phone numbers, or WiFi passwords anytime, and the QR code printed on paper stays exactly the same."
   },
   {
     question: "Do my CardQR codes ever expire?",
@@ -31,13 +31,12 @@ const FAQS = [
   }
 ];
 
-// Core template preview data (Simplified mockup content)
+// Core template preview data
 const MOCK_TEMPLATES = [
   {
     id: 'business',
     title: 'Business Card',
     description: 'Photo, job title, contact links, and Save Contact vCard.',
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=120&h=120',
     fields: ['Charlotte Dubois', 'Studio Arcs', 'Save Contact'],
     icon: Briefcase
   },
@@ -45,7 +44,6 @@ const MOCK_TEMPLATES = [
     id: 'menu',
     title: 'Restaurant Menu',
     description: 'Visual categories, items list, prices, and food details.',
-    avatar: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&q=80&w=120&h=120',
     fields: ['Truffle Arancini - $14', 'Burrata & Tomato - $16', 'Contemporary Italian'],
     icon: Utensils
   },
@@ -53,7 +51,6 @@ const MOCK_TEMPLATES = [
     id: 'event',
     title: 'Event Card',
     description: 'Calendar details, maps, agenda description, and RSVP signup.',
-    avatar: 'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?auto=format&fit=crop&q=80&w=120&h=120',
     fields: ['Gallery Vernissage', 'July 24, 7:00 PM', 'Confirm RSVP Form'],
     icon: Calendar
   },
@@ -61,7 +58,6 @@ const MOCK_TEMPLATES = [
     id: 'link',
     title: 'Link Hub',
     description: 'Premium alternative to bio-links. Highlight custom URLs.',
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=120&h=120',
     fields: ['Latest Exhibition', 'Figma Library', 'Read Articles'],
     icon: Link2
   },
@@ -69,7 +65,6 @@ const MOCK_TEMPLATES = [
     id: 'wifi',
     title: 'WiFi Sharing',
     description: 'Secure credentials card with instant click-to-copy button.',
-    avatar: '',
     fields: ['StudioArcs_Guest_5G', 'Copy Password', 'Auto-WPA Setup'],
     icon: Wifi
   },
@@ -77,27 +72,34 @@ const MOCK_TEMPLATES = [
     id: 'catalog',
     title: 'Product Catalog',
     description: 'Grid cards with photos, prices, and WhatsApp order checkout.',
-    avatar: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?auto=format&fit=crop&q=80&w=120&h=120',
     fields: ['Chroma Print - $120', 'Space Print - $160', 'Direct Whatsapp Order'],
     icon: ShoppingBag
   }
 ];
 
-export default function LandingPage() {
+interface SEOLandingPageProps {
+  heroTitle: string;
+  heroDescription: string;
+  ctaText?: string;
+  ctaLink: string;
+  prefillUrl?: string;
+  tagline?: string;
+  bulletTitle?: string;
+  bulletDescription?: string;
+}
+
+export default function SEOLandingPage({
+  heroTitle,
+  heroDescription,
+  ctaText = "Start Template Creator",
+  ctaLink,
+  prefillUrl = "",
+  tagline = "Create a beautiful QR destination in 60 seconds",
+  bulletTitle = "Create and Deploy in Seconds",
+  bulletDescription = "CardQR streamlines publication into 4 linear steps. No accounts required to get started."
+}: SEOLandingPageProps) {
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
-  
-  // Hero Animation Loop State
-  const [heroCardStep, setHeroCardStep] = useState<'scan' | 'sheet'>('scan');
-  
-  // Instant URL to QR Code state
-  const [inputUrl, setInputUrl] = useState('');
-  
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setHeroCardStep(prev => prev === 'scan' ? 'sheet' : 'scan');
-    }, 4500);
-    return () => clearInterval(timer);
-  }, []);
+  const [inputUrl, setInputUrl] = useState(prefillUrl);
 
   const toggleFaq = (index: number) => {
     setActiveFaq(activeFaq === index ? null : index);
@@ -135,23 +137,23 @@ export default function LandingPage() {
         <div className="flex-1 max-w-xl text-center lg:text-left">
           {/* Tagline Badge */}
           <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-accent-dim text-accent border border-accent/15 rounded-full text-[10px] font-bold mb-5 uppercase tracking-wide">
-            <Sparkles className="w-3 h-3 text-accent" /> Create a beautiful QR destination in 60 seconds
+            <Sparkles className="w-3 h-3 text-accent" /> {tagline}
           </div>
 
           <h1 className="text-3xl md:text-5xl lg:text-6xl font-black text-primary tracking-tight leading-[1.08] font-heading">
-            Turn Any QR Code Into a Branded Experience
+            {heroTitle}
           </h1>
           
           <p className="text-xs md:text-sm text-muted-text leading-relaxed mt-5 max-w-md mx-auto lg:mx-0 font-medium">
-            Create digital business cards, menus, event pages, WiFi cards, and link hubs in under a minute. Or convert any web link into a print-ready vector QR code instantly.
+            {heroDescription}
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 mt-8">
             <Link 
-              href="/create"
+              href={ctaLink}
               className="h-11 w-full sm:w-auto px-6 bg-accent hover:bg-accent/90 text-zinc-950 text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer text-center"
             >
-              Start Template Creator <ArrowRight className="w-4 h-4" />
+              {ctaText} <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
         </div>
@@ -267,9 +269,9 @@ export default function LandingPage() {
       {/* 3. HOW IT WORKS */}
       <section id="how-it-works" className="px-6 py-20 w-full max-w-7xl mx-auto">
         <div className="text-center max-w-xl mx-auto mb-16">
-          <h2 className="text-2xl md:text-3xl font-black text-primary tracking-tight font-heading">Create and Deploy in Seconds</h2>
+          <h2 className="text-2xl md:text-3xl font-black text-primary tracking-tight font-heading">{bulletTitle}</h2>
           <p className="text-xs text-muted-text mt-2.5 font-medium">
-            CardQR streamlines publication into 4 linear steps. No accounts required to get started.
+            {bulletDescription}
           </p>
         </div>
 
@@ -378,11 +380,11 @@ export default function LandingPage() {
         <div className="max-w-2xl mx-auto w-full">
           <div className="text-center mb-14">
             <h2 className="text-2xl md:text-3xl font-black text-primary tracking-tight font-heading">Frequently Asked Questions</h2>
-            <p className="text-xs text-muted-text mt-2.5">Clear responses to common workflow questions.</p>
+            <p className="text-xs text-muted-text mt-2.5 font-medium">Clear responses to common workflow questions.</p>
           </div>
 
           <div className="flex flex-col gap-3">
-            {FAQS.map((faq, idx) => {
+            {DEFAULT_FAQS.map((faq, idx) => {
               const isOpen = activeFaq === idx;
               return (
                 <div key={idx} className="border border-border-default rounded-2xl overflow-hidden bg-surface shadow-2xs">
@@ -410,7 +412,7 @@ export default function LandingPage() {
       <footer className="py-12 px-6 border-t border-border-default text-center text-[11px] text-muted-text bg-surface">
         <div className="max-w-7xl mx-auto w-full flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-1.5">
-            <span className="font-black text-primary text-xs">CardQR</span>
+            <span className="font-black text-primary text-xs font-heading">CardQR</span>
             <span>© 2026 CardQR Inc. All rights reserved.</span>
           </div>
           <div className="flex gap-4">

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { 
   Briefcase, Utensils, Calendar as CalendarIcon, Link2, Wifi, 
-  ShoppingBag, Sparkles, Send, Check, AlertTriangle, X, ChevronRight, Eye 
+  ShoppingBag, Sparkles, Send, Check, AlertTriangle, X, ChevronRight, Eye, QrCode
 } from 'lucide-react';
 import { getInitialData, TemplateType } from '@/lib/templates';
 import { CardData } from '@/lib/db';
@@ -122,15 +122,19 @@ export default function WorkspaceBuilder({ initialCard }: WorkspaceBuilderProps)
   const isEditMode = !!initialCard;
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] flex flex-col font-sans select-none relative">
+    <div className="min-h-screen bg-background text-primary flex flex-col font-sans select-none relative">
       {/* Workspace Header */}
-      <header className="h-16 px-6 bg-white border-b border-black/5 flex items-center justify-between shrink-0 sticky top-0 z-40">
-        <div className="flex items-center gap-3">
-          <Link href="/" className="text-base font-black tracking-tight text-primary flex items-center gap-1">
+      <header className="h-16 px-6 bg-surface/75 backdrop-blur-md border-b border-border-default flex items-center justify-between shrink-0 sticky top-0 z-40">
+        <div className="flex items-center gap-2">
+          {/* Styled Brand Logo Badge */}
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-accent to-amber-400 flex items-center justify-center shadow-md shadow-accent/10">
+            <QrCode className="w-4.5 h-4.5 text-zinc-950" />
+          </div>
+          <Link href="/" className="text-base font-black tracking-tight text-primary flex items-center gap-1.5 font-heading">
             Card<span className="text-muted-text font-medium">QR</span>
           </Link>
-          <span className="text-xs text-muted-text/60">/</span>
-          <span className="text-xs font-bold text-primary">
+          <span className="text-xs text-border-emphasis">/</span>
+          <span className="text-xs font-bold text-muted-text">
             {isEditMode ? 'Edit Card Workspace' : 'Creator Workspace'}
           </span>
         </div>
@@ -139,7 +143,7 @@ export default function WorkspaceBuilder({ initialCard }: WorkspaceBuilderProps)
           {/* Mobile Preview Trigger */}
           <button
             onClick={() => setShowMobilePreview(true)}
-            className="md:hidden h-9 px-3 border border-black/10 rounded-xl text-xs font-bold bg-white hover:bg-[#F4F4F5] flex items-center gap-1.5 cursor-pointer"
+            className="md:hidden h-9 px-3 border border-border-default rounded-xl text-xs font-bold bg-surface hover:bg-surface-2 flex items-center gap-1.5 cursor-pointer text-primary"
           >
             <Eye className="w-3.5 h-3.5" /> Preview
           </button>
@@ -147,11 +151,11 @@ export default function WorkspaceBuilder({ initialCard }: WorkspaceBuilderProps)
           <button
             onClick={handlePublish}
             disabled={isPublishing || slugStatus === 'taken' || !slug}
-            className="h-9 px-4.5 bg-primary hover:bg-accent disabled:opacity-50 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
+            className="h-9 px-4.5 bg-accent hover:bg-accent/90 disabled:opacity-50 text-zinc-950 text-xs font-bold rounded-xl flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
           >
             {isPublishing ? 'Saving...' : (
               <>
-                <Send className="w-3.5 h-3.5" /> {isEditMode ? 'Update Card' : 'Publish Card'}
+                <Send className="w-3.5 h-3.5 text-zinc-950" /> {isEditMode ? 'Update Card' : 'Publish Card'}
               </>
             )}
           </button>
@@ -161,9 +165,9 @@ export default function WorkspaceBuilder({ initialCard }: WorkspaceBuilderProps)
       {/* Main Workspace split */}
       <main className="flex-1 flex overflow-hidden">
         {/* Left Side: Customizer Forms */}
-        <section className="flex-1 overflow-y-auto px-6 py-8 md:px-12 md:py-10 flex flex-col max-w-3xl">
+        <section className="flex-1 overflow-y-auto px-6 py-8 md:px-12 md:py-10 flex flex-col max-w-3xl bg-background">
           <div className="max-w-xl w-full">
-            <h1 className="text-xl md:text-2xl font-bold tracking-tight text-primary mb-1.5">
+            <h1 className="text-xl md:text-2xl font-bold tracking-tight text-primary mb-1.5 font-heading">
               {isEditMode ? 'Update Your Card' : 'Design Your Card'}
             </h1>
             <p className="text-xs text-muted-text">
@@ -171,8 +175,8 @@ export default function WorkspaceBuilder({ initialCard }: WorkspaceBuilderProps)
             </p>
             
             {/* Slug Path Input */}
-            <div className="mt-6 p-4 rounded-xl border border-black/5 bg-white shadow-2xs">
-              <label className="text-[11px] font-bold text-primary tracking-wide uppercase">Your Public URL Route</label>
+            <div className="mt-6 p-4 rounded-xl border border-border-default bg-surface shadow-2xs">
+              <label className="text-[11px] font-bold text-muted-text tracking-wide uppercase">Your Public URL Route</label>
               <div className="flex items-center gap-1 mt-2">
                 <span className="text-xs text-muted-text select-none">cardqr.com/c/</span>
                 <input
@@ -180,13 +184,13 @@ export default function WorkspaceBuilder({ initialCard }: WorkspaceBuilderProps)
                   value={slug}
                   onChange={(e) => handleSlugChange(e.target.value)}
                   placeholder="e.g. coffee-hub"
-                  className="flex-1 h-9 px-3 text-xs border border-black/10 rounded-lg focus:outline-none focus:border-primary font-bold text-primary"
+                  className="flex-1 h-9 px-3 text-xs border border-border-default rounded-lg focus:outline-none focus:border-accent font-bold text-primary bg-surface-2"
                 />
               </div>
               <div className="mt-2.5 flex items-center justify-between text-[10px] font-bold">
                 {slugStatus === 'checking' && <span className="text-muted-text">Verifying URL route availability...</span>}
-                {slugStatus === 'available' && <span className="text-[#10B981]">✓ Route route is available</span>}
-                {slugStatus === 'taken' && <span className="text-red-500">✗ Route already in use. Try a different slug.</span>}
+                {slugStatus === 'available' && <span className="text-success">✓ Route is available</span>}
+                {slugStatus === 'taken' && <span className="text-danger">✗ Route already in use. Try a different slug.</span>}
                 {slugStatus === 'idle' && <span className="text-muted-text/60">Alphanumeric characters and hyphens only.</span>}
               </div>
             </div>
@@ -194,7 +198,7 @@ export default function WorkspaceBuilder({ initialCard }: WorkspaceBuilderProps)
             {/* Template Selector Grid (Disabled in edit mode to preserve structural types) */}
             {!isEditMode && (
               <div className="mt-8">
-                <label className="text-[11px] font-bold text-primary tracking-wide uppercase">Select Template Profile</label>
+                <label className="text-[11px] font-bold text-muted-text tracking-wide uppercase">Select Template Profile</label>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 mt-2.5">
                   {TEMPLATES.map((item) => {
                     const Icon = item.icon;
@@ -205,11 +209,11 @@ export default function WorkspaceBuilder({ initialCard }: WorkspaceBuilderProps)
                         onClick={() => setTemplate(item.id)}
                         className={`h-11 px-3.5 border rounded-xl flex items-center gap-2.5 transition-all text-left cursor-pointer ${
                           isSelected 
-                            ? 'border-primary bg-white text-primary shadow-xs' 
-                            : 'border-black/5 bg-white hover:bg-muted-bg text-muted-text'
+                            ? 'border-accent bg-accent-dim text-accent shadow-xs' 
+                            : 'border-border-default bg-surface hover:bg-surface-2 text-muted-text hover:text-primary'
                         }`}
                       >
-                        <Icon className={`w-4 h-4 shrink-0 ${isSelected ? 'text-primary' : 'text-muted-text/70'}`} />
+                        <Icon className={`w-4 h-4 shrink-0 ${isSelected ? 'text-accent' : 'text-muted-text/70'}`} />
                         <span className="text-xs font-bold leading-tight truncate">{item.label}</span>
                       </button>
                     );
@@ -220,16 +224,16 @@ export default function WorkspaceBuilder({ initialCard }: WorkspaceBuilderProps)
 
             {/* validation banner */}
             {validationError && (
-              <div className="mt-6 p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-600 text-xs font-bold flex items-center gap-2">
+              <div className="mt-6 p-3.5 rounded-xl bg-danger/10 border border-danger/20 text-danger text-xs font-bold flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4 shrink-0" />
                 <span>{validationError}</span>
               </div>
             )}
 
             {/* Render selected template form */}
-            <div className="mt-8 bg-white border border-black/5 p-6 rounded-2xl shadow-2xs mb-10">
-              <div className="flex items-center gap-2 mb-6 border-b border-black/5 pb-4">
-                <div className="w-6 h-6 rounded-md bg-primary/5 text-primary flex items-center justify-center font-bold">
+            <div className="mt-8 bg-surface border border-border-default p-6 rounded-2xl shadow-2xs mb-10">
+              <div className="flex items-center gap-2 mb-6 border-b border-border-default pb-4">
+                <div className="w-6 h-6 rounded-md bg-accent-dim text-accent flex items-center justify-center font-bold">
                   <Sparkles className="w-3.5 h-3.5" />
                 </div>
                 <h2 className="text-xs font-bold tracking-wider text-muted-text uppercase">
@@ -247,23 +251,20 @@ export default function WorkspaceBuilder({ initialCard }: WorkspaceBuilderProps)
         </section>
 
         {/* Right Side: Simulator Preview (Desktop only) */}
-        <section className="hidden md:flex w-[380px] border-l border-black/5 bg-[#FAFAFA] flex-col justify-center py-6 shrink-0 h-full overflow-y-auto no-scrollbar">
+        <section className="hidden md:flex w-[380px] border-l border-border-default bg-background flex-col justify-center py-6 shrink-0 h-full overflow-y-auto no-scrollbar">
           <PhoneMockup dark={true}>
-            <div className="relative w-full h-full flex-1 flex flex-col items-center justify-center overflow-hidden bg-[#09090B]">
-              {/* Camera-style focus background details */}
-              <div className="absolute inset-0 bg-[#09090B] bg-[radial-gradient(#1f1f23_1px,transparent_1px)] bg-[size:16px_16px] opacity-40 pointer-events-none" />
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.03)_0%,_transparent_70%)] pointer-events-none" />
+            <div className="relative w-full h-full flex-1 flex flex-col items-center justify-center overflow-hidden bg-background">
               
               {/* Viewfinder borders customized for small simulator screen */}
-              <div className="absolute inset-4 pointer-events-none z-0 border border-white/5 rounded-2xl">
-                <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-white/20 rounded-tl-md" />
-                <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-white/20 rounded-tr-md" />
-                <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-white/20 rounded-bl-md" />
-                <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-white/20 rounded-br-md" />
+              <div className="absolute inset-4 pointer-events-none z-0 border border-border-default rounded-2xl">
+                <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-border-emphasis rounded-tl-md" />
+                <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-border-emphasis rounded-tr-md" />
+                <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-border-emphasis rounded-bl-md" />
+                <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-border-emphasis rounded-br-md" />
                 
                 {/* Live Scan Mode label */}
-                <div className="absolute top-2 left-2 flex items-center gap-1 text-[8px] font-bold tracking-wider text-white/30 uppercase">
-                  <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                <div className="absolute top-2 left-2 flex items-center gap-1 text-[8px] font-bold tracking-wider text-muted-text uppercase">
+                  <span className="w-1.5 h-1.5 rounded-full bg-danger animate-pulse" />
                   <span>Scan Preview</span>
                 </div>
               </div>
@@ -273,8 +274,8 @@ export default function WorkspaceBuilder({ initialCard }: WorkspaceBuilderProps)
                 <PhysicalCard card={{ templateType: template, data: formData, slug: slug || 'preview' }} />
                 
                 {/* Hint indicator */}
-                <span className="text-[8px] text-white/30 font-bold uppercase tracking-wider mt-4">
-                  Move mouse to rotate
+                <span className="text-[8px] text-muted-text font-bold uppercase tracking-wider mt-4">
+                  Interactive Card Preview
                 </span>
               </div>
             </div>
@@ -284,40 +285,38 @@ export default function WorkspaceBuilder({ initialCard }: WorkspaceBuilderProps)
 
       {/* Mobile Preview Overlay Bottom Sheet */}
       {showMobilePreview && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex flex-col justify-end md:hidden">
+        <div className="fixed inset-0 bg-black/80 z-50 flex flex-col justify-end md:hidden">
           <div className="absolute inset-0" onClick={() => setShowMobilePreview(false)} />
-          <div className="relative bg-[#FAFAFA] rounded-t-3xl p-4 flex flex-col gap-4 max-h-[90%] z-20 overflow-hidden">
-            <div className="flex items-center justify-between border-b border-black/5 pb-3">
+          <div className="relative bg-surface border-t border-border-emphasis rounded-t-3xl p-4 flex flex-col gap-4 max-h-[90%] z-20 overflow-hidden">
+            <div className="flex items-center justify-between border-b border-border-default pb-3">
               <span className="text-xs font-bold text-primary">Live Mobile Simulator</span>
               <button 
                 onClick={() => setShowMobilePreview(false)}
-                className="w-7 h-7 rounded-full bg-[#F4F4F5] flex items-center justify-center text-primary cursor-pointer"
+                className="w-7 h-7 rounded-full bg-surface-2 flex items-center justify-center text-primary cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
             <div className="flex-1 overflow-y-auto pb-6">
               <PhoneMockup animate={false} dark={true}>
-                <div className="relative w-full h-full flex-1 flex flex-col items-center justify-center overflow-hidden bg-[#09090B]">
-                  <div className="absolute inset-0 bg-[#09090B] bg-[radial-gradient(#1f1f23_1px,transparent_1px)] bg-[size:16px_16px] opacity-40 pointer-events-none" />
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.03)_0%,_transparent_70%)] pointer-events-none" />
+                <div className="relative w-full h-full flex-1 flex flex-col items-center justify-center overflow-hidden bg-background">
                   
-                  <div className="absolute inset-4 pointer-events-none z-0 border border-white/5 rounded-2xl">
-                    <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-white/20 rounded-tl-md" />
-                    <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-white/20 rounded-tr-md" />
-                    <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-white/20 rounded-bl-md" />
-                    <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-white/20 rounded-br-md" />
+                  <div className="absolute inset-4 pointer-events-none z-0 border border-border-default rounded-2xl">
+                    <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-border-emphasis rounded-tl-md" />
+                    <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-border-emphasis rounded-tr-md" />
+                    <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-border-emphasis rounded-bl-md" />
+                    <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-border-emphasis rounded-br-md" />
                     
-                    <div className="absolute top-2 left-2 flex items-center gap-1 text-[8px] font-bold tracking-wider text-white/30 uppercase">
-                      <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                    <div className="absolute top-2 left-2 flex items-center gap-1 text-[8px] font-bold tracking-wider text-muted-text uppercase">
+                      <span className="w-1.5 h-1.5 rounded-full bg-danger animate-pulse" />
                       <span>Scan Preview</span>
                     </div>
                   </div>
 
                   <div className="flex-1 flex flex-col items-center justify-center z-10 scale-90 -my-6 origin-center">
                     <PhysicalCard card={{ templateType: template, data: formData, slug: slug || 'preview' }} />
-                    <span className="text-[8px] text-white/30 font-bold uppercase tracking-wider mt-4">
-                      Move mouse to rotate
+                    <span className="text-[8px] text-muted-text font-bold uppercase tracking-wider mt-4">
+                      Interactive Card Preview
                     </span>
                   </div>
                 </div>
@@ -329,14 +328,14 @@ export default function WorkspaceBuilder({ initialCard }: WorkspaceBuilderProps)
 
       {/* Publish Result Modal Overlay */}
       {publishResult && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-6.5 max-w-sm w-full flex flex-col gap-5 border border-black/5 shadow-xl select-text">
+        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+          <div className="bg-surface rounded-3xl p-6.5 max-w-sm w-full flex flex-col gap-5 border border-border-emphasis shadow-2xl select-text text-primary">
             
             {/* Header */}
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-full bg-success text-white flex items-center justify-center shadow-xs">
-                  <Check className="w-4 h-4" />
+                <div className="w-7 h-7 rounded-full bg-success text-zinc-950 flex items-center justify-center shadow-xs">
+                  <Check className="w-4 h-4 stroke-[3]" />
                 </div>
                 <h3 className="text-sm font-bold text-primary">
                   {isEditMode ? 'Card Updated!' : 'Card Published!'}
@@ -347,41 +346,41 @@ export default function WorkspaceBuilder({ initialCard }: WorkspaceBuilderProps)
                   setPublishResult(null);
                   router.push('/');
                 }}
-                className="w-7 h-7 rounded-full bg-[#F4F4F5] flex items-center justify-center text-primary cursor-pointer hover:bg-zinc-200"
+                className="w-7 h-7 rounded-full bg-surface-2 flex items-center justify-center text-primary cursor-pointer hover:bg-border-emphasis"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             {/* QR Code Container */}
-            <div className="py-2 flex justify-center">
+            <div className="py-2 flex justify-center bg-white p-4 rounded-2xl border border-border-default">
               <QRGenerator value={publishResult.publicUrl} />
             </div>
 
             {/* Secret URL warning */}
-            <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-[10px] leading-relaxed font-bold flex gap-2">
-              <AlertTriangle className="w-5 h-5 shrink-0 text-amber-600 mt-0.5" />
+            <div className="p-3.5 rounded-xl bg-warning/10 border border-warning/20 text-warning text-[10px] leading-relaxed font-bold flex gap-2">
+              <AlertTriangle className="w-5 h-5 shrink-0 text-warning mt-0.5" />
               <div>
-                <span className="uppercase text-amber-700 block mb-0.5">Critical Action Required</span>
+                <span className="uppercase text-warning block mb-0.5">Critical Action Required</span>
                 Save your edit link below. Anyone with this link can edit your Card. We do not store passwords.
               </div>
             </div>
 
             {/* Edit Link copying */}
-            <div className="flex flex-col gap-1 pt-1.5 border-t border-black/5">
+            <div className="flex flex-col gap-1 pt-1.5 border-t border-border-default">
               <span className="text-[9px] font-extrabold tracking-wider text-muted-text uppercase">Secret Edit URL</span>
               <div className="flex items-center gap-2 mt-1">
                 <input
                   type="text"
                   readOnly
                   value={publishResult.editUrl}
-                  className="flex-1 h-9 px-2.5 text-[11px] font-mono border border-black/10 bg-[#FAFAFA] rounded-lg focus:outline-none"
+                  className="flex-1 h-9 px-2.5 text-[11px] font-mono border border-border-default bg-surface-2 rounded-lg focus:outline-none text-primary"
                 />
                 <button
                   onClick={() => {
                     navigator.clipboard.writeText(publishResult.editUrl);
                   }}
-                  className="h-9 px-3 bg-primary hover:bg-accent text-white text-xs font-semibold rounded-lg shrink-0 transition-all cursor-pointer"
+                  className="h-9 px-3 bg-accent hover:bg-accent/90 text-zinc-950 text-xs font-bold rounded-lg shrink-0 transition-all cursor-pointer"
                 >
                   Copy
                 </button>
@@ -393,7 +392,7 @@ export default function WorkspaceBuilder({ initialCard }: WorkspaceBuilderProps)
               href={publishResult.publicUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full h-10 border border-black/10 hover:bg-[#F4F4F5] rounded-xl flex items-center justify-center gap-1.5 text-xs font-bold text-primary transition-all text-center mt-2 cursor-pointer"
+              className="w-full h-10 border border-border-default hover:bg-surface-2 rounded-xl flex items-center justify-center gap-1.5 text-xs font-bold text-primary transition-all text-center mt-2 cursor-pointer"
             >
               Open Scanned Card <ChevronRight className="w-3.5 h-3.5" />
             </a>

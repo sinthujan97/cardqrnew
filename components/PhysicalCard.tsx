@@ -87,26 +87,7 @@ export default function PhysicalCard({ card }: PhysicalCardProps) {
     return () => observer.disconnect();
   }, []);
 
-  // Interaction handlers
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (reducedMotion) return;
-    const container = containerRef.current;
-    if (!container) return;
-
-    const rect = container.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-
-    const rotateX = (e.clientY - centerY) / 25;
-    const rotateY = (e.clientX - centerX) / -20;
-
-    // Clamp rotation to ±6deg
-    targetRotation.current = {
-      x: Math.min(Math.max(rotateX, -6), 6),
-      y: Math.min(Math.max(rotateY, -6), 6),
-    };
-  };
-
+  // Interaction handlers - Dynamic tilt removed, keeping hover depth lift transitions
   const handleMouseEnter = () => {
     targetLift.current = 24;
     targetScale.current = 1.03;
@@ -131,46 +112,6 @@ export default function PhysicalCard({ card }: PhysicalCardProps) {
       cardRef.current.style.boxShadow = `${edgeShadow}, 0 40px 80px rgba(0,0,0,0.5)`;
     }
   };
-
-  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
-    if (reducedMotion) return;
-    const container = containerRef.current;
-    if (!container || e.touches.length === 0) return;
-
-    const rect = container.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-
-    const touch = e.touches[0];
-    const rotateX = (touch.clientY - centerY) / 25;
-    const rotateY = (touch.clientX - centerX) / -20;
-
-    targetRotation.current = {
-      x: Math.min(Math.max(rotateX, -6), 6),
-      y: Math.min(Math.max(rotateY, -6), 6),
-    };
-  };
-
-  // Gyroscope tracking for mobile orientation
-  useEffect(() => {
-    if (typeof window === 'undefined' || reducedMotion) return;
-
-    const handleOrientation = (e: DeviceOrientationEvent) => {
-      if (e.beta === null || e.gamma === null) return;
-
-      const pitch = Math.min(Math.max(e.beta - 45, -20), 20);
-      const roll = Math.min(Math.max(e.gamma, -20), 20);
-
-      // Clamp to ±6deg
-      targetRotation.current = {
-        x: Math.min(Math.max(-pitch * 0.3, -6), 6),
-        y: Math.min(Math.max(roll * 0.3, -6), 6),
-      };
-    };
-
-    window.addEventListener('deviceorientation', handleOrientation);
-    return () => window.removeEventListener('deviceorientation', handleOrientation);
-  }, [reducedMotion]);
 
   // RequestAnimationFrame physics loop
   useEffect(() => {
@@ -237,11 +178,9 @@ export default function PhysicalCard({ card }: PhysicalCardProps) {
       {/* 2. Float Wrapper */}
       <div 
         ref={containerRef}
-        onMouseMove={handleMouseMove}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
         onTouchEnd={handleMouseLeave}
         className={`relative w-[320px] h-[500px] select-none ${reducedMotion ? '' : 'float-card'}`}
         style={{

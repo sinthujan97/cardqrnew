@@ -3,20 +3,27 @@
 @import "tailwindcss";
 
 :root {
-  --background: #FAFAFA;
-  --foreground: #111111;
+  --background: #0B0C0E;
+  --foreground: #F0EEE8;
 }
 
 @theme {
   --font-heading: "Clash Display", "General Sans", sans-serif;
   --font-sans: "Satoshi", system-ui, sans-serif;
   
-  --color-primary: #111111;
-  --color-accent: #0F172A;
-  --color-success: #10B981;
-  --color-card-bg: #FFFFFF;
-  --color-muted-bg: #F4F4F5;
-  --color-muted-text: #71717A;
+  --color-primary: #F0EEE8;
+  --color-accent: #E8FF47;
+  --color-accent-dim: rgba(232, 255, 71, 0.12);
+  --color-success: #4ADE80;
+  --color-danger: #FF5C5C;
+  --color-warning: #FFA94D;
+  --color-info: #60A5FA;
+  --color-surface: #131416;
+  --color-surface-2: #1A1B1E;
+  --color-muted-bg: #1A1B1E;
+  --color-muted-text: #7A7870;
+  --color-border-default: rgba(255, 255, 255, 0.07);
+  --color-border-emphasis: rgba(255, 255, 255, 0.12);
 }
 
 body {
@@ -36,30 +43,30 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #E4E4E7;
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #D4D4D8;
+  background: rgba(255, 255, 255, 0.2);
 }
 
 /* Custom Utilities for smooth iOS-style transitions */
 .ios-spring-sheet {
-  box-shadow: 0px -10px 40px rgba(0, 0, 0, 0.04), 0px 30px 60px rgba(0, 0, 0, 0.12);
+  box-shadow: 0px -10px 40px rgba(0, 0, 0, 0.3), 0px 30px 60px rgba(0, 0, 0, 0.6);
   border-top-left-radius: 24px;
   border-top-right-radius: 24px;
 }
 
 .card-shadow {
-  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.02), 0px 8px 30px rgba(0, 0, 0, 0.04);
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2), 0px 8px 30px rgba(0, 0, 0, 0.3);
 }
 
 .premium-border {
-  border: 1px solid rgba(17, 17, 17, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.07);
 }
 
 .premium-glow {
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.02), 0 12px 24px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05), 0 2px 4px rgba(0, 0, 0, 0.3), 0 12px 24px rgba(0, 0, 0, 0.5);
 }
 
 /* Hide scrollbar for clean sheet simulator */

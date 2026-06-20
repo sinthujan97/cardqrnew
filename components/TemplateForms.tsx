@@ -130,7 +130,7 @@ export function BusinessForm({ data, onChange }: FormProps<any>) {
             type="text"
             value={data.name || ''}
             onChange={(e) => updateField('name', e.target.value)}
-            className="w-full h-10 px-3.5 mt-1 text-xs border border-black/10 rounded-xl focus:outline-none focus:border-primary font-medium"
+            className="w-full h-10 px-3.5 mt-1 text-xs border border-border-default rounded-xl focus:outline-none focus:border-accent font-medium bg-surface-2"
             placeholder="e.g. Charlotte Dubois"
           />
         </div>
@@ -140,7 +140,7 @@ export function BusinessForm({ data, onChange }: FormProps<any>) {
             type="text"
             value={data.position || ''}
             onChange={(e) => updateField('position', e.target.value)}
-            className="w-full h-10 px-3.5 mt-1 text-xs border border-black/10 rounded-xl focus:outline-none focus:border-primary font-medium"
+            className="w-full h-10 px-3.5 mt-1 text-xs border border-border-default rounded-xl focus:outline-none focus:border-accent font-medium bg-surface-2"
             placeholder="e.g. Principal Designer at Studio Arcs"
           />
         </div>
@@ -150,9 +150,9 @@ export function BusinessForm({ data, onChange }: FormProps<any>) {
         <label className="text-[11px] font-bold text-primary tracking-wide uppercase">Profile Photo</label>
         <div className="flex items-center gap-4 mt-2">
           {data.photo && (
-            <img src={data.photo} alt="Preview" className="w-12 h-12 rounded-full object-cover border border-black/10" />
+            <img src={data.photo} alt="Preview" className="w-12 h-12 rounded-full object-cover border border-border-default bg-surface-2 text-primary" />
           )}
-          <label className="h-10 px-4 border border-black/10 rounded-xl hover:bg-[#F4F4F5] flex items-center gap-1.5 text-xs font-bold transition-all cursor-pointer">
+          <label className="h-10 px-4 border border-border-default rounded-xl hover:bg-surface-2/80 flex items-center gap-1.5 text-xs font-bold transition-all cursor-pointer">
             <Upload className="w-3.5 h-3.5 text-muted-text" /> Upload Photo
             <input
               type="file"
@@ -170,19 +170,19 @@ export function BusinessForm({ data, onChange }: FormProps<any>) {
           value={data.bio || ''}
           onChange={(e) => updateField('bio', e.target.value)}
           rows={3}
-          className="w-full p-3.5 mt-1 text-xs border border-black/10 rounded-xl focus:outline-none focus:border-primary font-medium resize-none"
+          className="w-full p-3.5 mt-1 text-xs border border-border-default rounded-xl focus:outline-none focus:border-accent font-medium resize-none bg-surface-2"
           placeholder="Brief description about yourself or company..."
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-black/5 pt-5">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-border-default pt-5 bg-surface-2 text-primary">
         <div>
           <label className="text-[11px] font-bold text-primary tracking-wide uppercase">Phone Number</label>
           <input
             type="text"
             value={data.phone || ''}
             onChange={(e) => updateField('phone', e.target.value)}
-            className="w-full h-10 px-3.5 mt-1 text-xs border border-black/10 rounded-xl focus:outline-none focus:border-primary font-medium"
+            className="w-full h-10 px-3.5 mt-1 text-xs border border-border-default rounded-xl focus:outline-none focus:border-accent font-medium bg-surface-2"
             placeholder="+1 (555) 000-0000"
           />
         </div>
@@ -192,7 +192,7 @@ export function BusinessForm({ data, onChange }: FormProps<any>) {
             type="email"
             value={data.email || ''}
             onChange={(e) => updateField('email', e.target.value)}
-            className="w-full h-10 px-3.5 mt-1 text-xs border border-black/10 rounded-xl focus:outline-none focus:border-primary font-medium"
+            className="w-full h-10 px-3.5 mt-1 text-xs border border-border-default rounded-xl focus:outline-none focus:border-accent font-medium bg-surface-2"
             placeholder="charlotte@example.com"
           />
         </div>
@@ -202,20 +202,20 @@ export function BusinessForm({ data, onChange }: FormProps<any>) {
             type="text"
             value={data.whatsapp || ''}
             onChange={(e) => updateField('whatsapp', e.target.value)}
-            className="w-full h-10 px-3.5 mt-1 text-xs border border-black/10 rounded-xl focus:outline-none focus:border-primary font-medium"
+            className="w-full h-10 px-3.5 mt-1 text-xs border border-border-default rounded-xl focus:outline-none focus:border-accent font-medium bg-surface-2"
             placeholder="15551234567"
           />
         </div>
       </div>
 
       {/* Social Links List */}
-      <div className="border-t border-black/5 pt-5">
+      <div className="border-t border-border-default pt-5 bg-surface-2 text-primary">
         <div className="flex items-center justify-between mb-3">
           <label className="text-[11px] font-bold text-primary tracking-wide uppercase">Social Links</label>
           <button
             type="button"
             onClick={handleAddSocial}
-            className="h-8 px-3 border border-black/10 rounded-lg text-[10px] font-bold bg-white hover:bg-[#F4F4F5] flex items-center gap-1 transition-all cursor-pointer"
+            className="h-8 px-3 border border-border-default rounded-lg text-[10px] font-bold bg-surface-2 hover:bg-surface-2/80 flex items-center gap-1 transition-all cursor-pointer"
           >
             <Plus className="w-3 h-3" /> Add Link
           </button>
@@ -223,11 +223,11 @@ export function BusinessForm({ data, onChange }: FormProps<any>) {
         
         <div className="flex flex-col gap-3">
           {data.socials?.map((social: any, idx: number) => (
-            <div key={idx} className="flex gap-2 items-center bg-[#F4F4F5]/30 p-3 rounded-xl border border-black/5">
+            <div key={idx} className="flex gap-2 items-center bg-[#F4F4F5]/30 p-3 rounded-xl border border-border-default text-primary">
               <select
                 value={social.label}
                 onChange={(e) => handleSocialChange(idx, 'label', e.target.value)}
-                className="h-9 px-2 text-xs border border-black/10 bg-white rounded-lg focus:outline-none font-semibold text-primary"
+                className="h-9 px-2 text-xs border border-border-default bg-surface-2 rounded-lg focus:outline-none font-semibold text-primary"
               >
                 <option value="Instagram">Instagram</option>
                 <option value="LinkedIn">LinkedIn</option>
@@ -242,12 +242,12 @@ export function BusinessForm({ data, onChange }: FormProps<any>) {
                 value={social.url}
                 onChange={(e) => handleSocialChange(idx, 'url', e.target.value)}
                 placeholder="https://..."
-                className="flex-1 h-9 px-3 text-xs border border-black/10 bg-white rounded-lg focus:outline-none font-medium"
+                className="flex-1 h-9 px-3 text-xs border border-border-default bg-surface-2 rounded-lg focus:outline-none font-medium"
               />
               <button
                 type="button"
                 onClick={() => handleRemoveSocial(idx)}
-                className="w-9 h-9 border border-black/10 rounded-lg hover:bg-red-50 text-red-500 flex items-center justify-center transition-all cursor-pointer"
+                className="w-9 h-9 border border-border-default rounded-lg hover:bg-danger/10 text-danger flex items-center justify-center transition-all cursor-pointer"
               >
                 <Trash className="w-3.5 h-3.5" />
               </button>
@@ -372,7 +372,7 @@ export function MenuForm({ data, onChange }: FormProps<any>) {
             type="text"
             value={data.restaurantName || ''}
             onChange={(e) => updateField('restaurantName', e.target.value)}
-            className="w-full h-10 px-3.5 mt-1 text-xs border border-black/10 rounded-xl focus:outline-none focus:border-primary font-medium"
+            className="w-full h-10 px-3.5 mt-1 text-xs border border-border-default rounded-xl focus:outline-none focus:border-accent font-medium bg-surface-2"
             placeholder="e.g. Gusto Bistro"
           />
         </div>
@@ -382,7 +382,7 @@ export function MenuForm({ data, onChange }: FormProps<any>) {
             type="text"
             value={data.currency || '$'}
             onChange={(e) => updateField('currency', e.target.value)}
-            className="w-full h-10 px-3.5 mt-1 text-xs border border-black/10 rounded-xl focus:outline-none focus:border-primary font-medium"
+            className="w-full h-10 px-3.5 mt-1 text-xs border border-border-default rounded-xl focus:outline-none focus:border-accent font-medium bg-surface-2"
             placeholder="e.g. $, €, £"
           />
         </div>
@@ -394,7 +394,7 @@ export function MenuForm({ data, onChange }: FormProps<any>) {
           type="text"
           value={data.description || ''}
           onChange={(e) => updateField('description', e.target.value)}
-          className="w-full h-10 px-3.5 mt-1 text-xs border border-black/10 rounded-xl focus:outline-none focus:border-primary font-medium"
+          className="w-full h-10 px-3.5 mt-1 text-xs border border-border-default rounded-xl focus:outline-none focus:border-accent font-medium bg-surface-2"
           placeholder="Italian bistro crafted from local organic ingredients..."
         />
       </div>
@@ -404,9 +404,9 @@ export function MenuForm({ data, onChange }: FormProps<any>) {
           <label className="text-[11px] font-bold text-primary tracking-wide uppercase">Cover Banner Image</label>
           <div className="flex items-center gap-3 mt-2">
             {data.coverImage && (
-              <img src={data.coverImage} alt="Cover Preview" className="w-14 h-10 object-cover rounded-lg border border-black/10" />
+              <img src={data.coverImage} alt="Cover Preview" className="w-14 h-10 object-cover rounded-lg border border-border-default bg-surface-2 text-primary" />
             )}
-            <label className="h-9 px-3 border border-black/10 rounded-lg hover:bg-[#F4F4F5] flex items-center gap-1.5 text-xs font-semibold cursor-pointer">
+            <label className="h-9 px-3 border border-border-default rounded-lg hover:bg-surface-2/80 flex items-center gap-1.5 text-xs font-semibold cursor-pointer">
               <Upload className="w-3.5 h-3.5 text-muted-text" /> Upload
               <input
                 type="file"
@@ -421,9 +421,9 @@ export function MenuForm({ data, onChange }: FormProps<any>) {
           <label className="text-[11px] font-bold text-primary tracking-wide uppercase">Brand Logo</label>
           <div className="flex items-center gap-3 mt-2">
             {data.logo && (
-              <img src={data.logo} alt="Logo Preview" className="w-10 h-10 object-cover rounded-lg border border-black/10" />
+              <img src={data.logo} alt="Logo Preview" className="w-10 h-10 object-cover rounded-lg border border-border-default bg-surface-2 text-primary" />
             )}
-            <label className="h-9 px-3 border border-black/10 rounded-lg hover:bg-[#F4F4F5] flex items-center gap-1.5 text-xs font-semibold cursor-pointer">
+            <label className="h-9 px-3 border border-border-default rounded-lg hover:bg-surface-2/80 flex items-center gap-1.5 text-xs font-semibold cursor-pointer">
               <Upload className="w-3.5 h-3.5 text-muted-text" /> Upload
               <input
                 type="file"
@@ -437,7 +437,7 @@ export function MenuForm({ data, onChange }: FormProps<any>) {
       </div>
 
       {/* Menu categories list */}
-      <div className="border-t border-black/5 pt-5 mt-2">
+      <div className="border-t border-border-default pt-5 mt-2 bg-surface-2 text-primary">
         <div className="flex items-center justify-between mb-4">
           <label className="text-[11px] font-bold text-primary tracking-wide uppercase">Menu Categories & Items</label>
           <button
@@ -451,26 +451,26 @@ export function MenuForm({ data, onChange }: FormProps<any>) {
 
         <div className="flex flex-col gap-6">
           {data.categories?.map((cat: any) => (
-            <div key={cat.id} className="p-4 rounded-xl border border-black/10 bg-[#FAFAFA]">
+            <div key={cat.id} className="p-4 rounded-xl border border-border-default bg-surface-2 text-primary">
               <div className="flex gap-2 items-center justify-between mb-3">
                 <input
                   type="text"
                   value={cat.name}
                   onChange={(e) => handleCategoryNameChange(cat.id, e.target.value)}
-                  className="h-9 px-3 text-xs font-bold border border-black/10 bg-white rounded-lg focus:outline-none focus:border-primary flex-1 max-w-[200px]"
+                  className="h-9 px-3 text-xs font-bold border border-border-default bg-surface-2 rounded-lg focus:outline-none focus:border-accent flex-1 max-w-[200px]"
                 />
                 <div className="flex gap-1.5">
                   <button
                     type="button"
                     onClick={() => handleAddItem(cat.id)}
-                    className="h-8 px-2.5 border border-black/10 bg-white hover:bg-zinc-100 rounded-lg text-[10px] font-bold text-primary flex items-center gap-1 transition-all cursor-pointer"
+                    className="h-8 px-2.5 border border-border-default bg-surface-2 hover:bg-surface-2/80 rounded-lg text-[10px] font-bold text-primary flex items-center gap-1 transition-all cursor-pointer"
                   >
                     <Plus className="w-3.5 h-3.5" /> Add Food Item
                   </button>
                   <button
                     type="button"
                     onClick={() => handleRemoveCategory(cat.id)}
-                    className="w-8 h-8 border border-black/10 bg-white hover:bg-red-50 text-red-500 rounded-lg flex items-center justify-center transition-all cursor-pointer"
+                    className="w-8 h-8 border border-border-default bg-surface-2 hover:bg-danger/10 text-danger rounded-lg flex items-center justify-center transition-all cursor-pointer"
                   >
                     <Trash className="w-3.5 h-3.5" />
                   </button>
@@ -480,7 +480,7 @@ export function MenuForm({ data, onChange }: FormProps<any>) {
               {/* Items under category */}
               <div className="flex flex-col gap-3.5 mt-4">
                 {cat.items?.map((item: any) => (
-                  <div key={item.id} className="p-3 border border-black/5 bg-white rounded-xl flex flex-col gap-3">
+                  <div key={item.id} className="p-3 border border-border-default bg-surface-2 rounded-xl flex flex-col gap-3 text-primary">
                     <div className="flex gap-2 items-start justify-between">
                       <div className="grid grid-cols-2 gap-2 flex-1">
                         <input
@@ -488,20 +488,20 @@ export function MenuForm({ data, onChange }: FormProps<any>) {
                           value={item.name}
                           onChange={(e) => handleItemFieldChange(cat.id, item.id, 'name', e.target.value)}
                           placeholder="Item Name"
-                          className="h-8 px-2.5 text-xs font-bold border border-black/5 rounded-md focus:outline-none focus:border-primary w-full"
+                          className="h-8 px-2.5 text-xs font-bold border border-border-default rounded-md focus:outline-none focus:border-accent w-full bg-surface-2"
                         />
                         <input
                           type="text"
                           value={item.price}
                           onChange={(e) => handleItemFieldChange(cat.id, item.id, 'price', e.target.value)}
                           placeholder="Price"
-                          className="h-8 px-2.5 text-xs font-bold border border-black/5 rounded-md focus:outline-none focus:border-primary w-full"
+                          className="h-8 px-2.5 text-xs font-bold border border-border-default rounded-md focus:outline-none focus:border-accent w-full bg-surface-2"
                         />
                       </div>
                       <button
                         type="button"
                         onClick={() => handleRemoveItem(cat.id, item.id)}
-                        className="w-8 h-8 hover:bg-red-50 text-red-500 rounded-md flex items-center justify-center shrink-0 transition-all cursor-pointer"
+                        className="w-8 h-8 hover:bg-danger/10 text-danger rounded-md flex items-center justify-center shrink-0 transition-all cursor-pointer"
                       >
                         <Trash className="w-3.5 h-3.5" />
                       </button>
@@ -512,16 +512,16 @@ export function MenuForm({ data, onChange }: FormProps<any>) {
                       value={item.description}
                       onChange={(e) => handleItemFieldChange(cat.id, item.id, 'description', e.target.value)}
                       placeholder="Item description (ingredients, sizes, etc.)..."
-                      className="h-8 px-2.5 text-xs border border-black/5 rounded-md focus:outline-none focus:border-primary w-full"
+                      className="h-8 px-2.5 text-xs border border-border-default rounded-md focus:outline-none focus:border-accent w-full bg-surface-2"
                     />
 
                     {/* Image and Tag selections */}
                     <div className="flex flex-wrap items-center justify-between gap-3 mt-1">
                       <div className="flex items-center gap-2">
                         {item.image && (
-                          <img src={item.image} alt="Item Preview" className="w-8 h-8 object-cover rounded-md border border-black/5" />
+                          <img src={item.image} alt="Item Preview" className="w-8 h-8 object-cover rounded-md border border-border-default bg-surface-2 text-primary" />
                         )}
-                        <label className="h-7 px-2 border border-black/5 rounded-md hover:bg-[#F4F4F5] flex items-center gap-1 text-[9px] font-bold cursor-pointer transition-all">
+                        <label className="h-7 px-2 border border-border-default rounded-md hover:bg-surface-2/80 flex items-center gap-1 text-[9px] font-bold cursor-pointer transition-all">
                           <Upload className="w-3 h-3 text-muted-text" /> Photo
                           <input
                             type="file"
@@ -544,7 +544,7 @@ export function MenuForm({ data, onChange }: FormProps<any>) {
                               className={`text-[8px] font-bold uppercase px-2 py-0.5 rounded-sm transition-all cursor-pointer ${
                                 isChecked 
                                   ? 'bg-primary text-white' 
-                                  : 'bg-muted-bg text-primary/60 border border-black/5'
+                                  : 'bg-muted-bg text-primary/60 border border-border-default'
                               }`}
                             >
                               {tag}
@@ -580,7 +580,7 @@ export function EventForm({ data, onChange }: FormProps<any>) {
           type="text"
           value={data.title || ''}
           onChange={(e) => updateField('title', e.target.value)}
-          className="w-full h-10 px-3.5 mt-1 text-xs border border-black/10 rounded-xl focus:outline-none focus:border-primary font-medium"
+          className="w-full h-10 px-3.5 mt-1 text-xs border border-border-default rounded-xl focus:outline-none focus:border-accent font-medium bg-surface-2"
           placeholder="e.g. Midsummer Gallery Vernissage"
         />
       </div>
@@ -589,9 +589,9 @@ export function EventForm({ data, onChange }: FormProps<any>) {
         <label className="text-[11px] font-bold text-primary tracking-wide uppercase">Event Banner Image</label>
         <div className="flex items-center gap-4 mt-2">
           {data.banner && (
-            <img src={data.banner} alt="Banner Preview" className="w-20 h-10 object-cover rounded-lg border border-black/10 shadow-xs" />
+            <img src={data.banner} alt="Banner Preview" className="w-20 h-10 object-cover rounded-lg border border-border-default shadow-xs bg-surface-2 text-primary" />
           )}
-          <label className="h-10 px-4 border border-black/10 rounded-xl hover:bg-[#F4F4F5] flex items-center gap-1.5 text-xs font-bold cursor-pointer transition-all">
+          <label className="h-10 px-4 border border-border-default rounded-xl hover:bg-surface-2/80 flex items-center gap-1.5 text-xs font-bold cursor-pointer transition-all">
             <Upload className="w-3.5 h-3.5 text-muted-text" /> Upload Banner
             <input
               type="file"
@@ -610,7 +610,7 @@ export function EventForm({ data, onChange }: FormProps<any>) {
             type="text"
             value={data.date || ''}
             onChange={(e) => updateField('date', e.target.value)}
-            className="w-full h-10 px-3.5 mt-1 text-xs border border-black/10 rounded-xl focus:outline-none focus:border-primary font-medium"
+            className="w-full h-10 px-3.5 mt-1 text-xs border border-border-default rounded-xl focus:outline-none focus:border-accent font-medium bg-surface-2"
             placeholder="e.g. July 24, 2026"
           />
         </div>
@@ -620,7 +620,7 @@ export function EventForm({ data, onChange }: FormProps<any>) {
             type="text"
             value={data.time || ''}
             onChange={(e) => updateField('time', e.target.value)}
-            className="w-full h-10 px-3.5 mt-1 text-xs border border-black/10 rounded-xl focus:outline-none focus:border-primary font-medium"
+            className="w-full h-10 px-3.5 mt-1 text-xs border border-border-default rounded-xl focus:outline-none focus:border-accent font-medium bg-surface-2"
             placeholder="e.g. 19:00 - 22:30"
           />
         </div>
@@ -632,7 +632,7 @@ export function EventForm({ data, onChange }: FormProps<any>) {
           type="text"
           value={data.venue || ''}
           onChange={(e) => updateField('venue', e.target.value)}
-          className="w-full h-10 px-3.5 mt-1 text-xs border border-black/10 rounded-xl focus:outline-none focus:border-primary font-medium"
+          className="w-full h-10 px-3.5 mt-1 text-xs border border-border-default rounded-xl focus:outline-none focus:border-accent font-medium bg-surface-2"
           placeholder="e.g. Studio Arcs Gallery, District 4"
         />
       </div>
@@ -643,19 +643,19 @@ export function EventForm({ data, onChange }: FormProps<any>) {
           value={data.description || ''}
           onChange={(e) => updateField('description', e.target.value)}
           rows={3}
-          className="w-full p-3.5 mt-1 text-xs border border-black/10 rounded-xl focus:outline-none focus:border-primary font-medium resize-none"
+          className="w-full p-3.5 mt-1 text-xs border border-border-default rounded-xl focus:outline-none focus:border-accent font-medium resize-none bg-surface-2"
           placeholder="Give a brief summary of the agenda, curated features..."
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-black/5 pt-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-border-default pt-5 bg-surface-2 text-primary">
         <div>
           <label className="text-[11px] font-bold text-primary tracking-wide uppercase">RSVP Button Text</label>
           <input
             type="text"
             value={data.rsvpButtonText || ''}
             onChange={(e) => updateField('rsvpButtonText', e.target.value)}
-            className="w-full h-10 px-3.5 mt-1 text-xs border border-black/10 rounded-xl focus:outline-none focus:border-primary font-medium"
+            className="w-full h-10 px-3.5 mt-1 text-xs border border-border-default rounded-xl focus:outline-none focus:border-accent font-medium bg-surface-2"
             placeholder="Request Invitation / RSVP"
           />
         </div>
@@ -665,7 +665,7 @@ export function EventForm({ data, onChange }: FormProps<any>) {
             type="number"
             value={data.maxGuests || ''}
             onChange={(e) => updateField('maxGuests', e.target.value ? parseInt(e.target.value) : undefined)}
-            className="w-full h-10 px-3.5 mt-1 text-xs border border-black/10 rounded-xl focus:outline-none focus:border-primary font-medium"
+            className="w-full h-10 px-3.5 mt-1 text-xs border border-border-default rounded-xl focus:outline-none focus:border-accent font-medium bg-surface-2"
             placeholder="Unlimited"
           />
         </div>
@@ -721,7 +721,7 @@ export function LinkForm({ data, onChange }: FormProps<any>) {
             type="text"
             value={data.displayName || ''}
             onChange={(e) => updateField('displayName', e.target.value)}
-            className="w-full h-10 px-3.5 mt-1 text-xs border border-black/10 rounded-xl focus:outline-none focus:border-primary font-medium"
+            className="w-full h-10 px-3.5 mt-1 text-xs border border-border-default rounded-xl focus:outline-none focus:border-accent font-medium bg-surface-2"
             placeholder="e.g. Charlotte Dubois"
           />
         </div>
@@ -729,9 +729,9 @@ export function LinkForm({ data, onChange }: FormProps<any>) {
           <label className="text-[11px] font-bold text-primary tracking-wide uppercase">Profile Image</label>
           <div className="flex items-center gap-3 mt-2">
             {data.profileImage && (
-              <img src={data.profileImage} alt="Profile Preview" className="w-10 h-10 object-cover rounded-full border border-black/10" />
+              <img src={data.profileImage} alt="Profile Preview" className="w-10 h-10 object-cover rounded-full border border-border-default bg-surface-2 text-primary" />
             )}
-            <label className="h-9 px-3 border border-black/10 rounded-lg hover:bg-[#F4F4F5] flex items-center gap-1.5 text-xs font-semibold cursor-pointer">
+            <label className="h-9 px-3 border border-border-default rounded-lg hover:bg-surface-2/80 flex items-center gap-1.5 text-xs font-semibold cursor-pointer">
               <Upload className="w-3.5 h-3.5 text-muted-text" /> Upload Image
               <input
                 type="file"
@@ -750,19 +750,19 @@ export function LinkForm({ data, onChange }: FormProps<any>) {
           value={data.bio || ''}
           onChange={(e) => updateField('bio', e.target.value)}
           rows={2}
-          className="w-full p-3.5 mt-1 text-xs border border-black/10 rounded-xl focus:outline-none focus:border-primary font-medium resize-none"
+          className="w-full p-3.5 mt-1 text-xs border border-border-default rounded-xl focus:outline-none focus:border-accent font-medium resize-none bg-surface-2"
           placeholder="Introduce yourself, company, or channels..."
         />
       </div>
 
       {/* Dynamic links */}
-      <div className="border-t border-black/5 pt-5 mt-2">
+      <div className="border-t border-border-default pt-5 mt-2 bg-surface-2 text-primary">
         <div className="flex items-center justify-between mb-4">
           <label className="text-[11px] font-bold text-primary tracking-wide uppercase">Button Links</label>
           <button
             type="button"
             onClick={handleAddLink}
-            className="h-8 px-3 border border-black/10 rounded-lg text-[10px] font-bold bg-white hover:bg-[#F4F4F5] flex items-center gap-1 transition-all cursor-pointer"
+            className="h-8 px-3 border border-border-default rounded-lg text-[10px] font-bold bg-surface-2 hover:bg-surface-2/80 flex items-center gap-1 transition-all cursor-pointer"
           >
             <Plus className="w-3 h-3" /> Add Link
           </button>
@@ -770,7 +770,7 @@ export function LinkForm({ data, onChange }: FormProps<any>) {
 
         <div className="flex flex-col gap-4">
           {data.links?.map((link: any) => (
-            <div key={link.id} className="p-3 border border-black/5 bg-[#F4F4F5]/30 rounded-xl flex flex-col gap-2.5">
+            <div key={link.id} className="p-3 border border-border-default bg-[#F4F4F5]/30 rounded-xl flex flex-col gap-2.5 text-primary">
               <div className="flex gap-2 items-start justify-between">
                 <div className="grid grid-cols-2 gap-2 flex-1">
                   <input
@@ -778,12 +778,12 @@ export function LinkForm({ data, onChange }: FormProps<any>) {
                     value={link.label}
                     onChange={(e) => handleLinkFieldChange(link.id, 'label', e.target.value)}
                     placeholder="Button Label"
-                    className="h-8 px-2.5 text-xs font-bold border border-black/5 rounded-md focus:outline-none focus:border-primary bg-white w-full"
+                    className="h-8 px-2.5 text-xs font-bold border border-border-default rounded-md focus:outline-none focus:border-accent bg-surface-2 w-full"
                   />
                   <select
                     value={link.theme || 'default'}
                     onChange={(e) => handleLinkFieldChange(link.id, 'theme', e.target.value)}
-                    className="h-8 px-2 text-xs border border-black/5 rounded-md focus:outline-none bg-white font-semibold w-full"
+                    className="h-8 px-2 text-xs border border-border-default rounded-md focus:outline-none bg-surface-2 font-semibold w-full"
                   >
                     <option value="default">Default Button</option>
                     <option value="outline">Outline Button</option>
@@ -793,7 +793,7 @@ export function LinkForm({ data, onChange }: FormProps<any>) {
                 <button
                   type="button"
                   onClick={() => handleRemoveLink(link.id)}
-                  className="w-8 h-8 hover:bg-red-50 text-red-500 rounded-md flex items-center justify-center shrink-0 transition-all cursor-pointer"
+                  className="w-8 h-8 hover:bg-danger/10 text-danger rounded-md flex items-center justify-center shrink-0 transition-all cursor-pointer"
                 >
                   <Trash className="w-3.5 h-3.5" />
                 </button>
@@ -804,14 +804,14 @@ export function LinkForm({ data, onChange }: FormProps<any>) {
                 value={link.url}
                 onChange={(e) => handleLinkFieldChange(link.id, 'url', e.target.value)}
                 placeholder="Redirect Link URL (e.g. https://instagram.com/user)"
-                className="h-8 px-2.5 text-xs border border-black/5 rounded-md focus:outline-none focus:border-primary bg-white w-full"
+                className="h-8 px-2.5 text-xs border border-border-default rounded-md focus:outline-none focus:border-accent bg-surface-2 w-full"
               />
               <input
                 type="text"
                 value={link.secondaryText}
                 onChange={(e) => handleLinkFieldChange(link.id, 'secondaryText', e.target.value)}
                 placeholder="Alternative helper text (appears small underneath label)"
-                className="h-8 px-2.5 text-xs border border-black/5 rounded-md focus:outline-none focus:border-primary bg-white w-full"
+                className="h-8 px-2.5 text-xs border border-border-default rounded-md focus:outline-none focus:border-accent bg-surface-2 w-full"
               />
             </div>
           ))}
@@ -837,7 +837,7 @@ export function WifiForm({ data, onChange }: FormProps<any>) {
           type="text"
           value={data.networkName || ''}
           onChange={(e) => updateField('networkName', e.target.value)}
-          className="w-full h-10 px-3.5 mt-1 text-xs border border-black/10 rounded-xl focus:outline-none focus:border-primary font-medium"
+          className="w-full h-10 px-3.5 mt-1 text-xs border border-border-default rounded-xl focus:outline-none focus:border-accent font-medium bg-surface-2"
           placeholder="e.g. StudioArcs_Guest_5G"
         />
       </div>
@@ -849,7 +849,7 @@ export function WifiForm({ data, onChange }: FormProps<any>) {
             type="text"
             value={data.password || ''}
             onChange={(e) => updateField('password', e.target.value)}
-            className="w-full h-10 px-3.5 mt-1 text-xs border border-black/10 rounded-xl focus:outline-none focus:border-primary font-medium"
+            className="w-full h-10 px-3.5 mt-1 text-xs border border-border-default rounded-xl focus:outline-none focus:border-accent font-medium bg-surface-2"
             placeholder="e.g. spaceandchroma"
           />
         </div>
@@ -858,7 +858,7 @@ export function WifiForm({ data, onChange }: FormProps<any>) {
           <select
             value={data.security || 'WPA'}
             onChange={(e) => updateField('security', e.target.value)}
-            className="w-full h-10 px-3 mt-1 text-xs border border-black/10 bg-white rounded-xl focus:outline-none font-semibold text-primary"
+            className="w-full h-10 px-3 mt-1 text-xs border border-border-default bg-surface-2 rounded-xl focus:outline-none font-semibold text-primary"
           >
             <option value="WPA">WPA/WPA2/WPA3 (Recommended)</option>
             <option value="WEP">WEP (Legacy)</option>
@@ -913,7 +913,7 @@ export function CatalogForm({ data, onChange }: FormProps<any>) {
             type="text"
             value={data.catalogTitle || ''}
             onChange={(e) => updateField('catalogTitle', e.target.value)}
-            className="w-full h-10 px-3.5 mt-1 text-xs border border-black/10 rounded-xl focus:outline-none focus:border-primary font-medium"
+            className="w-full h-10 px-3.5 mt-1 text-xs border border-border-default rounded-xl focus:outline-none focus:border-accent font-medium bg-surface-2"
             placeholder="e.g. Studio Arcs Print Shop"
           />
         </div>
@@ -923,7 +923,7 @@ export function CatalogForm({ data, onChange }: FormProps<any>) {
             type="text"
             value={data.contactNumber || ''}
             onChange={(e) => updateField('contactNumber', e.target.value)}
-            className="w-full h-10 px-3.5 mt-1 text-xs border border-black/10 rounded-xl focus:outline-none focus:border-primary font-medium"
+            className="w-full h-10 px-3.5 mt-1 text-xs border border-border-default rounded-xl focus:outline-none focus:border-accent font-medium bg-surface-2"
             placeholder="e.g. 15551234567"
           />
         </div>
@@ -933,9 +933,9 @@ export function CatalogForm({ data, onChange }: FormProps<any>) {
         <label className="text-[11px] font-bold text-primary tracking-wide uppercase">Catalog Banner Image</label>
         <div className="flex items-center gap-4 mt-2">
           {data.bannerImage && (
-            <img src={data.bannerImage} alt="Banner Preview" className="w-16 h-10 object-cover rounded-lg border border-black/10 shadow-xs" />
+            <img src={data.bannerImage} alt="Banner Preview" className="w-16 h-10 object-cover rounded-lg border border-border-default shadow-xs bg-surface-2 text-primary" />
           )}
-          <label className="h-10 px-4 border border-black/10 rounded-xl hover:bg-[#F4F4F5] flex items-center gap-1.5 text-xs font-bold cursor-pointer transition-all">
+          <label className="h-10 px-4 border border-border-default rounded-xl hover:bg-surface-2/80 flex items-center gap-1.5 text-xs font-bold cursor-pointer transition-all">
             <Upload className="w-3.5 h-3.5 text-muted-text" /> Upload Banner
             <input
               type="file"
@@ -953,13 +953,13 @@ export function CatalogForm({ data, onChange }: FormProps<any>) {
           value={data.catalogDescription || ''}
           onChange={(e) => updateField('catalogDescription', e.target.value)}
           rows={2}
-          className="w-full p-3.5 mt-1 text-xs border border-black/10 rounded-xl focus:outline-none focus:border-primary font-medium resize-none"
+          className="w-full p-3.5 mt-1 text-xs border border-border-default rounded-xl focus:outline-none focus:border-accent font-medium resize-none bg-surface-2"
           placeholder="Brief description about the catalog, materials, or delivery details..."
         />
       </div>
 
       {/* Catalog products list */}
-      <div className="border-t border-black/5 pt-5 mt-2">
+      <div className="border-t border-border-default pt-5 mt-2 bg-surface-2 text-primary">
         <div className="flex items-center justify-between mb-4">
           <label className="text-[11px] font-bold text-primary tracking-wide uppercase">Catalog Products</label>
           <button
@@ -973,7 +973,7 @@ export function CatalogForm({ data, onChange }: FormProps<any>) {
 
         <div className="flex flex-col gap-4">
           {data.products?.map((prod: any) => (
-            <div key={prod.id} className="p-4 border border-black/10 bg-[#FAFAFA] rounded-xl flex flex-col gap-3.5">
+            <div key={prod.id} className="p-4 border border-border-default bg-surface-2 rounded-xl flex flex-col gap-3.5 text-primary">
               <div className="flex gap-2 items-start justify-between">
                 <div className="grid grid-cols-2 gap-2 flex-1">
                   <input
@@ -981,20 +981,20 @@ export function CatalogForm({ data, onChange }: FormProps<any>) {
                     value={prod.name}
                     onChange={(e) => handleProductFieldChange(prod.id, 'name', e.target.value)}
                     placeholder="Product Name"
-                    className="h-8.5 px-3 text-xs font-bold border border-black/10 bg-white rounded-lg focus:outline-none focus:border-primary w-full"
+                    className="h-8.5 px-3 text-xs font-bold border border-border-default bg-surface-2 rounded-lg focus:outline-none focus:border-accent w-full"
                   />
                   <input
                     type="text"
                     value={prod.price}
                     onChange={(e) => handleProductFieldChange(prod.id, 'price', e.target.value)}
                     placeholder="Price (e.g. 120.00)"
-                    className="h-8.5 px-3 text-xs font-bold border border-black/10 bg-white rounded-lg focus:outline-none focus:border-primary w-full"
+                    className="h-8.5 px-3 text-xs font-bold border border-border-default bg-surface-2 rounded-lg focus:outline-none focus:border-accent w-full"
                   />
                 </div>
                 <button
                   type="button"
                   onClick={() => handleRemoveProduct(prod.id)}
-                  className="w-8.5 h-8.5 hover:bg-red-50 text-red-500 rounded-lg flex items-center justify-center shrink-0 border border-black/10 bg-white transition-all cursor-pointer"
+                  className="w-8.5 h-8.5 hover:bg-danger/10 text-danger rounded-lg flex items-center justify-center shrink-0 border border-border-default bg-surface-2 transition-all cursor-pointer"
                 >
                   <Trash className="w-3.5 h-3.5" />
                 </button>
@@ -1005,15 +1005,15 @@ export function CatalogForm({ data, onChange }: FormProps<any>) {
                 onChange={(e) => handleProductFieldChange(prod.id, 'description', e.target.value)}
                 placeholder="Product description (materials, availability, dimensions)..."
                 rows={2}
-                className="w-full p-2.5 text-xs border border-black/10 bg-white rounded-lg focus:outline-none focus:border-primary resize-none font-medium"
+                className="w-full p-2.5 text-xs border border-border-default bg-surface-2 rounded-lg focus:outline-none focus:border-accent resize-none font-medium"
               />
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
                 <div className="flex items-center gap-2">
                   {prod.image && (
-                    <img src={prod.image} alt="Product Preview" className="w-9 h-9 object-cover rounded-lg border border-black/5 shrink-0" />
+                    <img src={prod.image} alt="Product Preview" className="w-9 h-9 object-cover rounded-lg border border-border-default shrink-0 bg-surface-2 text-primary" />
                   )}
-                  <label className="h-8 px-3 border border-black/10 bg-white rounded-lg hover:bg-[#F4F4F5] flex items-center gap-1.5 text-[10px] font-bold cursor-pointer transition-all">
+                  <label className="h-8 px-3 border border-border-default bg-surface-2 rounded-lg hover:bg-surface-2/80 flex items-center gap-1.5 text-[10px] font-bold cursor-pointer transition-all">
                     <Upload className="w-3 h-3 text-muted-text" /> Product Photo
                     <input
                       type="file"
@@ -1029,7 +1029,7 @@ export function CatalogForm({ data, onChange }: FormProps<any>) {
                   value={prod.link || ''}
                   onChange={(e) => handleProductFieldChange(prod.id, 'link', e.target.value)}
                   placeholder="Purchase URL link (Optional)"
-                  className="h-8.5 px-3 text-xs border border-black/10 bg-white rounded-lg focus:outline-none focus:border-primary w-full"
+                  className="h-8.5 px-3 text-xs border border-border-default bg-surface-2 rounded-lg focus:outline-none focus:border-accent w-full"
                 />
               </div>
             </div>
