@@ -168,6 +168,20 @@ export function BusinessPreview({ data, slug = '' }: { data: BusinessCardData; s
 
       {/* Main Body */}
       <div className="flex-1 flex flex-col justify-center items-center text-center z-10 min-h-0 overflow-y-auto no-scrollbar py-2">
+        {/* Avatar Profile Image */}
+        {data.photo && (
+          <div 
+            className="w-20 h-20 rounded-full overflow-hidden border-2 mb-3.5 shadow-md shrink-0 transition-transform duration-75 ease-out"
+            style={{
+              borderColor: '#BF953F',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
+              transform: 'translateZ(20px) translateX(calc(var(--tilt-y) * -1.5px)) translateY(calc(var(--tilt-x) * -1.5px))',
+            }}
+          >
+            <img src={data.photo} alt={data.name} className="w-full h-full object-cover" />
+          </div>
+        )}
+
         {/* Name with Gold Foil Shimmer shifting on tilt */}
         <h1 
           className="text-2xl font-bold tracking-tight font-serif drop-shadow-md py-1 leading-tight select-text"
@@ -240,11 +254,6 @@ export function BusinessPreview({ data, slug = '' }: { data: BusinessCardData; s
             ))}
           </div>
         )}
-      </div>
-
-      {/* Bottom Corner QR Code */}
-      <div className="absolute bottom-4 right-4 z-25">
-        <CardCornerQR value={qrValue} size={36} dark={true} />
       </div>
     </div>
   );
@@ -392,11 +401,6 @@ export function MenuPreview({ data, slug = '' }: { data: RestaurantMenuData; slu
           </div>
         )}
       </div>
-
-      {/* Bottom Corner QR Code */}
-      <div className="absolute bottom-4 right-4 z-20">
-        <CardCornerQR value={qrValue} size={34} dark={true} />
-      </div>
     </div>
   );
 }
@@ -473,11 +477,6 @@ export function EventPreview({ data, slug = '' }: { data: EventCardData; slug?: 
             Get Tickets / RSVP
           </button>
         </div>
-      </div>
-
-      {/* Bottom Corner QR Code */}
-      <div className="absolute bottom-4 right-4 z-20">
-        <CardCornerQR value={qrValue} size={34} dark={true} />
       </div>
     </div>
   );
@@ -557,8 +556,6 @@ export function LinkPreview({ data, slug = '' }: { data: LinkCardData; slug?: st
             <span className="text-[7px] text-teal-100/40 uppercase font-sans mt-0.5">Clips</span>
           </div>
         </div>
-        
-        <CardCornerQR value={qrValue} size={34} dark={true} />
       </div>
     </div>
   );
@@ -805,11 +802,6 @@ export function CatalogPreview({ data, slug = '' }: { data: ProductCatalogData; 
             ))}
           </div>
         )}
-      </div>
-
-      {/* Bottom Corner QR Code */}
-      <div className="absolute bottom-4 right-4 z-20">
-        <CardCornerQR value={qrValue} size={34} dark={true} />
       </div>
     </div>
   );
