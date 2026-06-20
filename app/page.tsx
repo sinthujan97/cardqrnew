@@ -12,6 +12,7 @@ import PhoneMockup from '@/components/PhoneMockup';
 import QRGenerator from '@/components/QRGenerator';
 import TemplatesDropdown from '@/components/TemplatesDropdown';
 import TemplatePreview from '@/components/TemplatePreviews';
+import AdSlot from '@/components/AdSlot';
 import {
   INITIAL_BUSINESS_DATA,
   INITIAL_MENU_DATA,
@@ -326,10 +327,8 @@ export default function LandingPage() {
       </section>
 
       {/* 1b. HERO AD SLOT */}
-      <div className="w-full flex justify-center pb-12 px-6 max-w-7xl mx-auto select-none">
-        <div className="w-full max-w-[728px] h-[90px] border border-border-default bg-surface-2/50 rounded-xl flex items-center justify-center text-[10px] text-muted-text font-mono tracking-wider">
-          ADVERTISEMENT
-        </div>
+      <div className="w-full max-w-7xl mx-auto px-6 select-none">
+        <AdSlot slotId="homepage-post-hero" />
       </div>
 
       {/* 2. TEMPLATE SHOWCASE */}
@@ -401,12 +400,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 2b. IN-CONTENT AD SLOT */}
-      <div className="w-full flex justify-center py-6 px-6 max-w-7xl mx-auto select-none">
-        <div className="w-full max-w-[728px] h-[90px] border border-border-default bg-surface-2/50 rounded-xl flex items-center justify-center text-[10px] text-muted-text font-mono tracking-wider">
-          ADVERTISEMENT
-        </div>
-      </div>
+
 
       {/* 3. HOW IT WORKS */}
       <section id="how-it-works" className="px-6 py-20 w-full max-w-7xl mx-auto">
@@ -446,6 +440,11 @@ export default function LandingPage() {
 
         </div>
       </section>
+
+      {/* 2b. POST-STEPS AD SLOT */}
+      <div className="w-full max-w-7xl mx-auto px-6 select-none">
+        <AdSlot slotId="homepage-post-steps" />
+      </div>
 
       {/* 4. FEATURES GRID SECTION */}
       <section id="features" className="px-6 py-20 bg-surface border-t border-b border-border-default w-full select-none">
@@ -511,6 +510,11 @@ export default function LandingPage() {
           ))}
         </div>
       </section>
+
+      {/* 3b. PRE-FAQ AD SLOT */}
+      <div className="w-full max-w-7xl mx-auto px-6 select-none">
+        <AdSlot slotId="homepage-pre-faq" />
+      </div>
 
       {/* 5. FAQ */}
       <section className="px-6 py-20 w-full max-w-7xl mx-auto">

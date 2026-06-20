@@ -51,5 +51,10 @@ export const ADSENSE_CONFIG = {
     'link-workspace-sidebar': 'ad-unit-placeholder',
     'wifi-workspace-sidebar': 'ad-unit-placeholder',
     'catalog-workspace-sidebar': 'ad-unit-placeholder',
+
+    // Homepage Ad Slots
+    'homepage-post-hero': 'ad-unit-placeholder',
+    'homepage-post-steps': 'ad-unit-placeholder',
+    'homepage-pre-faq': 'ad-unit-placeholder',
   } as Record<string, string>
 };
