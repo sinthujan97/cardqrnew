@@ -11,6 +11,15 @@ import {
 import PhoneMockup from '@/components/PhoneMockup';
 import QRGenerator from '@/components/QRGenerator';
 import TemplatesDropdown from '@/components/TemplatesDropdown';
+import TemplatePreview from '@/components/TemplatePreviews';
+import {
+  INITIAL_BUSINESS_DATA,
+  INITIAL_MENU_DATA,
+  INITIAL_EVENT_DATA,
+  INITIAL_LINK_DATA,
+  INITIAL_WIFI_DATA,
+  INITIAL_CATALOG_DATA
+} from '@/lib/templates';
 
 const getTemplateSEOPath = (id: string) => {
   switch (id) {
@@ -91,161 +100,94 @@ const MOCK_TEMPLATES = [
 ];
 
 
-const renderTemplatePreview = (id: string) => {
-  switch (id) {
-    case 'business':
-      return (
-        <div className="bg-background border border-border-default rounded-xl p-4 flex flex-col gap-3 font-sans shadow-2xs select-none">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-border-emphasis overflow-hidden flex items-center justify-center text-[10px] text-muted-text font-bold">
-              CD
-            </div>
-            <div>
-              <h4 className="text-xs font-bold text-primary font-heading">Charlotte Dubois</h4>
-              <p className="text-[10px] text-muted-text font-mono">Art Director at Studio Arcs</p>
-            </div>
-          </div>
-          <div className="flex flex-col gap-1.5 border-t border-border-default/50 pt-2.5">
-            <div className="h-7 px-3 bg-surface-2 border border-border-default/60 rounded flex items-center justify-between text-[9px] font-mono text-primary font-semibold">
-              <span>Save Contact (vCard)</span>
-              <span className="text-[8px] text-accent font-bold uppercase tracking-wider">vCard</span>
-            </div>
-            <div className="flex gap-2">
-              <div className="flex-1 h-6 px-2 bg-surface border border-border-default/45 rounded flex items-center justify-center text-[8px] text-muted-text font-mono truncate">
-                charlotte@studioarcs.com
-              </div>
-              <div className="flex-1 h-6 px-2 bg-surface border border-border-default/45 rounded flex items-center justify-center text-[8px] text-muted-text font-mono">
-                Paris, FR
-              </div>
-            </div>
-          </div>
-        </div>
-      );
-    case 'menu':
-      return (
-        <div className="bg-background border border-border-default rounded-xl p-4 flex flex-col gap-2.5 shadow-2xs select-none">
-          <div className="border-b border-border-default/50 pb-2 flex justify-between items-baseline">
-            <h4 className="text-[10px] font-mono tracking-wider text-muted-text uppercase font-bold">L'Arc Contemporain</h4>
-            <span className="text-[9px] text-accent font-semibold">Modern Italian</span>
-          </div>
-          <div className="flex flex-col gap-2">
-            <div className="flex justify-between items-center text-[10px] font-mono">
-              <span className="text-primary font-medium">Truffle Arancini</span>
-              <span className="text-muted-text/30 flex-1 border-b border-dotted border-border-emphasis mx-2 h-2"></span>
-              <span className="text-primary font-bold">$14</span>
-            </div>
-            <div className="flex justify-between items-center text-[10px] font-mono">
-              <span className="text-primary font-medium">Burrata & Heirloom Tomato</span>
-              <span className="text-muted-text/30 flex-1 border-b border-dotted border-border-emphasis mx-2 h-2"></span>
-              <span className="text-primary font-bold">$16</span>
-            </div>
-            <div className="flex justify-between items-center text-[10px] font-mono">
-              <span className="text-primary font-medium">Wild Mushroom Risotto</span>
-              <span className="text-muted-text/30 flex-1 border-b border-dotted border-border-emphasis mx-2 h-2"></span>
-              <span className="text-primary font-bold">$24</span>
-            </div>
-          </div>
-        </div>
-      );
-    case 'event':
-      return (
-        <div className="bg-background border border-border-default rounded-xl p-4 flex flex-col gap-3 shadow-2xs relative overflow-hidden select-none">
-          <div className="absolute top-0 right-0 h-full w-1 border-l border-dashed border-border-emphasis"></div>
-          <div className="flex flex-col gap-1">
-            <span className="text-[8px] font-mono tracking-wider text-accent uppercase font-bold">Exhibition Opening</span>
-            <h4 className="text-xs font-bold text-primary font-heading">Gallery Vernissage</h4>
-          </div>
-          <div className="grid grid-cols-2 gap-2 border-t border-border-default/50 pt-2.5 text-[9px] font-mono text-muted-text">
-            <div>
-              <span className="text-[7px] text-muted-text/60 block uppercase">Date & Time</span>
-              <span className="text-primary font-semibold">July 24, 7:00 PM</span>
-            </div>
-            <div>
-              <span className="text-[7px] text-muted-text/60 block uppercase">Location</span>
-              <span className="text-primary font-semibold">Studio Arcs Gallery</span>
-            </div>
-          </div>
-          <div className="h-7 px-3 bg-accent text-white rounded flex items-center justify-center text-[9px] font-bold tracking-wider uppercase mt-1">
-            Confirm RSVP
-          </div>
-        </div>
-      );
-    case 'link':
-      return (
-        <div className="bg-background border border-border-default rounded-xl p-4 flex flex-col gap-2 select-none">
-          <div className="text-center pb-1.5 border-b border-border-default/45">
-            <h4 className="text-[10px] font-mono tracking-wide text-primary font-bold">Studio Arcs Resources</h4>
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <div className="h-7 px-3 bg-surface border border-border-default/50 rounded flex items-center justify-between text-[9px] font-mono text-primary font-medium">
-              <span>Latest Exhibition Portfolio</span>
-              <span className="text-accent text-[8px] font-bold">→</span>
-            </div>
-            <div className="h-7 px-3 bg-surface border border-border-default/50 rounded flex items-center justify-between text-[9px] font-mono text-primary font-medium">
-              <span>Download Figma Design Library</span>
-              <span className="text-accent text-[8px] font-bold">→</span>
-            </div>
-            <div className="h-7 px-3 bg-surface border border-border-default/50 rounded flex items-center justify-between text-[9px] font-mono text-primary font-medium">
-              <span>Read Architecture Articles</span>
-              <span className="text-accent text-[8px] font-bold">→</span>
-            </div>
-          </div>
-        </div>
-      );
-    case 'wifi':
-      return (
-        <div className="bg-background border border-border-default rounded-xl p-4 flex flex-col gap-3 shadow-2xs select-none">
-          <div className="flex items-center gap-2 border-b border-border-default/50 pb-2">
-            <Wifi className="w-4 h-4 text-accent" />
-            <h4 className="text-[10px] font-mono tracking-wider text-muted-text uppercase font-bold">Guest WiFi network</h4>
-          </div>
-          <div className="flex flex-col gap-2 font-mono text-[10px]">
-            <div className="flex justify-between items-center bg-surface border border-border-default/40 p-1.5 rounded">
-              <span className="text-muted-text/75 text-[8px] uppercase">Network</span>
-              <span className="text-primary font-bold">StudioArcs_Guest_5G</span>
-            </div>
-            <div className="flex justify-between items-center bg-surface border border-border-default/40 p-1.5 rounded">
-              <span className="text-muted-text/75 text-[8px] uppercase">Password</span>
-              <span className="text-primary font-bold tracking-widest text-[9px]">••••••••••••</span>
-            </div>
-          </div>
-          <div className="h-7 bg-surface-2 border border-border-default/70 rounded flex items-center justify-center text-[9px] font-mono text-primary font-bold">
-            Tap to Auto-Connect
-          </div>
-        </div>
-      );
-    case 'catalog':
-      return (
-        <div className="bg-background border border-border-default rounded-xl p-4 flex flex-col gap-2 shadow-2xs select-none">
-          <div className="border-b border-border-default/50 pb-1.5 flex justify-between items-baseline">
-            <h4 className="text-[10px] font-mono tracking-wider text-muted-text uppercase font-bold font-heading">Studio Arcs Prints</h4>
-            <span className="text-[8px] font-mono text-accent">Fine Art</span>
-          </div>
-          <div className="grid grid-cols-2 gap-2">
-            <div className="bg-surface border border-border-default/50 p-2 rounded flex flex-col gap-1">
-              <div className="aspect-square bg-surface-2 border border-border-default/45 rounded flex items-center justify-center text-[8px] font-mono text-muted-text/45 animate-pulse">
-                Chroma #4
-              </div>
-              <div className="flex justify-between items-center mt-1">
-                <span className="text-[8px] font-mono font-bold truncate text-primary max-w-[50px]">Chroma #4</span>
-                <span className="text-[9px] font-mono font-bold text-accent">$120</span>
+function LiveCardPreview({ id }: { id: string }) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Determine the example data and force theme: 'light'
+  const getExampleData = () => {
+    switch (id) {
+      case 'business':
+        return { ...INITIAL_BUSINESS_DATA, theme: 'light' };
+      case 'menu':
+        return { ...INITIAL_MENU_DATA, theme: 'light' };
+      case 'event':
+        return { ...INITIAL_EVENT_DATA, theme: 'light' };
+      case 'link':
+        return { ...INITIAL_LINK_DATA, theme: 'light' };
+      case 'wifi':
+        return { ...INITIAL_WIFI_DATA, theme: 'light' };
+      case 'catalog':
+        return { ...INITIAL_CATALOG_DATA, theme: 'light' };
+      default:
+        return null;
+    }
+  };
+
+  const data = getExampleData();
+
+  if (!data) return null;
+
+  // Render a clean placeholder/skeleton when not mounted to ensure CLS = 0
+  if (!mounted) {
+    return (
+      <div className="w-full flex justify-center items-center py-4 bg-[#FAF8F4]/50 border border-[#E8E2D6]/60 rounded-xl min-h-[340px]">
+        <div 
+          className="relative shadow-sm border border-[#E8E2D6] rounded-2xl overflow-hidden bg-[#FAF8F4] paper-grain animate-pulse"
+          style={{ width: '192px', height: '300px' }}
+        >
+          {/* Skeleton representation of a card */}
+          <div className="w-full h-full flex flex-col justify-between p-4">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-full bg-border-default" />
+              <div className="flex-1 flex flex-col gap-1.5">
+                <div className="h-3 bg-border-default rounded w-2/3" />
+                <div className="h-2 bg-border-default rounded w-1/2" />
               </div>
             </div>
-            <div className="bg-surface border border-border-default/50 p-2 rounded flex flex-col gap-1">
-              <div className="aspect-square bg-surface-2 border border-border-default/45 rounded flex items-center justify-center text-[8px] font-mono text-muted-text/45 animate-pulse">
-                Space #2
-              </div>
-              <div className="flex justify-between items-center mt-1">
-                <span className="text-[8px] font-mono font-bold truncate text-primary max-w-[50px]">Space #2</span>
-                <span className="text-[9px] font-mono font-bold text-accent">$160</span>
-              </div>
+            <div className="flex-1 flex flex-col justify-center gap-3 py-6">
+              <div className="h-3 bg-border-default rounded w-full" />
+              <div className="h-3 bg-border-default rounded w-5/6" />
+              <div className="h-3 bg-border-default rounded w-4/5" />
             </div>
+            <div className="h-7 bg-border-default rounded-lg w-full" />
           </div>
         </div>
-      );
-    default:
-      return null;
+      </div>
+    );
   }
+
+  return (
+    <div className="w-full flex justify-center items-center py-4 bg-[#FAF8F4]/50 border border-[#E8E2D6]/60 rounded-xl overflow-hidden relative min-h-[340px]">
+      <div 
+        className="relative shadow-sm border border-[#E8E2D6] rounded-2xl overflow-hidden pointer-events-none select-none bg-[#FAF8F4] paper-grain"
+        style={{
+          width: '192px',
+          height: '300px',
+        }}
+      >
+        <div 
+          style={{
+            width: '320px',
+            height: '500px',
+            transform: 'scale(0.6)',
+            transformOrigin: 'top left',
+            pointerEvents: 'none',
+          }}
+          className="absolute inset-0"
+        >
+          <TemplatePreview type={id as any} data={data} slug="preview" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const renderTemplatePreview = (id: string) => {
+  return <LiveCardPreview id={id} />;
 };
 
 export default function LandingPage() {
