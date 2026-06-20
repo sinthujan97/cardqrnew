@@ -33,7 +33,9 @@ export interface RestaurantMenuData {
   description: string;
   currency: string;
   categories: MenuCategory[];
+  displayMode?: 'card' | 'list';
 }
+
 
 export interface EventRsvp {
   name: string;
@@ -105,6 +107,7 @@ export const INITIAL_MENU_DATA: RestaurantMenuData = {
   logo: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&q=80&w=120&h=120',
   description: 'Contemporary Italian fare crafted from locally sourced organic ingredients.',
   currency: '$',
+  displayMode: 'card',
   categories: [
     {
       id: 'cat-1',
