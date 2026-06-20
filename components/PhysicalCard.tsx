@@ -24,6 +24,9 @@ export default function PhysicalCard({ card }: PhysicalCardProps) {
   const targetLift = useRef(0);
   const currentScale = useRef(1);
   const targetScale = useRef(1);
+  
+  const currentTranslateY = useRef(0);
+  const targetTranslateY = useRef(0);
 
   const [reducedMotion, setReducedMotion] = useState(false);
   const [accentColor, setAccentColor] = useState('#8B5CF6');
@@ -81,10 +84,11 @@ export default function PhysicalCard({ card }: PhysicalCardProps) {
 
   // Interaction handlers - Dynamic tilt removed, keeping hover depth lift transitions
   const handleMouseEnter = () => {
-    targetLift.current = 24;
-    targetScale.current = 1.03;
+    targetLift.current = 16;
+    targetScale.current = 1;
+    targetTranslateY.current = -4;
     if (cardRef.current) {
-      cardRef.current.style.boxShadow = `${edgeShadow}, 0 8px 24px rgba(28, 27, 25, 0.06)`;
+      cardRef.current.style.boxShadow = `${edgeShadow}, 0 6px 20px rgba(28, 27, 25, 0.08)`;
     }
   };
 
@@ -92,16 +96,18 @@ export default function PhysicalCard({ card }: PhysicalCardProps) {
     targetRotation.current = { x: 0, y: 0 };
     targetLift.current = 0;
     targetScale.current = 1;
+    targetTranslateY.current = 0;
     if (cardRef.current) {
       cardRef.current.style.boxShadow = `${edgeShadow}, 0 2px 8px rgba(28, 27, 25, 0.03)`;
     }
   };
 
   const handleTouchStart = () => {
-    targetLift.current = 24;
-    targetScale.current = 1.03;
+    targetLift.current = 16;
+    targetScale.current = 1;
+    targetTranslateY.current = -4;
     if (cardRef.current) {
-      cardRef.current.style.boxShadow = `${edgeShadow}, 0 8px 24px rgba(28, 27, 25, 0.06)`;
+      cardRef.current.style.boxShadow = `${edgeShadow}, 0 6px 20px rgba(28, 27, 25, 0.08)`;
     }
   };
 
@@ -124,13 +130,15 @@ export default function PhysicalCard({ card }: PhysicalCardProps) {
 
       currentLift.current += (targetLift.current - currentLift.current) * 0.1;
       currentScale.current += (targetScale.current - currentScale.current) * 0.1;
+      currentTranslateY.current += (targetTranslateY.current - currentTranslateY.current) * 0.1;
 
       const { x, y } = currentRotation.current;
       const lift = currentLift.current;
       const scale = currentScale.current;
+      const transY = currentTranslateY.current;
 
       if (cardRef.current) {
-        cardRef.current.style.transform = `perspective(1200px) translateZ(${lift}px) scale(${scale}) rotateX(${x}deg) rotateY(${y}deg)`;
+        cardRef.current.style.transform = `perspective(1200px) translateY(${transY}px) translateZ(${lift}px) scale(${scale}) rotateX(${x}deg) rotateY(${y}deg)`;
         cardRef.current.style.setProperty('--tilt-x', `${x}`);
         cardRef.current.style.setProperty('--tilt-y', `${y}`);
       }

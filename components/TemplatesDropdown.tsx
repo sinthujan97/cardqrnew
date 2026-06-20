@@ -5,12 +5,12 @@ import Link from 'next/link';
 import { ChevronDown, Briefcase, Utensils, Calendar, Link2, Wifi, ShoppingBag } from 'lucide-react';
 
 const MENU_ITEMS = [
-  { href: '/business-card-qr', label: 'Business Card', icon: Briefcase, desc: 'vCard contacts' },
-  { href: '/restaurant-menu-qr', label: 'Restaurant Menu', icon: Utensils, desc: 'Digital food lists' },
-  { href: '/event-qr', label: 'Event Card', icon: Calendar, desc: 'RSVP & details' },
-  { href: '/link-hub-qr', label: 'Link Hub', icon: Link2, desc: 'Bio landing hub' },
-  { href: '/wifi-qr', label: 'WiFi Sharing', icon: Wifi, desc: 'Instant credentials' },
-  { href: '/product-catalog-qr', label: 'Product Catalog', icon: ShoppingBag, desc: 'Order via WhatsApp' },
+  { href: '/create/business', label: 'Business Card', icon: Briefcase, desc: 'vCard contacts' },
+  { href: '/create/menu', label: 'Restaurant Menu', icon: Utensils, desc: 'Digital food lists' },
+  { href: '/create/event', label: 'Event Card', icon: Calendar, desc: 'RSVP & details' },
+  { href: '/create/link', label: 'Link Hub', icon: Link2, desc: 'Bio landing hub' },
+  { href: '/create/wifi', label: 'WiFi Sharing', icon: Wifi, desc: 'Instant credentials' },
+  { href: '/create/catalog', label: 'Product Catalog', icon: ShoppingBag, desc: 'Order via WhatsApp' },
 ];
 
 export default function TemplatesDropdown() {
@@ -39,7 +39,7 @@ export default function TemplatesDropdown() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-64 bg-surface border border-border-default rounded-2xl shadow-md p-2 z-50 flex flex-col gap-0.5">
+        <div className="absolute right-0 mt-2 w-64 bg-surface paper-grain border border-border-default rounded-2xl shadow-md p-2 z-50 flex flex-col gap-0.5">
           {MENU_ITEMS.map((item) => {
             const Icon = item.icon;
             return (
@@ -59,6 +59,14 @@ export default function TemplatesDropdown() {
               </Link>
             );
           })}
+          
+          <Link
+            href="/create"
+            onClick={() => setIsOpen(false)}
+            className="mt-1.5 pt-2 border-t border-border-default/50 text-center font-mono text-[9px] uppercase tracking-wider text-muted-text hover:text-accent font-bold block transition-all"
+          >
+            Browse All Templates
+          </Link>
         </div>
       )}
     </div>

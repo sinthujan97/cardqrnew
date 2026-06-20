@@ -28,15 +28,18 @@ const TEMPLATES: Array<{ id: TemplateType; label: string; icon: any }> = [
 
 interface WorkspaceBuilderProps {
   initialCard?: CardData;
+  forcedTemplate?: TemplateType;
 }
 
-export default function WorkspaceBuilder({ initialCard }: WorkspaceBuilderProps) {
+export default function WorkspaceBuilder({ initialCard, forcedTemplate }: WorkspaceBuilderProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const tParam = searchParams.get('t');
   
   // States
-  const [template, setTemplate] = useState<TemplateType>(initialCard?.templateType || 'business');
+  const [template, setTemplate] = useState<TemplateType>(
+    initialCard?.templateType || forcedTemplate || 'business'
+  );
   const [formData, setFormData] = useState<any>(initialCard?.data || null);
   const [slug, setSlug] = useState(initialCard?.slug || '');
   const [slugStatus, setSlugStatus] = useState<'idle' | 'checking' | 'available' | 'taken'>(
@@ -47,15 +50,15 @@ export default function WorkspaceBuilder({ initialCard }: WorkspaceBuilderProps)
   const [showMobilePreview, setShowMobilePreview] = useState(false);
   const [validationError, setValidationError] = useState('');
 
-  // Sync with URL query parameter t
+  // Sync with URL query parameter t (only if not forced by dynamic route)
   useEffect(() => {
-    if (!initialCard && tParam) {
+    if (!initialCard && !forcedTemplate && tParam) {
       const validTemplates: TemplateType[] = ['business', 'menu', 'event', 'link', 'wifi', 'catalog'];
       if (validTemplates.includes(tParam as TemplateType)) {
         setTemplate(tParam as TemplateType);
       }
     }
-  }, [tParam, initialCard]);
+  }, [tParam, initialCard, forcedTemplate]);
 
   // Handle template initial load or changes (only in create mode)
   useEffect(() => {
@@ -131,6 +134,33 @@ export default function WorkspaceBuilder({ initialCard }: WorkspaceBuilderProps)
     }
   };
 
+const INTRO_CONTENT: Record<TemplateType, { title: string; desc: string }> = {
+  business: {
+    title: "Create a Free Digital Business Card",
+    desc: "Design your professional digital business card. Fill in your name, company, job role, and contact details. Prospects can scan the QR code to save your details to their contacts instantly."
+  },
+  menu: {
+    title: "Create a Free QR Code Restaurant Menu",
+    desc: "Build a beautiful online menu for your restaurant, diner, or café. Add item categories, pricing, descriptions, and photos. Update items instantly anytime without reprinting the QR code."
+  },
+  event: {
+    title: "Create a Free Event Invitation Card",
+    desc: "Set up a clean digital landing page for your event or opening. Add date details, venue maps, agenda guides, and let guests submit their RSVP confirmations instantly."
+  },
+  link: {
+    title: "Create a Free Link Hub (Link-in-Bio)",
+    desc: "Build a premium central link-in-bio page for your profile. Highlight multiple links, portfolio galleries, latest articles, and social profiles behind one scannable code."
+  },
+  wifi: {
+    title: "Create a Free WiFi Sharing Card",
+    desc: "Generate a table card or wall sign for guest WiFi credentials. Enter your network SSID and password. Guests scan to connect automatically, with a copy button fallback."
+  },
+  catalog: {
+    title: "Create a Free QR Code Product Catalog",
+    desc: "Create an online boutique display of your products. Add images, descriptions, and prices. Enable customers to submit orders directly to your WhatsApp number."
+  }
+};
+
   if (!formData) return null;
 
   const isEditMode = !!initialCard;
@@ -166,7 +196,7 @@ export default function WorkspaceBuilder({ initialCard }: WorkspaceBuilderProps)
           <button
             onClick={handlePublish}
             disabled={isPublishing || slugStatus === 'taken' || !slug}
-            className="h-9 px-4.5 bg-accent hover:bg-accent/95 disabled:opacity-50 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
+            className="h-9 px-4.5 bg-accent hover:bg-accent/95 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
           >
             {isPublishing ? 'Saving...' : (
               <>
@@ -183,10 +213,10 @@ export default function WorkspaceBuilder({ initialCard }: WorkspaceBuilderProps)
         <section className="flex-1 overflow-y-auto px-6 py-8 md:px-12 md:py-10 flex flex-col max-w-3xl bg-background">
           <div className="max-w-xl w-full">
             <h1 className="text-xl md:text-2xl font-bold tracking-tight text-primary mb-1.5 font-heading">
-              {isEditMode ? 'Update Your Card' : 'Design Your Card'}
+              {isEditMode ? 'Update Your Card' : INTRO_CONTENT[template]?.title || 'Design Your Card'}
             </h1>
             <p className="text-xs text-muted-text">
-              {isEditMode ? 'Modify your fields below. The card changes will update immediately.' : 'Fill in the fields below. The live simulator on the right will update instantly.'}
+              {isEditMode ? 'Modify your fields below. The card changes will update immediately.' : INTRO_CONTENT[template]?.desc || 'Fill in the fields below.'}
             </p>
             
             {/* Slug Path Input */}
@@ -263,7 +293,7 @@ export default function WorkspaceBuilder({ initialCard }: WorkspaceBuilderProps)
               </div>
 
               {/* Physical card centered with scale adjustment */}
-              <div className="flex-1 flex flex-col items-center justify-center z-10 scale-90 -my-6 origin-center">
+              <div className="flex-1 flex flex-col items-center justify-center z-10 scale-[0.82] -my-10 origin-center">
                 <PhysicalCard card={{ templateType: template, data: formData, slug: slug || 'preview' }} />
                 
                 {/* Hint indicator */}
@@ -306,7 +336,7 @@ export default function WorkspaceBuilder({ initialCard }: WorkspaceBuilderProps)
                     </div>
                   </div>
 
-                  <div className="flex-1 flex flex-col items-center justify-center z-10 scale-90 -my-6 origin-center">
+                  <div className="flex-1 flex flex-col items-center justify-center z-10 scale-[0.82] -my-10 origin-center">
                     <PhysicalCard card={{ templateType: template, data: formData, slug: slug || 'preview' }} />
                     <span className="text-[8px] text-muted-text font-bold uppercase tracking-wider mt-4">
                       Interactive Card Preview

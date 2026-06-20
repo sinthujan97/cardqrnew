@@ -446,7 +446,7 @@ export default function LandingPage() {
                     </Link>
                     
                     <Link 
-                      href={`/create?t=${tpl.id}`}
+                      href={`/create/${tpl.id}`}
                       className="h-9 px-4 bg-accent hover:bg-accent/95 text-white text-[11px] font-bold rounded-xl flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
                     >
                       <Sparkles className="w-3.5 h-3.5 text-white" /> Use Template
