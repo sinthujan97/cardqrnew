@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import TemplatesDropdown from '@/components/TemplatesDropdown';
 import { 
   Briefcase, Utensils, Calendar as CalendarIcon, Link2, Wifi, 
   ShoppingBag, Sparkles, Send, Check, AlertTriangle, X, ChevronRight, Eye, QrCode
@@ -14,6 +15,7 @@ import PhysicalCard from '@/components/PhysicalCard';
 import PhoneMockup from '@/components/PhoneMockup';
 import QRGenerator from '@/components/QRGenerator';
 import { createCardAction, updateCardAction, checkSlugAvailability } from '@/app/actions/card-actions';
+import AdSlot from '@/components/AdSlot';
 
 const TEMPLATES: Array<{ id: TemplateType; label: string; icon: any }> = [
   { id: 'business', label: 'Business Card', icon: Briefcase },
@@ -30,6 +32,8 @@ interface WorkspaceBuilderProps {
 
 export default function WorkspaceBuilder({ initialCard }: WorkspaceBuilderProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const tParam = searchParams.get('t');
   
   // States
   const [template, setTemplate] = useState<TemplateType>(initialCard?.templateType || 'business');
@@ -42,6 +46,16 @@ export default function WorkspaceBuilder({ initialCard }: WorkspaceBuilderProps)
   const [publishResult, setPublishResult] = useState<{ publicUrl: string; editUrl: string } | null>(null);
   const [showMobilePreview, setShowMobilePreview] = useState(false);
   const [validationError, setValidationError] = useState('');
+
+  // Sync with URL query parameter t
+  useEffect(() => {
+    if (!initialCard && tParam) {
+      const validTemplates: TemplateType[] = ['business', 'menu', 'event', 'link', 'wifi', 'catalog'];
+      if (validTemplates.includes(tParam as TemplateType)) {
+        setTemplate(tParam as TemplateType);
+      }
+    }
+  }, [tParam, initialCard]);
 
   // Handle template initial load or changes (only in create mode)
   useEffect(() => {
@@ -127,11 +141,11 @@ export default function WorkspaceBuilder({ initialCard }: WorkspaceBuilderProps)
       <header className="h-16 px-6 bg-surface/75 backdrop-blur-md border-b border-border-default flex items-center justify-between shrink-0 sticky top-0 z-40">
         <div className="flex items-center gap-2">
           {/* Styled Brand Logo Badge */}
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-accent to-amber-400 flex items-center justify-center shadow-md shadow-accent/10">
-            <QrCode className="w-4.5 h-4.5 text-zinc-950" />
+          <div className="w-8 h-8 rounded-xl bg-accent flex items-center justify-center shadow-sm">
+            <QrCode className="w-4.5 h-4.5 text-white" />
           </div>
-          <Link href="/" className="text-base font-black tracking-tight text-primary flex items-center gap-1.5 font-heading">
-            Card<span className="text-muted-text font-medium">QR</span>
+          <Link href="/" className="text-base font-bold tracking-tight text-primary flex items-center gap-1 font-heading">
+            Card<span className="text-muted-text font-normal">QR</span>
           </Link>
           <span className="text-xs text-border-emphasis">/</span>
           <span className="text-xs font-bold text-muted-text">
@@ -139,7 +153,8 @@ export default function WorkspaceBuilder({ initialCard }: WorkspaceBuilderProps)
           </span>
         </div>
         
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
+          <TemplatesDropdown />
           {/* Mobile Preview Trigger */}
           <button
             onClick={() => setShowMobilePreview(true)}
@@ -151,11 +166,11 @@ export default function WorkspaceBuilder({ initialCard }: WorkspaceBuilderProps)
           <button
             onClick={handlePublish}
             disabled={isPublishing || slugStatus === 'taken' || !slug}
-            className="h-9 px-4.5 bg-accent hover:bg-accent/90 disabled:opacity-50 text-zinc-950 text-xs font-bold rounded-xl flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
+            className="h-9 px-4.5 bg-accent hover:bg-accent/95 disabled:opacity-50 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
           >
             {isPublishing ? 'Saving...' : (
               <>
-                <Send className="w-3.5 h-3.5 text-zinc-950" /> {isEditMode ? 'Update Card' : 'Publish Card'}
+                <Send className="w-3.5 h-3.5 text-white" /> {isEditMode ? 'Update Card' : 'Publish Card'}
               </>
             )}
           </button>
@@ -195,32 +210,10 @@ export default function WorkspaceBuilder({ initialCard }: WorkspaceBuilderProps)
               </div>
             </div>
 
-            {/* Template Selector Grid (Disabled in edit mode to preserve structural types) */}
-            {!isEditMode && (
-              <div className="mt-8">
-                <label className="text-[11px] font-bold text-muted-text tracking-wide uppercase">Select Template Profile</label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 mt-2.5">
-                  {TEMPLATES.map((item) => {
-                    const Icon = item.icon;
-                    const isSelected = template === item.id;
-                    return (
-                      <button
-                        key={item.id}
-                        onClick={() => setTemplate(item.id)}
-                        className={`h-11 px-3.5 border rounded-xl flex items-center gap-2.5 transition-all text-left cursor-pointer ${
-                          isSelected 
-                            ? 'border-accent bg-accent-dim text-accent shadow-xs' 
-                            : 'border-border-default bg-surface hover:bg-surface-2 text-muted-text hover:text-primary'
-                        }`}
-                      >
-                        <Icon className={`w-4 h-4 shrink-0 ${isSelected ? 'text-accent' : 'text-muted-text/70'}`} />
-                        <span className="text-xs font-bold leading-tight truncate">{item.label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
+            {/* Template Workspace Ad Slot Placeholder */}
+            <AdSlot slotId={`${template}-workspace`} />
+
+            {/* Template Selector Grid is hidden; selected template is governed by URL query path or dropdown selection */}
 
             {/* validation banner */}
             {validationError && (
@@ -252,7 +245,7 @@ export default function WorkspaceBuilder({ initialCard }: WorkspaceBuilderProps)
 
         {/* Right Side: Simulator Preview (Desktop only) */}
         <section className="hidden md:flex w-[380px] border-l border-border-default bg-background flex-col justify-center py-6 shrink-0 h-full overflow-y-auto no-scrollbar">
-          <PhoneMockup dark={true}>
+          <PhoneMockup dark={false}>
             <div className="relative w-full h-full flex-1 flex flex-col items-center justify-center overflow-hidden bg-background">
               
               {/* Viewfinder borders customized for small simulator screen */}
@@ -298,7 +291,7 @@ export default function WorkspaceBuilder({ initialCard }: WorkspaceBuilderProps)
               </button>
             </div>
             <div className="flex-1 overflow-y-auto pb-6">
-              <PhoneMockup animate={false} dark={true}>
+              <PhoneMockup animate={false} dark={false}>
                 <div className="relative w-full h-full flex-1 flex flex-col items-center justify-center overflow-hidden bg-background">
                   
                   <div className="absolute inset-4 pointer-events-none z-0 border border-border-default rounded-2xl">

@@ -15,6 +15,7 @@ export default function Page() {
       ctaLink="/create?t=event"
       prefillUrl="https://cardqr.com/c/exhibition-rsvp"
       tagline="Prerendered event invitations"
+      templateId="event-card"
     />
   );
 }

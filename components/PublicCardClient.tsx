@@ -23,19 +23,19 @@ export default function PublicCardClient({ card }: PublicCardClientProps) {
 
   // Viewfinder Corners Helper Component
   const Viewfinder = () => (
-    <div className="absolute inset-8 pointer-events-none z-0 border border-white/5 rounded-2xl hidden md:block">
+    <div className="absolute inset-8 pointer-events-none z-0 border border-border-default rounded-2xl hidden md:block">
       {/* Top Left Corner */}
-      <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-white/20 rounded-tl-xl" />
+      <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-border-emphasis rounded-tl-xl" />
       {/* Top Right Corner */}
-      <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-white/20 rounded-tr-xl" />
+      <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-border-emphasis rounded-tr-xl" />
       {/* Bottom Left Corner */}
-      <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-white/20 rounded-bl-xl" />
+      <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-border-emphasis rounded-bl-xl" />
       {/* Bottom Right Corner */}
-      <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-white/20 rounded-br-xl" />
+      <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-border-emphasis rounded-br-xl" />
       
       {/* Pulse recording indicator */}
-      <div className="absolute top-4 left-4 flex items-center gap-1.5 text-[9px] font-bold tracking-wider text-white/40 uppercase">
-        <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+      <div className="absolute top-4 left-4 flex items-center gap-1.5 text-[9px] font-bold tracking-wider text-muted-text/60 uppercase font-mono">
+        <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
         <span>Scan Mode</span>
       </div>
     </div>
@@ -108,10 +108,10 @@ export default function PublicCardClient({ card }: PublicCardClientProps) {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#09090B] flex items-center justify-center select-none relative overflow-hidden">
+    <div className="min-h-screen w-full bg-background flex items-center justify-center select-none relative overflow-hidden">
       {/* Camera-style focus background details */}
-      <div className="absolute inset-0 bg-[#09090B] bg-[radial-gradient(#1f1f23_1px,transparent_1px)] bg-[size:20px_20px] opacity-40 pointer-events-none" />
-      <div className="absolute inset-0 bg-radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-zinc-800/20 via-black/80 to-black pointer-events-none" />
+      <div className="absolute inset-0 bg-background bg-[radial-gradient(#E8E2D6_1.5px,transparent_1.5px)] bg-[size:24px_24px] opacity-70 pointer-events-none" />
+      <div className="absolute inset-0 bg-radial-gradient(ellipse_at_center,rgba(250,248,244,0.3)_0%,_#FAF8F4_80%) pointer-events-none" />
       
       <Viewfinder />
 
@@ -132,11 +132,11 @@ export default function PublicCardClient({ card }: PublicCardClientProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -30 }}
             transition={{ duration: 0.25 }}
-            className="w-[320px] h-[500px] bg-surface rounded-[24px] shadow-2xl z-10 flex flex-col border border-border-default overflow-hidden relative"
+            className="w-[320px] h-[500px] bg-surface rounded-[24px] card-shadow z-10 flex flex-col border border-border-default overflow-hidden relative paper-grain"
           >
             {/* Native card handle spacer */}
             <div className="w-full flex justify-center py-3 shrink-0">
-              <div className="w-10 h-1.5 bg-white/10 rounded-full" />
+              <div className="w-10 h-1.5 bg-border-default rounded-full" />
             </div>
             <div className="flex-1 overflow-y-auto no-scrollbar">
               {renderSkeleton()}
@@ -150,9 +150,9 @@ export default function PublicCardClient({ card }: PublicCardClientProps) {
             {/* Soft hint overlay at bottom */}
             <motion.div 
               initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 0.5, y: 0 }}
+              animate={{ opacity: 0.6, y: 0 }}
               transition={{ delay: 0.8 }}
-              className="text-[9px] text-white/40 font-bold uppercase tracking-widest pointer-events-none text-center bg-white/5 border border-white/10 px-3.5 py-1.5 rounded-full"
+              className="text-[9px] text-muted-text font-bold uppercase tracking-widest pointer-events-none text-center bg-surface border border-border-default px-3.5 py-1.5 rounded-full font-sans"
             >
               Premium Digital Experience
             </motion.div>

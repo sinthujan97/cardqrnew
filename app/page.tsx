@@ -10,6 +10,19 @@ import {
 } from 'lucide-react';
 import PhoneMockup from '@/components/PhoneMockup';
 import QRGenerator from '@/components/QRGenerator';
+import TemplatesDropdown from '@/components/TemplatesDropdown';
+
+const getTemplateSEOPath = (id: string) => {
+  switch (id) {
+    case 'business': return '/business-card-qr';
+    case 'menu': return '/restaurant-menu-qr';
+    case 'event': return '/event-qr';
+    case 'link': return '/link-hub-qr';
+    case 'wifi': return '/wifi-qr';
+    case 'catalog': return '/product-catalog-qr';
+    default: return '/create';
+  }
+};
 
 // FAQS data
 const FAQS = [
@@ -31,57 +44,209 @@ const FAQS = [
   }
 ];
 
-// Core template preview data (Simplified mockup content)
+// Core template preview data (Realistic print mockup content)
 const MOCK_TEMPLATES = [
   {
     id: 'business',
     title: 'Business Card',
-    description: 'Photo, job title, contact links, and Save Contact vCard.',
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=120&h=120',
-    fields: ['Charlotte Dubois', 'Studio Arcs', 'Save Contact'],
+    audience: 'For Professionals & Founders',
+    descText: 'Share contact details, job roles, social links, and enable direct vCard contact downloads.',
     icon: Briefcase
   },
   {
     id: 'menu',
     title: 'Restaurant Menu',
-    description: 'Visual categories, items list, prices, and food details.',
-    avatar: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&q=80&w=120&h=120',
-    fields: ['Truffle Arancini - $14', 'Burrata & Tomato - $16', 'Contemporary Italian'],
+    audience: 'For Diners & Cafes',
+    descText: 'Showcase visual categories, menu items, specific pricing, and food details dynamically.',
     icon: Utensils
   },
   {
     id: 'event',
-    title: 'Event Card',
-    description: 'Calendar details, maps, agenda description, and RSVP signup.',
-    avatar: 'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?auto=format&fit=crop&q=80&w=120&h=120',
-    fields: ['Gallery Vernissage', 'July 24, 7:00 PM', 'Confirm RSVP Form'],
+    title: 'Event Invite Card',
+    audience: 'For Hosts & Organizers',
+    descText: 'Publish date schedules, venue maps, agenda descriptors, and collect user RSVPs easily.',
     icon: Calendar
   },
   {
     id: 'link',
     title: 'Link Hub',
-    description: 'Premium alternative to bio-links. Highlight custom URLs.',
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=120&h=120',
-    fields: ['Latest Exhibition', 'Figma Library', 'Read Articles'],
+    audience: 'For Creators & Brands',
+    descText: 'Build a link-in-bio page. Highlight multiple links, portfolio exhibits, and digital assets.',
     icon: Link2
   },
   {
     id: 'wifi',
-    title: 'WiFi Sharing',
-    description: 'Secure credentials card with instant click-to-copy button.',
-    avatar: '',
-    fields: ['StudioArcs_Guest_5G', 'Copy Password', 'Auto-WPA Setup'],
+    title: 'WiFi Sharing Card',
+    audience: 'For Hosts & Offices',
+    descText: 'Deploy secure WiFi access points with auto-connect setup and a quick copy network card.',
     icon: Wifi
   },
   {
     id: 'catalog',
     title: 'Product Catalog',
-    description: 'Grid cards with photos, prices, and WhatsApp order checkout.',
-    avatar: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?auto=format&fit=crop&q=80&w=120&h=120',
-    fields: ['Chroma Print - $120', 'Space Print - $160', 'Direct Whatsapp Order'],
+    audience: 'For Retailers & Shops',
+    descText: 'List item cards with pricing, descriptions, and checkout links straight to WhatsApp orders.',
     icon: ShoppingBag
   }
 ];
+
+
+const renderTemplatePreview = (id: string) => {
+  switch (id) {
+    case 'business':
+      return (
+        <div className="bg-background border border-border-default rounded-xl p-4 flex flex-col gap-3 font-sans shadow-2xs select-none">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-border-emphasis overflow-hidden flex items-center justify-center text-[10px] text-muted-text font-bold">
+              CD
+            </div>
+            <div>
+              <h4 className="text-xs font-bold text-primary font-heading">Charlotte Dubois</h4>
+              <p className="text-[10px] text-muted-text font-mono">Art Director at Studio Arcs</p>
+            </div>
+          </div>
+          <div className="flex flex-col gap-1.5 border-t border-border-default/50 pt-2.5">
+            <div className="h-7 px-3 bg-surface-2 border border-border-default/60 rounded flex items-center justify-between text-[9px] font-mono text-primary font-semibold">
+              <span>Save Contact (vCard)</span>
+              <span className="text-[8px] text-accent font-bold uppercase tracking-wider">vCard</span>
+            </div>
+            <div className="flex gap-2">
+              <div className="flex-1 h-6 px-2 bg-surface border border-border-default/45 rounded flex items-center justify-center text-[8px] text-muted-text font-mono truncate">
+                charlotte@studioarcs.com
+              </div>
+              <div className="flex-1 h-6 px-2 bg-surface border border-border-default/45 rounded flex items-center justify-center text-[8px] text-muted-text font-mono">
+                Paris, FR
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    case 'menu':
+      return (
+        <div className="bg-background border border-border-default rounded-xl p-4 flex flex-col gap-2.5 shadow-2xs select-none">
+          <div className="border-b border-border-default/50 pb-2 flex justify-between items-baseline">
+            <h4 className="text-[10px] font-mono tracking-wider text-muted-text uppercase font-bold">L'Arc Contemporain</h4>
+            <span className="text-[9px] text-accent font-semibold">Modern Italian</span>
+          </div>
+          <div className="flex flex-col gap-2">
+            <div className="flex justify-between items-center text-[10px] font-mono">
+              <span className="text-primary font-medium">Truffle Arancini</span>
+              <span className="text-muted-text/30 flex-1 border-b border-dotted border-border-emphasis mx-2 h-2"></span>
+              <span className="text-primary font-bold">$14</span>
+            </div>
+            <div className="flex justify-between items-center text-[10px] font-mono">
+              <span className="text-primary font-medium">Burrata & Heirloom Tomato</span>
+              <span className="text-muted-text/30 flex-1 border-b border-dotted border-border-emphasis mx-2 h-2"></span>
+              <span className="text-primary font-bold">$16</span>
+            </div>
+            <div className="flex justify-between items-center text-[10px] font-mono">
+              <span className="text-primary font-medium">Wild Mushroom Risotto</span>
+              <span className="text-muted-text/30 flex-1 border-b border-dotted border-border-emphasis mx-2 h-2"></span>
+              <span className="text-primary font-bold">$24</span>
+            </div>
+          </div>
+        </div>
+      );
+    case 'event':
+      return (
+        <div className="bg-background border border-border-default rounded-xl p-4 flex flex-col gap-3 shadow-2xs relative overflow-hidden select-none">
+          <div className="absolute top-0 right-0 h-full w-1 border-l border-dashed border-border-emphasis"></div>
+          <div className="flex flex-col gap-1">
+            <span className="text-[8px] font-mono tracking-wider text-accent uppercase font-bold">Exhibition Opening</span>
+            <h4 className="text-xs font-bold text-primary font-heading">Gallery Vernissage</h4>
+          </div>
+          <div className="grid grid-cols-2 gap-2 border-t border-border-default/50 pt-2.5 text-[9px] font-mono text-muted-text">
+            <div>
+              <span className="text-[7px] text-muted-text/60 block uppercase">Date & Time</span>
+              <span className="text-primary font-semibold">July 24, 7:00 PM</span>
+            </div>
+            <div>
+              <span className="text-[7px] text-muted-text/60 block uppercase">Location</span>
+              <span className="text-primary font-semibold">Studio Arcs Gallery</span>
+            </div>
+          </div>
+          <div className="h-7 px-3 bg-accent text-white rounded flex items-center justify-center text-[9px] font-bold tracking-wider uppercase mt-1">
+            Confirm RSVP
+          </div>
+        </div>
+      );
+    case 'link':
+      return (
+        <div className="bg-background border border-border-default rounded-xl p-4 flex flex-col gap-2 select-none">
+          <div className="text-center pb-1.5 border-b border-border-default/45">
+            <h4 className="text-[10px] font-mono tracking-wide text-primary font-bold">Studio Arcs Resources</h4>
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <div className="h-7 px-3 bg-surface border border-border-default/50 rounded flex items-center justify-between text-[9px] font-mono text-primary font-medium">
+              <span>Latest Exhibition Portfolio</span>
+              <span className="text-accent text-[8px] font-bold">→</span>
+            </div>
+            <div className="h-7 px-3 bg-surface border border-border-default/50 rounded flex items-center justify-between text-[9px] font-mono text-primary font-medium">
+              <span>Download Figma Design Library</span>
+              <span className="text-accent text-[8px] font-bold">→</span>
+            </div>
+            <div className="h-7 px-3 bg-surface border border-border-default/50 rounded flex items-center justify-between text-[9px] font-mono text-primary font-medium">
+              <span>Read Architecture Articles</span>
+              <span className="text-accent text-[8px] font-bold">→</span>
+            </div>
+          </div>
+        </div>
+      );
+    case 'wifi':
+      return (
+        <div className="bg-background border border-border-default rounded-xl p-4 flex flex-col gap-3 shadow-2xs select-none">
+          <div className="flex items-center gap-2 border-b border-border-default/50 pb-2">
+            <Wifi className="w-4 h-4 text-accent" />
+            <h4 className="text-[10px] font-mono tracking-wider text-muted-text uppercase font-bold">Guest WiFi network</h4>
+          </div>
+          <div className="flex flex-col gap-2 font-mono text-[10px]">
+            <div className="flex justify-between items-center bg-surface border border-border-default/40 p-1.5 rounded">
+              <span className="text-muted-text/75 text-[8px] uppercase">Network</span>
+              <span className="text-primary font-bold">StudioArcs_Guest_5G</span>
+            </div>
+            <div className="flex justify-between items-center bg-surface border border-border-default/40 p-1.5 rounded">
+              <span className="text-muted-text/75 text-[8px] uppercase">Password</span>
+              <span className="text-primary font-bold tracking-widest text-[9px]">••••••••••••</span>
+            </div>
+          </div>
+          <div className="h-7 bg-surface-2 border border-border-default/70 rounded flex items-center justify-center text-[9px] font-mono text-primary font-bold">
+            Tap to Auto-Connect
+          </div>
+        </div>
+      );
+    case 'catalog':
+      return (
+        <div className="bg-background border border-border-default rounded-xl p-4 flex flex-col gap-2 shadow-2xs select-none">
+          <div className="border-b border-border-default/50 pb-1.5 flex justify-between items-baseline">
+            <h4 className="text-[10px] font-mono tracking-wider text-muted-text uppercase font-bold font-heading">Studio Arcs Prints</h4>
+            <span className="text-[8px] font-mono text-accent">Fine Art</span>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <div className="bg-surface border border-border-default/50 p-2 rounded flex flex-col gap-1">
+              <div className="aspect-square bg-surface-2 border border-border-default/45 rounded flex items-center justify-center text-[8px] font-mono text-muted-text/45 animate-pulse">
+                Chroma #4
+              </div>
+              <div className="flex justify-between items-center mt-1">
+                <span className="text-[8px] font-mono font-bold truncate text-primary max-w-[50px]">Chroma #4</span>
+                <span className="text-[9px] font-mono font-bold text-accent">$120</span>
+              </div>
+            </div>
+            <div className="bg-surface border border-border-default/50 p-2 rounded flex flex-col gap-1">
+              <div className="aspect-square bg-surface-2 border border-border-default/45 rounded flex items-center justify-center text-[8px] font-mono text-muted-text/45 animate-pulse">
+                Space #2
+              </div>
+              <div className="flex justify-between items-center mt-1">
+                <span className="text-[8px] font-mono font-bold truncate text-primary max-w-[50px]">Space #2</span>
+                <span className="text-[9px] font-mono font-bold text-accent">$160</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    default:
+      return null;
+  }
+};
 
 export default function LandingPage() {
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
@@ -104,32 +269,33 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="flex flex-col flex-1 bg-background font-sans selection:bg-accent selection:text-zinc-950 text-primary">
+    <div className="flex flex-col flex-1 bg-background font-sans selection:bg-accent selection:text-white text-primary">
       
       {/* Sticky Premium Navbar with Brand Logo */}
       <nav className="h-16 px-6 bg-surface/75 backdrop-blur-md border-b border-border-default flex items-center justify-between sticky top-0 z-50">
         <div className="flex items-center gap-2">
           {/* Styled Brand Logo Badge */}
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-accent to-amber-400 flex items-center justify-center shadow-md shadow-accent/10">
-            <QrCode className="w-4.5 h-4.5 text-zinc-950" />
+          <div className="w-8 h-8 rounded-xl bg-accent flex items-center justify-center shadow-sm">
+            <QrCode className="w-4.5 h-4.5 text-white" />
           </div>
-          <Link href="/" className="text-base font-black tracking-tight text-primary flex items-center gap-1.5 font-heading">
-            Card<span className="text-muted-text font-medium">QR</span>
+          <Link href="/" className="text-base font-bold tracking-tight text-primary flex items-center gap-1 font-heading">
+            Card<span className="text-muted-text font-normal">QR</span>
           </Link>
         </div>
         
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
+          <TemplatesDropdown />
           <Link 
             href="/create"
-            className="h-9 px-4 bg-accent hover:bg-accent/90 text-zinc-950 text-xs font-bold rounded-xl flex items-center justify-center transition-all cursor-pointer shadow-xs"
+            className="h-9 px-4 bg-accent hover:bg-accent/95 text-white text-xs font-bold rounded-xl flex items-center justify-center transition-all cursor-pointer shadow-xs"
           >
-            Design Templates
+            Create Your Card
           </Link>
         </div>
       </nav>
 
       {/* 1. HERO SECTION & INSTANT URL GENERATOR */}
-      <section className="relative px-6 pt-12 pb-20 md:pt-16 md:pb-24 overflow-hidden max-w-7xl mx-auto w-full flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
+      <section className="relative px-6 pt-12 pb-16 md:pt-16 md:pb-20 overflow-hidden max-w-7xl mx-auto w-full flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
         
         {/* Left Info Column */}
         <div className="flex-1 max-w-xl text-center lg:text-left">
@@ -138,7 +304,7 @@ export default function LandingPage() {
             <Sparkles className="w-3 h-3 text-accent" /> Create a beautiful QR destination in 60 seconds
           </div>
 
-          <h1 className="text-3xl md:text-5xl lg:text-6xl font-black text-primary tracking-tight leading-[1.08] font-heading">
+          <h1 className="text-3xl md:text-5xl lg:text-6xl font-medium text-primary tracking-tight leading-[1.08] font-heading">
             Turn Any QR Code Into a Branded Experience
           </h1>
           
@@ -149,7 +315,7 @@ export default function LandingPage() {
           <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 mt-8">
             <Link 
               href="/create"
-              className="h-11 w-full sm:w-auto px-6 bg-accent hover:bg-accent/90 text-zinc-950 text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer text-center"
+              className="h-11 w-full sm:w-auto px-6 bg-accent hover:bg-accent/95 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer text-center"
             >
               Start Template Creator <ArrowRight className="w-4 h-4" />
             </Link>
@@ -158,26 +324,26 @@ export default function LandingPage() {
 
         {/* Right Visual Column (Interactive Instant QR Generator Widget) */}
         <div className="flex-1 w-full max-w-md lg:max-w-none flex justify-center">
-          <div className="w-full max-w-sm bg-surface border border-border-default rounded-3xl p-6 shadow-md relative overflow-hidden">
+          <div className="w-full max-w-sm bg-surface border border-border-default rounded-2xl p-6 shadow-sm relative overflow-hidden stamp-press">
             
             <div className="relative z-10 flex flex-col gap-4.5">
               <div className="flex items-center gap-2">
                 <div className="w-7 h-7 rounded-lg bg-accent-dim text-accent flex items-center justify-center">
                   <LinkIcon className="w-4 h-4" />
                 </div>
-                <h3 className="text-xs font-bold text-primary tracking-tight">Instant URL to QR Code</h3>
+                <h3 className="text-xs font-bold text-primary tracking-tight font-sans">Instant URL to QR Code</h3>
               </div>
 
               {/* URL Input */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] font-bold text-muted-text uppercase tracking-wider">Paste your Web URL</label>
+                <label className="text-[10px] font-bold text-muted-text uppercase tracking-wider font-mono">Paste your Web URL</label>
                 <div className="flex items-center gap-2">
                   <input
                     type="text"
                     value={inputUrl}
                     onChange={(e) => setInputUrl(e.target.value)}
                     placeholder="e.g. https://my-website.com"
-                    className="flex-1 h-9 px-3 text-xs border border-border-default rounded-xl focus:outline-none focus:border-accent font-medium text-primary bg-surface-2 shadow-2xs"
+                    className="flex-1 h-9 px-3 text-xs border border-border-default rounded-xl focus:outline-none focus:border-accent font-medium text-primary bg-surface-2 shadow-2xs font-mono"
                   />
                   {inputUrl && (
                     <button
@@ -193,14 +359,17 @@ export default function LandingPage() {
               {/* Dynamic QR Output Zone */}
               <div className="border-t border-border-default pt-4.5 flex flex-col items-center min-h-[220px] justify-center">
                 {inputUrl.trim() ? (
-                  <QRGenerator value={inputUrl.trim()} size={160} showDownloads={true} />
+                  <div className="p-4 bg-white border border-border-default rounded-xl shadow-2xs relative">
+                    <div className="absolute top-1 left-1.5 text-[7px] font-mono text-muted-text/30 select-none">PROOF</div>
+                    <QRGenerator value={inputUrl.trim()} size={160} showDownloads={true} />
+                  </div>
                 ) : (
                   <div className="flex flex-col items-center text-center text-muted-text/30 gap-3 py-6">
                     <div className="w-14 h-14 rounded-full border border-dashed border-border-default flex items-center justify-center bg-surface-2">
                       <QrCode className="w-6 h-6 text-muted-text/45" />
                     </div>
                     <div>
-                      <span className="text-[10px] font-bold text-muted-text uppercase block">QR Code Preview</span>
+                      <span className="text-[10px] font-bold text-muted-text uppercase block font-mono">QR Code Preview</span>
                       <span className="text-[9px] text-muted-text/80 max-w-[200px] mt-1 block text-center">
                         Enter any link or URL path above to generate a downloadable high-resolution code.
                       </span>
@@ -214,60 +383,93 @@ export default function LandingPage() {
 
       </section>
 
+      {/* 1b. HERO AD SLOT */}
+      <div className="w-full flex justify-center pb-12 px-6 max-w-7xl mx-auto select-none">
+        <div className="w-full max-w-[728px] h-[90px] border border-border-default bg-surface-2/50 rounded-xl flex items-center justify-center text-[10px] text-muted-text font-mono tracking-wider">
+          ADVERTISEMENT
+        </div>
+      </div>
+
       {/* 2. TEMPLATE SHOWCASE */}
       <section id="templates" className="px-6 py-20 bg-surface border-t border-b border-border-default w-full">
         <div className="max-w-7xl mx-auto w-full">
           <div className="text-center max-w-xl mx-auto mb-14">
-            <h2 className="text-2xl md:text-3xl font-black text-primary tracking-tight font-heading">6 Core Templates to Cover Any Idea</h2>
+            <h2 className="text-2xl md:text-3xl font-medium text-primary tracking-tight font-heading">6 Core Templates to Cover Any Idea</h2>
             <p className="text-xs text-muted-text mt-2.5 font-medium">
               Choose your profile style, fill details, and get your QR code instantly. No manual coding or website builder layout dragging needed.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6.5">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
             {MOCK_TEMPLATES.map((tpl) => {
               const Icon = tpl.icon;
               return (
-                <Link 
-                  href={`/create?t=${tpl.id}`}
+                <div 
                   key={tpl.id}
-                  className="group block bg-surface-2 p-5.5 rounded-2xl border border-border-default hover:border-primary/25 hover:-translate-y-1 transition-all duration-300 card-shadow cursor-pointer select-none"
+                  className="bg-surface paper-grain p-6 rounded-2xl border border-border-default hover:border-accent/30 transition-all duration-300 card-shadow select-none flex flex-col justify-between min-h-[420px]"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-xl bg-accent-dim text-accent border border-accent/15 flex items-center justify-center">
-                      <Icon className="w-4.5 h-4.5" />
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-bold text-primary tracking-tight">{tpl.title}</h3>
-                      <p className="text-[10px] text-muted-text leading-tight mt-0.5">{tpl.description}</p>
-                    </div>
-                  </div>
-
-                  {/* Animated card fields list mockup inside page */}
-                  <div className="mt-4.5 bg-surface p-3 rounded-xl border border-border-default flex flex-col gap-2 transition-all">
-                    {tpl.fields.map((field, fIdx) => (
-                      <div key={fIdx} className="h-6.5 px-2 bg-surface-2 rounded-md flex items-center justify-between text-[9px] font-bold text-primary">
-                        <span>{field}</span>
-                        <div className="w-1.5 h-1.5 rounded-full bg-accent/20 group-hover:bg-accent transition-all" />
+                  <div>
+                    {/* Header Info */}
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-accent-dim text-accent border border-accent/15 flex items-center justify-center">
+                          <Icon className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <span className="text-[9px] font-mono tracking-wider text-accent uppercase font-bold">
+                            {tpl.audience}
+                          </span>
+                          <h3 className="text-sm font-bold text-primary tracking-tight font-heading mt-0.5">
+                            {tpl.title}
+                          </h3>
+                        </div>
                       </div>
-                    ))}
+                    </div>
+                    
+                    <p className="text-xs text-muted-text mt-3.5 leading-relaxed font-medium">
+                      {tpl.descText}
+                    </p>
+
+                    {/* Realistic Interactive Preview Container */}
+                    <div className="mt-5.5">
+                      {renderTemplatePreview(tpl.id)}
+                    </div>
                   </div>
 
-                  <div className="mt-4 flex items-center justify-between text-[10px] font-bold text-muted-text group-hover:text-accent transition-all">
-                    <span>Use Template</span>
-                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-all" />
+                  {/* Actions Footer */}
+                  <div className="mt-6 pt-4 border-t border-border-default/50 flex items-center justify-between gap-4">
+                    <Link 
+                      href={getTemplateSEOPath(tpl.id)}
+                      className="text-[10px] font-bold text-muted-text hover:text-accent transition-all flex items-center gap-1 font-mono uppercase tracking-wider"
+                    >
+                      Learn More <ArrowRight className="w-3 h-3" />
+                    </Link>
+                    
+                    <Link 
+                      href={`/create?t=${tpl.id}`}
+                      className="h-9 px-4 bg-accent hover:bg-accent/95 text-white text-[11px] font-bold rounded-xl flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
+                    >
+                      <Sparkles className="w-3.5 h-3.5 text-white" /> Use Template
+                    </Link>
                   </div>
-                </Link>
+                </div>
               );
             })}
           </div>
         </div>
       </section>
 
+      {/* 2b. IN-CONTENT AD SLOT */}
+      <div className="w-full flex justify-center py-6 px-6 max-w-7xl mx-auto select-none">
+        <div className="w-full max-w-[728px] h-[90px] border border-border-default bg-surface-2/50 rounded-xl flex items-center justify-center text-[10px] text-muted-text font-mono tracking-wider">
+          ADVERTISEMENT
+        </div>
+      </div>
+
       {/* 3. HOW IT WORKS */}
       <section id="how-it-works" className="px-6 py-20 w-full max-w-7xl mx-auto">
         <div className="text-center max-w-xl mx-auto mb-16">
-          <h2 className="text-2xl md:text-3xl font-black text-primary tracking-tight font-heading">Create and Deploy in Seconds</h2>
+          <h2 className="text-2xl md:text-3xl font-medium text-primary tracking-tight font-heading">Create and Deploy in Seconds</h2>
           <p className="text-xs text-muted-text mt-2.5 font-medium">
             CardQR streamlines publication into 4 linear steps. No accounts required to get started.
           </p>
@@ -277,30 +479,25 @@ export default function LandingPage() {
           
           {[
             {
-              step: 'Step 1',
               title: 'Choose template',
               desc: 'Select from 6 beautiful target profiles built specifically for restaurants, networking, events, or local stores.'
             },
             {
-              step: 'Step 2',
               title: 'Fill in your info',
               desc: 'Type your contact handles, upload items, dates, network names, or banner screens. Changes reflect live.'
             },
             {
-              step: 'Step 3',
               title: 'Generate QR instantly',
               desc: 'Our engine processes details and renders print-ready, high-resolution vector SVG or PNG files.'
             },
             {
-              step: 'Step 4',
               title: 'Print and share',
               desc: 'Place the QR code on tables, business card backs, or flyers. Update the details anytime online.'
             }
           ].map((item, idx) => (
-            <div key={idx} className="flex flex-col bg-surface p-5 rounded-2xl border border-border-default card-shadow relative">
-              <div className="absolute top-4 right-4 text-[10px] font-extrabold text-primary/10 select-none">0{idx + 1}</div>
-              <div className="w-8.5 h-8.5 rounded-lg bg-accent-dim text-accent border border-accent/15 text-xs font-black flex items-center justify-center mb-4">{item.step}</div>
-              <h3 className="text-xs font-bold text-primary tracking-tight">{item.title}</h3>
+            <div key={idx} className="flex flex-col bg-surface p-5 rounded-xl border border-border-default card-shadow relative">
+              <div className="text-lg font-medium font-heading italic text-accent mb-2">0{idx + 1}.</div>
+              <h3 className="text-xs font-bold text-primary tracking-tight font-sans">{item.title}</h3>
               <p className="text-[11px] text-muted-text leading-relaxed mt-2 font-medium">{item.desc}</p>
             </div>
           ))}
@@ -311,7 +508,7 @@ export default function LandingPage() {
       {/* 4. FEATURES GRID SECTION */}
       <section id="features" className="px-6 py-20 bg-surface border-t border-b border-border-default w-full select-none">
         <div className="text-center max-w-xl mx-auto mb-16">
-          <h2 className="text-2xl md:text-3xl font-black text-primary tracking-tight font-heading">Engineered for Fast Real-World Use</h2>
+          <h2 className="text-2xl md:text-3xl font-medium text-primary tracking-tight font-heading">Engineered for Fast Real-World Use</h2>
           <p className="text-xs text-muted-text mt-2.5 font-medium">
             CardQR handles the hosting, files, QR compiling, and rendering details. You just input info.
           </p>
@@ -377,7 +574,7 @@ export default function LandingPage() {
       <section className="px-6 py-20 w-full max-w-7xl mx-auto">
         <div className="max-w-2xl mx-auto w-full">
           <div className="text-center mb-14">
-            <h2 className="text-2xl md:text-3xl font-black text-primary tracking-tight font-heading">Frequently Asked Questions</h2>
+            <h2 className="text-2xl md:text-3xl font-medium text-primary tracking-tight font-heading">Frequently Asked Questions</h2>
             <p className="text-xs text-muted-text mt-2.5">Clear responses to common workflow questions.</p>
           </div>
 
@@ -407,16 +604,35 @@ export default function LandingPage() {
       </section>
 
       {/* FOOTER */}
-      <footer className="py-12 px-6 border-t border-border-default text-center text-[11px] text-muted-text bg-surface">
-        <div className="max-w-7xl mx-auto w-full flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-1.5">
-            <span className="font-black text-primary text-xs">CardQR</span>
-            <span>© 2026 CardQR Inc. All rights reserved.</span>
+      <footer className="py-12 px-6 border-t border-border-default text-xs text-muted-text bg-surface">
+        <div className="max-w-7xl mx-auto w-full flex flex-col md:flex-row justify-between gap-8 md:gap-4">
+          <div className="flex flex-col gap-2 max-w-xs">
+            <div className="flex items-center gap-1.5">
+              <span className="font-black text-primary text-sm font-heading">CardQR</span>
+              <span className="text-[10px]">© 2026 CardQR Inc.</span>
+            </div>
+            <p className="text-[10px] text-muted-text/80 leading-relaxed font-medium">
+              Create premium, native-feeling mobile cards linked to custom QR codes in seconds.
+            </p>
           </div>
-          <div className="flex gap-4">
-            <a href="#" className="hover:text-primary transition-all font-semibold">Terms of Service</a>
-            <a href="#" className="hover:text-primary transition-all font-semibold">Privacy Policy</a>
-            <a href="#" className="hover:text-primary transition-all font-semibold">Contact Support</a>
+          
+          <div className="flex flex-wrap gap-x-8 gap-y-4">
+            <div className="flex flex-col gap-2 min-w-[100px]">
+              <span className="font-mono text-[9px] font-bold text-primary uppercase tracking-wider">Company</span>
+              <Link href="/about" className="hover:text-accent transition-all font-semibold text-[11px]">About Us</Link>
+              <Link href="/contact" className="hover:text-accent transition-all font-semibold text-[11px]">Contact Support</Link>
+            </div>
+            <div className="flex flex-col gap-2 min-w-[100px]">
+              <span className="font-mono text-[9px] font-bold text-primary uppercase tracking-wider">Legal</span>
+              <Link href="/terms-of-service" className="hover:text-accent transition-all font-semibold text-[11px]">Terms of Service</Link>
+              <Link href="/privacy-policy" className="hover:text-accent transition-all font-semibold text-[11px]">Privacy Policy</Link>
+            </div>
+            <div className="flex flex-col gap-2 min-w-[120px]">
+              <span className="font-mono text-[9px] font-bold text-primary uppercase tracking-wider">Guides & Resources</span>
+              <Link href="/wifi-qr-code-generator" className="hover:text-accent transition-all font-semibold text-[11px]">WiFi QR Generator Guide</Link>
+              <Link href="/qr-code-menu-maker" className="hover:text-accent transition-all font-semibold text-[11px]">QR Code Menu Maker</Link>
+              <Link href="/digital-business-card-maker" className="hover:text-accent transition-all font-semibold text-[11px]">Digital Business Card Guide</Link>
+            </div>
           </div>
         </div>
       </footer>

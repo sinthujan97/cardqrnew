@@ -10,6 +10,20 @@ import {
 } from 'lucide-react';
 import PhoneMockup from '@/components/PhoneMockup';
 import QRGenerator from '@/components/QRGenerator';
+import TemplatesDropdown from '@/components/TemplatesDropdown';
+import AdSlot from '@/components/AdSlot';
+
+const getTemplateSEOPath = (id: string) => {
+  switch (id) {
+    case 'business': return '/business-card-qr';
+    case 'menu': return '/restaurant-menu-qr';
+    case 'event': return '/event-qr';
+    case 'link': return '/link-hub-qr';
+    case 'wifi': return '/wifi-qr';
+    case 'catalog': return '/product-catalog-qr';
+    default: return '/create';
+  }
+};
 
 // Default FAQs
 const DEFAULT_FAQS = [
@@ -86,6 +100,7 @@ interface SEOLandingPageProps {
   tagline?: string;
   bulletTitle?: string;
   bulletDescription?: string;
+  templateId?: string;
 }
 
 export default function SEOLandingPage({
@@ -96,7 +111,8 @@ export default function SEOLandingPage({
   prefillUrl = "",
   tagline = "Create a beautiful QR destination in 60 seconds",
   bulletTitle = "Create and Deploy in Seconds",
-  bulletDescription = "CardQR streamlines publication into 4 linear steps. No accounts required to get started."
+  bulletDescription = "CardQR streamlines publication into 4 linear steps. No accounts required to get started.",
+  templateId
 }: SEOLandingPageProps) {
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
   const [inputUrl, setInputUrl] = useState(prefillUrl);
@@ -106,32 +122,33 @@ export default function SEOLandingPage({
   };
 
   return (
-    <div className="flex flex-col flex-1 bg-background font-sans selection:bg-accent selection:text-zinc-950 text-primary">
+    <div className="flex flex-col flex-1 bg-background font-sans selection:bg-accent selection:text-white text-primary">
       
       {/* Sticky Premium Navbar with Brand Logo */}
       <nav className="h-16 px-6 bg-surface/75 backdrop-blur-md border-b border-border-default flex items-center justify-between sticky top-0 z-50">
         <div className="flex items-center gap-2">
           {/* Styled Brand Logo Badge */}
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-accent to-amber-400 flex items-center justify-center shadow-md shadow-accent/10">
-            <QrCode className="w-4.5 h-4.5 text-zinc-950" />
+          <div className="w-8 h-8 rounded-xl bg-accent flex items-center justify-center shadow-sm">
+            <QrCode className="w-4.5 h-4.5 text-white" />
           </div>
-          <Link href="/" className="text-base font-black tracking-tight text-primary flex items-center gap-1.5 font-heading">
-            Card<span className="text-muted-text font-medium">QR</span>
+          <Link href="/" className="text-base font-bold tracking-tight text-primary flex items-center gap-1 font-heading">
+            Card<span className="text-muted-text font-normal">QR</span>
           </Link>
         </div>
         
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
+          <TemplatesDropdown />
           <Link 
             href="/create"
-            className="h-9 px-4 bg-accent hover:bg-accent/90 text-zinc-950 text-xs font-bold rounded-xl flex items-center justify-center transition-all cursor-pointer shadow-xs"
+            className="h-9 px-4 bg-accent hover:bg-accent/95 text-white text-xs font-bold rounded-xl flex items-center justify-center transition-all cursor-pointer shadow-xs"
           >
-            Design Templates
+            Create Your Card
           </Link>
         </div>
       </nav>
 
       {/* 1. HERO SECTION & INSTANT URL GENERATOR */}
-      <section className="relative px-6 pt-12 pb-20 md:pt-16 md:pb-24 overflow-hidden max-w-7xl mx-auto w-full flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
+      <section className="relative px-6 pt-12 pb-16 md:pt-16 md:pb-20 overflow-hidden max-w-7xl mx-auto w-full flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
         
         {/* Left Info Column */}
         <div className="flex-1 max-w-xl text-center lg:text-left">
@@ -140,7 +157,7 @@ export default function SEOLandingPage({
             <Sparkles className="w-3 h-3 text-accent" /> {tagline}
           </div>
 
-          <h1 className="text-3xl md:text-5xl lg:text-6xl font-black text-primary tracking-tight leading-[1.08] font-heading">
+          <h1 className="text-3xl md:text-5xl lg:text-6xl font-medium text-primary tracking-tight leading-[1.08] font-heading">
             {heroTitle}
           </h1>
           
@@ -151,7 +168,7 @@ export default function SEOLandingPage({
           <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 mt-8">
             <Link 
               href={ctaLink}
-              className="h-11 w-full sm:w-auto px-6 bg-accent hover:bg-accent/90 text-zinc-950 text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer text-center"
+              className="h-11 w-full sm:w-auto px-6 bg-accent hover:bg-accent/95 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer text-center"
             >
               {ctaText} <ArrowRight className="w-4 h-4" />
             </Link>
@@ -160,26 +177,26 @@ export default function SEOLandingPage({
 
         {/* Right Visual Column (Interactive Instant QR Generator Widget) */}
         <div className="flex-1 w-full max-w-md lg:max-w-none flex justify-center">
-          <div className="w-full max-w-sm bg-surface border border-border-default rounded-3xl p-6 shadow-md relative overflow-hidden">
+          <div className="w-full max-w-sm bg-surface border border-border-default rounded-2xl p-6 shadow-sm relative overflow-hidden stamp-press">
             
             <div className="relative z-10 flex flex-col gap-4.5">
               <div className="flex items-center gap-2">
                 <div className="w-7 h-7 rounded-lg bg-accent-dim text-accent flex items-center justify-center">
                   <LinkIcon className="w-4 h-4" />
                 </div>
-                <h3 className="text-xs font-bold text-primary tracking-tight">Instant URL to QR Code</h3>
+                <h3 className="text-xs font-bold text-primary tracking-tight font-sans">Instant URL to QR Code</h3>
               </div>
 
               {/* URL Input */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] font-bold text-muted-text uppercase tracking-wider">Paste your Web URL</label>
+                <label className="text-[10px] font-bold text-muted-text uppercase tracking-wider font-mono">Paste your Web URL</label>
                 <div className="flex items-center gap-2">
                   <input
                     type="text"
                     value={inputUrl}
                     onChange={(e) => setInputUrl(e.target.value)}
                     placeholder="e.g. https://my-website.com"
-                    className="flex-1 h-9 px-3 text-xs border border-border-default rounded-xl focus:outline-none focus:border-accent font-medium text-primary bg-surface-2 shadow-2xs"
+                    className="flex-1 h-9 px-3 text-xs border border-border-default rounded-xl focus:outline-none focus:border-accent font-medium text-primary bg-surface-2 shadow-2xs font-mono"
                   />
                   {inputUrl && (
                     <button
@@ -195,14 +212,17 @@ export default function SEOLandingPage({
               {/* Dynamic QR Output Zone */}
               <div className="border-t border-border-default pt-4.5 flex flex-col items-center min-h-[220px] justify-center">
                 {inputUrl.trim() ? (
-                  <QRGenerator value={inputUrl.trim()} size={160} showDownloads={true} />
+                  <div className="p-4 bg-white border border-border-default rounded-xl shadow-2xs relative">
+                    <div className="absolute top-1 left-1.5 text-[7px] font-mono text-muted-text/30 select-none">PROOF</div>
+                    <QRGenerator value={inputUrl.trim()} size={160} showDownloads={true} />
+                  </div>
                 ) : (
                   <div className="flex flex-col items-center text-center text-muted-text/30 gap-3 py-6">
                     <div className="w-14 h-14 rounded-full border border-dashed border-border-default flex items-center justify-center bg-surface-2">
                       <QrCode className="w-6 h-6 text-muted-text/45" />
                     </div>
                     <div>
-                      <span className="text-[10px] font-bold text-muted-text uppercase block">QR Code Preview</span>
+                      <span className="text-[10px] font-bold text-muted-text uppercase block font-mono">QR Code Preview</span>
                       <span className="text-[9px] text-muted-text/80 max-w-[200px] mt-1 block text-center">
                         Enter any link or URL path above to generate a downloadable high-resolution code.
                       </span>
@@ -216,11 +236,22 @@ export default function SEOLandingPage({
 
       </section>
 
+      {/* 1b. HERO AD SLOT */}
+      <div className="w-full flex justify-center pb-4 px-6 max-w-7xl mx-auto select-none">
+        {templateId ? (
+          <AdSlot slotId={`${templateId}-intro`} />
+        ) : (
+          <div className="w-full max-w-[728px] h-[90px] border border-border-default bg-surface-2/50 rounded-xl flex items-center justify-center text-[10px] text-muted-text font-mono tracking-wider">
+            ADVERTISEMENT
+          </div>
+        )}
+      </div>
+
       {/* 2. TEMPLATE SHOWCASE */}
       <section id="templates" className="px-6 py-20 bg-surface border-t border-b border-border-default w-full">
         <div className="max-w-7xl mx-auto w-full">
           <div className="text-center max-w-xl mx-auto mb-14">
-            <h2 className="text-2xl md:text-3xl font-black text-primary tracking-tight font-heading">6 Core Templates to Cover Any Idea</h2>
+            <h2 className="text-2xl md:text-3xl font-medium text-primary tracking-tight font-heading">6 Core Templates to Cover Any Idea</h2>
             <p className="text-xs text-muted-text mt-2.5 font-medium">
               Choose your profile style, fill details, and get your QR code instantly. No manual coding or website builder layout dragging needed.
             </p>
@@ -231,9 +262,9 @@ export default function SEOLandingPage({
               const Icon = tpl.icon;
               return (
                 <Link 
-                  href={`/create?t=${tpl.id}`}
+                  href={getTemplateSEOPath(tpl.id)}
                   key={tpl.id}
-                  className="group block bg-surface-2 p-5.5 rounded-2xl border border-border-default hover:border-primary/25 hover:-translate-y-1 transition-all duration-300 card-shadow cursor-pointer select-none"
+                  className="group block bg-surface paper-grain p-5.5 rounded-xl border border-border-default hover:border-accent transition-all duration-300 card-shadow cursor-pointer select-none"
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-9 h-9 rounded-xl bg-accent-dim text-accent border border-accent/15 flex items-center justify-center">
@@ -246,17 +277,17 @@ export default function SEOLandingPage({
                   </div>
 
                   {/* Animated card fields list mockup inside page */}
-                  <div className="mt-4.5 bg-surface p-3 rounded-xl border border-border-default flex flex-col gap-2 transition-all">
+                  <div className="mt-4.5 bg-surface-2/45 p-3 rounded-lg border border-border-default/60 flex flex-col gap-2 transition-all">
                     {tpl.fields.map((field, fIdx) => (
-                      <div key={fIdx} className="h-6.5 px-2 bg-surface-2 rounded-md flex items-center justify-between text-[9px] font-bold text-primary">
+                      <div key={fIdx} className="h-6.5 px-2 bg-surface rounded border border-border-default/50 flex items-center justify-between text-[9px] font-mono text-muted-text">
                         <span>{field}</span>
-                        <div className="w-1.5 h-1.5 rounded-full bg-accent/20 group-hover:bg-accent transition-all" />
+                        <div className="w-1 h-1 rounded-full bg-accent/20 group-hover:bg-accent transition-all" />
                       </div>
                     ))}
                   </div>
 
-                  <div className="mt-4 flex items-center justify-between text-[10px] font-bold text-muted-text group-hover:text-accent transition-all">
-                    <span>Use Template</span>
+                  <div className="mt-4 flex items-center justify-between text-[10px] font-bold text-muted-text group-hover:text-accent transition-all font-sans">
+                    <span>View Template Details</span>
                     <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-all" />
                   </div>
                 </Link>
@@ -266,10 +297,17 @@ export default function SEOLandingPage({
         </div>
       </section>
 
+      {/* 2b. IN-CONTENT AD SLOT */}
+      <div className="w-full flex justify-center py-6 px-6 max-w-7xl mx-auto select-none">
+        <div className="w-full max-w-[728px] h-[90px] border border-border-default bg-surface-2/50 rounded-xl flex items-center justify-center text-[10px] text-muted-text font-mono tracking-wider">
+          ADVERTISEMENT
+        </div>
+      </div>
+
       {/* 3. HOW IT WORKS */}
       <section id="how-it-works" className="px-6 py-20 w-full max-w-7xl mx-auto">
         <div className="text-center max-w-xl mx-auto mb-16">
-          <h2 className="text-2xl md:text-3xl font-black text-primary tracking-tight font-heading">{bulletTitle}</h2>
+          <h2 className="text-2xl md:text-3xl font-medium text-primary tracking-tight font-heading">{bulletTitle}</h2>
           <p className="text-xs text-muted-text mt-2.5 font-medium">
             {bulletDescription}
           </p>
@@ -279,30 +317,25 @@ export default function SEOLandingPage({
           
           {[
             {
-              step: 'Step 1',
               title: 'Choose template',
               desc: 'Select from 6 beautiful target profiles built specifically for restaurants, networking, events, or local stores.'
             },
             {
-              step: 'Step 2',
               title: 'Fill in your info',
               desc: 'Type your contact handles, upload items, dates, network names, or banner screens. Changes reflect live.'
             },
             {
-              step: 'Step 3',
               title: 'Generate QR instantly',
               desc: 'Our engine processes details and renders print-ready, high-resolution vector SVG or PNG files.'
             },
             {
-              step: 'Step 4',
               title: 'Print and share',
               desc: 'Place the QR code on tables, business card backs, or flyers. Update the details anytime online.'
             }
           ].map((item, idx) => (
-            <div key={idx} className="flex flex-col bg-surface p-5 rounded-2xl border border-border-default card-shadow relative">
-              <div className="absolute top-4 right-4 text-[10px] font-extrabold text-primary/10 select-none">0{idx + 1}</div>
-              <div className="w-8.5 h-8.5 rounded-lg bg-accent-dim text-accent border border-accent/15 text-xs font-black flex items-center justify-center mb-4">{item.step}</div>
-              <h3 className="text-xs font-bold text-primary tracking-tight">{item.title}</h3>
+            <div key={idx} className="flex flex-col bg-surface p-5 rounded-xl border border-border-default card-shadow relative">
+              <div className="text-lg font-medium font-heading italic text-accent mb-2">0{idx + 1}.</div>
+              <h3 className="text-xs font-bold text-primary tracking-tight font-sans">{item.title}</h3>
               <p className="text-[11px] text-muted-text leading-relaxed mt-2 font-medium">{item.desc}</p>
             </div>
           ))}
@@ -313,7 +346,7 @@ export default function SEOLandingPage({
       {/* 4. FEATURES GRID SECTION */}
       <section id="features" className="px-6 py-20 bg-surface border-t border-b border-border-default w-full select-none">
         <div className="text-center max-w-xl mx-auto mb-16">
-          <h2 className="text-2xl md:text-3xl font-black text-primary tracking-tight font-heading">Engineered for Fast Real-World Use</h2>
+          <h2 className="text-2xl md:text-3xl font-medium text-primary tracking-tight font-heading">Engineered for Fast Real-World Use</h2>
           <p className="text-xs text-muted-text mt-2.5 font-medium">
             CardQR handles the hosting, files, QR compiling, and rendering details. You just input info.
           </p>
@@ -375,11 +408,18 @@ export default function SEOLandingPage({
         </div>
       </section>
 
+      {/* 4b. LOWER AD SLOT */}
+      {templateId && (
+        <div className="w-full flex justify-center py-4 px-6 max-w-7xl mx-auto select-none">
+          <AdSlot slotId={`${templateId}-lower`} />
+        </div>
+      )}
+
       {/* 5. FAQ */}
       <section className="px-6 py-20 w-full max-w-7xl mx-auto">
         <div className="max-w-2xl mx-auto w-full">
           <div className="text-center mb-14">
-            <h2 className="text-2xl md:text-3xl font-black text-primary tracking-tight font-heading">Frequently Asked Questions</h2>
+            <h2 className="text-2xl md:text-3xl font-medium text-primary tracking-tight font-heading">Frequently Asked Questions</h2>
             <p className="text-xs text-muted-text mt-2.5 font-medium">Clear responses to common workflow questions.</p>
           </div>
 
@@ -409,16 +449,35 @@ export default function SEOLandingPage({
       </section>
 
       {/* FOOTER */}
-      <footer className="py-12 px-6 border-t border-border-default text-center text-[11px] text-muted-text bg-surface">
-        <div className="max-w-7xl mx-auto w-full flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-1.5">
-            <span className="font-black text-primary text-xs font-heading">CardQR</span>
-            <span>© 2026 CardQR Inc. All rights reserved.</span>
+      <footer className="py-12 px-6 border-t border-border-default text-xs text-muted-text bg-surface">
+        <div className="max-w-7xl mx-auto w-full flex flex-col md:flex-row justify-between gap-8 md:gap-4">
+          <div className="flex flex-col gap-2 max-w-xs">
+            <div className="flex items-center gap-1.5">
+              <span className="font-black text-primary text-sm font-heading">CardQR</span>
+              <span className="text-[10px]">© 2026 CardQR Inc.</span>
+            </div>
+            <p className="text-[10px] text-muted-text/80 leading-relaxed font-medium">
+              Create premium, native-feeling mobile cards linked to custom QR codes in seconds.
+            </p>
           </div>
-          <div className="flex gap-4">
-            <a href="#" className="hover:text-primary transition-all font-semibold">Terms of Service</a>
-            <a href="#" className="hover:text-primary transition-all font-semibold">Privacy Policy</a>
-            <a href="#" className="hover:text-primary transition-all font-semibold">Contact Support</a>
+          
+          <div className="flex flex-wrap gap-x-8 gap-y-4">
+            <div className="flex flex-col gap-2 min-w-[100px]">
+              <span className="font-mono text-[9px] font-bold text-primary uppercase tracking-wider">Company</span>
+              <Link href="/about" className="hover:text-accent transition-all font-semibold text-[11px]">About Us</Link>
+              <Link href="/contact" className="hover:text-accent transition-all font-semibold text-[11px]">Contact Support</Link>
+            </div>
+            <div className="flex flex-col gap-2 min-w-[100px]">
+              <span className="font-mono text-[9px] font-bold text-primary uppercase tracking-wider">Legal</span>
+              <Link href="/terms-of-service" className="hover:text-accent transition-all font-semibold text-[11px]">Terms of Service</Link>
+              <Link href="/privacy-policy" className="hover:text-accent transition-all font-semibold text-[11px]">Privacy Policy</Link>
+            </div>
+            <div className="flex flex-col gap-2 min-w-[120px]">
+              <span className="font-mono text-[9px] font-bold text-primary uppercase tracking-wider">Guides & Resources</span>
+              <Link href="/wifi-qr-code-generator" className="hover:text-accent transition-all font-semibold text-[11px]">WiFi QR Generator Guide</Link>
+              <Link href="/qr-code-menu-maker" className="hover:text-accent transition-all font-semibold text-[11px]">QR Code Menu Maker</Link>
+              <Link href="/digital-business-card-maker" className="hover:text-accent transition-all font-semibold text-[11px]">Digital Business Card Guide</Link>
+            </div>
           </div>
         </div>
       </footer>

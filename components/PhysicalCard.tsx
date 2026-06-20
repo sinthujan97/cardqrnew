@@ -42,15 +42,7 @@ export default function PhysicalCard({ card }: PhysicalCardProps) {
   };
 
   const getEdgeShadow = () => {
-    switch (card.templateType) {
-      case 'business': return 'inset -4px -4px 0 rgba(10,10,30,0.6)';
-      case 'menu': return 'inset -4px -4px 0 rgba(28,10,0,0.6)';
-      case 'event': return 'inset -4px -4px 0 rgba(236,72,153,0.5)';
-      case 'link': return 'inset -4px -4px 0 rgba(29,158,117,0.5)';
-      case 'wifi': return 'inset -4px -4px 0 rgba(55,138,221,0.5)';
-      case 'catalog': return `inset -4px -4px 0 ${accentColor}80`;
-      default: return 'inset -4px -4px 0 rgba(0,0,0,0.3)';
-    }
+    return 'inset 0 0 0 1px rgba(28, 27, 25, 0.05)';
   };
 
   const bloomColor = getBloomColor();
@@ -92,7 +84,7 @@ export default function PhysicalCard({ card }: PhysicalCardProps) {
     targetLift.current = 24;
     targetScale.current = 1.03;
     if (cardRef.current) {
-      cardRef.current.style.boxShadow = `${edgeShadow}, 0 40px 80px rgba(0,0,0,0.5)`;
+      cardRef.current.style.boxShadow = `${edgeShadow}, 0 8px 24px rgba(28, 27, 25, 0.06)`;
     }
   };
 
@@ -101,7 +93,7 @@ export default function PhysicalCard({ card }: PhysicalCardProps) {
     targetLift.current = 0;
     targetScale.current = 1;
     if (cardRef.current) {
-      cardRef.current.style.boxShadow = `${edgeShadow}, 0 4px 20px rgba(0,0,0,0.08)`;
+      cardRef.current.style.boxShadow = `${edgeShadow}, 0 2px 8px rgba(28, 27, 25, 0.03)`;
     }
   };
 
@@ -109,7 +101,7 @@ export default function PhysicalCard({ card }: PhysicalCardProps) {
     targetLift.current = 24;
     targetScale.current = 1.03;
     if (cardRef.current) {
-      cardRef.current.style.boxShadow = `${edgeShadow}, 0 40px 80px rgba(0,0,0,0.5)`;
+      cardRef.current.style.boxShadow = `${edgeShadow}, 0 8px 24px rgba(28, 27, 25, 0.06)`;
     }
   };
 
@@ -190,11 +182,11 @@ export default function PhysicalCard({ card }: PhysicalCardProps) {
         {/* 3. Interactive Card */}
         <div
           ref={cardRef}
-          className="relative w-full h-full select-none rounded-[20px] overflow-hidden flex flex-col transition-shadow duration-300 ease-out"
+          className="relative w-full h-full select-none rounded-[20px] overflow-hidden flex flex-col transition-shadow duration-300 ease-out border border-border-default"
           style={{
             transformStyle: 'preserve-3d',
             willChange: 'transform',
-            boxShadow: `${edgeShadow}, 0 4px 20px rgba(0,0,0,0.08)`,
+            boxShadow: `${edgeShadow}, 0 2px 8px rgba(28, 27, 25, 0.03)`,
           }}
         >
           {/* Card template content */}

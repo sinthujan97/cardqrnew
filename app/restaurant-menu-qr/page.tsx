@@ -15,6 +15,7 @@ export default function Page() {
       ctaLink="/create?t=menu"
       prefillUrl="https://cardqr.com/c/bistro-menu"
       tagline="Editorial restaurant menu layouts"
+      templateId="restaurant-menu"
     />
   );
 }

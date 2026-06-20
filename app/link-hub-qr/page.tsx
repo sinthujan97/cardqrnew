@@ -15,6 +15,7 @@ export default function Page() {
       ctaLink="/create?t=link"
       prefillUrl="https://cardqr.com/c/your-portfolio"
       tagline="Premium social link hub profiles"
+      templateId="link-hub"
     />
   );
 }

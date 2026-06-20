@@ -15,6 +15,7 @@ export default function Page() {
       ctaLink="/create?t=wifi"
       prefillUrl="https://cardqr.com/c/studio-wifi"
       tagline="Tap-to-connect wireless sharing"
+      templateId="wifi-sharing"
     />
   );
 }

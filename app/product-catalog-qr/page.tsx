@@ -15,6 +15,7 @@ export default function Page() {
       ctaLink="/create?t=catalog"
       prefillUrl="https://cardqr.com/c/shop-catalog"
       tagline="Mobile-first product showcases"
+      templateId="product-catalog"
     />
   );
 }

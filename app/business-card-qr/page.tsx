@@ -15,6 +15,7 @@ export default function Page() {
       ctaLink="/create?t=business"
       prefillUrl="https://cardqr.com/c/your-name"
       tagline="Save Contacts Instantly with vCard"
+      templateId="business-card"
     />
   );
 }
