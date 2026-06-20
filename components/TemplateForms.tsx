@@ -93,6 +93,46 @@ const handleImageFileChange = async (
   reader.readAsDataURL(file);
 };
 
+function CardThemeSelector({ 
+  value = 'light', 
+  onChange 
+}: { 
+  value?: 'light' | 'dark'; 
+  onChange: (theme: 'light' | 'dark') => void; 
+}) {
+  return (
+    <div className="mb-6 p-4 rounded-xl border border-border-default bg-surface shadow-2xs">
+      <label className="text-[10px] font-semibold text-muted-text tracking-wider uppercase block mb-2">Card Visual Theme</label>
+      <div className="flex gap-2">
+        <button
+          type="button"
+          onClick={() => onChange('light')}
+          className={`flex-1 h-9 rounded-lg border text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+            value === 'light'
+              ? 'bg-[#FAF8F4] border-accent text-accent shadow-xs'
+              : 'bg-surface border-border-default text-primary hover:bg-surface-2'
+          }`}
+        >
+          <span className="w-2 h-2 rounded-full bg-[#FAF8F4] border border-border-emphasis" />
+          <span>Light Stationery</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => onChange('dark')}
+          className={`flex-1 h-9 rounded-lg border text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+            value === 'dark'
+              ? 'bg-[#1A1815] border-accent text-accent shadow-xs'
+              : 'bg-surface border-border-default text-primary hover:bg-surface-2'
+          }`}
+        >
+          <span className="w-2 h-2 rounded-full bg-[#1A1815] border border-white/10" />
+          <span>Dark Charcoal</span>
+        </button>
+      </div>
+    </div>
+  );
+}
+
 // -------------------------------------------------------------
 // 1. BUSINESS FORM
 // -------------------------------------------------------------
@@ -123,6 +163,7 @@ export function BusinessForm({ data, onChange }: FormProps<any>) {
 
   return (
     <div className="flex flex-col gap-5">
+      <CardThemeSelector value={data.theme} onChange={(theme) => updateField('theme', theme)} />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="text-[10px] font-semibold text-muted-text tracking-wider uppercase">Full Name</label>
@@ -365,6 +406,7 @@ export function MenuForm({ data, onChange }: FormProps<any>) {
 
   return (
     <div className="flex flex-col gap-5">
+      <CardThemeSelector value={data.theme} onChange={(theme) => updateField('theme', theme)} />
       {/* Menu Display Mode Segmented Toggle */}
       <div>
         <label className="text-[10px] font-semibold text-muted-text tracking-wider uppercase">Menu Display Mode</label>
@@ -603,6 +645,7 @@ export function EventForm({ data, onChange }: FormProps<any>) {
 
   return (
     <div className="flex flex-col gap-5">
+      <CardThemeSelector value={data.theme} onChange={(theme) => updateField('theme', theme)} />
       <div>
         <label className="text-[10px] font-semibold text-muted-text tracking-wider uppercase">Event Title</label>
         <input
@@ -743,6 +786,7 @@ export function LinkForm({ data, onChange }: FormProps<any>) {
 
   return (
     <div className="flex flex-col gap-5">
+      <CardThemeSelector value={data.theme} onChange={(theme) => updateField('theme', theme)} />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="text-[10px] font-semibold text-muted-text tracking-wider uppercase">Display Name / Title</label>
@@ -860,6 +904,7 @@ export function WifiForm({ data, onChange }: FormProps<any>) {
 
   return (
     <div className="flex flex-col gap-5">
+      <CardThemeSelector value={data.theme} onChange={(theme) => updateField('theme', theme)} />
       <div>
         <label className="text-[10px] font-semibold text-muted-text tracking-wider uppercase">Network SSID (Name)</label>
         <input
@@ -935,6 +980,7 @@ export function CatalogForm({ data, onChange }: FormProps<any>) {
 
   return (
     <div className="flex flex-col gap-5">
+      <CardThemeSelector value={data.theme} onChange={(theme) => updateField('theme', theme)} />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="text-[10px] font-semibold text-muted-text tracking-wider uppercase">Catalog Title</label>

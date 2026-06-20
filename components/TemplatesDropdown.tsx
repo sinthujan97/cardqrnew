@@ -39,31 +39,32 @@ export default function TemplatesDropdown() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-64 bg-surface paper-grain border border-border-default rounded-2xl shadow-md p-2 z-50 flex flex-col gap-0.5">
+        <div className="absolute right-0 mt-2 w-64 bg-surface paper-grain border border-border-default rounded-2xl shadow-[0_8px_30px_rgb(28,27,25,0.06)] p-2 z-50 flex flex-col gap-0.5">
           {MENU_ITEMS.map((item) => {
             const Icon = item.icon;
             return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setIsOpen(false)}
-                className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-surface-2 text-primary hover:text-accent transition-all group"
-              >
-                <div className="w-8 h-8 rounded-lg bg-surface-2 group-hover:bg-accent-dim text-muted-text group-hover:text-accent border border-border-default flex items-center justify-center shrink-0 transition-colors">
-                  <Icon className="w-4 h-4" />
-                </div>
-                <div className="flex flex-col min-w-0">
-                  <span className="text-xs font-bold leading-tight tracking-tight">{item.label}</span>
-                  <span className="text-[10px] text-muted-text leading-tight mt-0.5">{item.desc}</span>
-                </div>
-              </Link>
+              <div key={item.href} className="border-b border-border-default/30 last:border-b-0 py-0.5 first:pt-0 last:pb-0">
+                <Link
+                  href={item.href}
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-[#FAF8F4] text-primary hover:text-accent transition-all group border border-transparent hover:border-border-default/40"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-[#FAF8F4] text-muted-text group-hover:text-accent border border-border-default group-hover:border-accent flex items-center justify-center shrink-0 transition-all duration-200 group-hover:bg-accent-dim">
+                    <Icon className="w-4 h-4" />
+                  </div>
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-xs font-bold leading-tight tracking-tight text-[#1C1B19]">{item.label}</span>
+                    <span className="text-[10px] text-muted-text leading-[1.25] mt-0.5">{item.desc}</span>
+                  </div>
+                </Link>
+              </div>
             );
           })}
           
           <Link
             href="/create"
             onClick={() => setIsOpen(false)}
-            className="mt-1.5 pt-2 border-t border-border-default/50 text-center font-mono text-[9px] uppercase tracking-wider text-muted-text hover:text-accent font-bold block transition-all"
+            className="mt-1 pt-2 border-t border-border-default/50 text-center font-mono text-[9px] uppercase tracking-wider text-muted-text hover:text-accent font-bold block transition-all"
           >
             Browse All Templates
           </Link>

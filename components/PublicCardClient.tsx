@@ -12,6 +12,7 @@ interface PublicCardClientProps {
 
 export default function PublicCardClient({ card }: PublicCardClientProps) {
   const [isLoading, setIsLoading] = useState(true);
+  const isDark = card.data?.theme === 'dark';
 
   // Trigger quick skeleton loader simulation for smooth native app transition
   useEffect(() => {
@@ -23,18 +24,22 @@ export default function PublicCardClient({ card }: PublicCardClientProps) {
 
   // Viewfinder Corners Helper Component
   const Viewfinder = () => (
-    <div className="absolute inset-8 pointer-events-none z-0 border border-border-default rounded-2xl hidden md:block">
+    <div className={`absolute inset-8 pointer-events-none z-0 border rounded-2xl hidden md:block transition-colors duration-300 ${
+      isDark ? 'border-white/10' : 'border-border-default'
+    }`}>
       {/* Top Left Corner */}
-      <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-border-emphasis rounded-tl-xl" />
+      <div className={`absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 rounded-tl-xl transition-colors duration-300 ${isDark ? 'border-white/20' : 'border-border-emphasis'}`} />
       {/* Top Right Corner */}
-      <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-border-emphasis rounded-tr-xl" />
+      <div className={`absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 rounded-tr-xl transition-colors duration-300 ${isDark ? 'border-white/20' : 'border-border-emphasis'}`} />
       {/* Bottom Left Corner */}
-      <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-border-emphasis rounded-bl-xl" />
+      <div className={`absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 rounded-bl-xl transition-colors duration-300 ${isDark ? 'border-white/20' : 'border-border-emphasis'}`} />
       {/* Bottom Right Corner */}
-      <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-border-emphasis rounded-br-xl" />
+      <div className={`absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 rounded-br-xl transition-colors duration-300 ${isDark ? 'border-white/20' : 'border-border-emphasis'}`} />
       
       {/* Pulse recording indicator */}
-      <div className="absolute top-4 left-4 flex items-center gap-1.5 text-[9px] font-bold tracking-wider text-muted-text/60 uppercase font-mono">
+      <div className={`absolute top-4 left-4 flex items-center gap-1.5 text-[9px] font-bold tracking-wider uppercase font-mono transition-colors duration-300 ${
+        isDark ? 'text-white/40' : 'text-muted-text/60'
+      }`}>
         <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
         <span>Scan Mode</span>
       </div>
@@ -108,10 +113,22 @@ export default function PublicCardClient({ card }: PublicCardClientProps) {
   };
 
   return (
-    <div className="min-h-screen w-full bg-background flex items-center justify-center select-none relative overflow-hidden">
+    <div className={`min-h-screen w-full flex items-center justify-center select-none relative overflow-hidden transition-colors duration-300 ${
+      isDark ? 'bg-[#12110F]' : 'bg-background'
+    }`}>
       {/* Camera-style focus background details */}
-      <div className="absolute inset-0 bg-background bg-[radial-gradient(#E8E2D6_1.5px,transparent_1.5px)] bg-[size:24px_24px] opacity-70 pointer-events-none" />
-      <div className="absolute inset-0 bg-radial-gradient(ellipse_at_center,rgba(250,248,244,0.3)_0%,_#FAF8F4_80%) pointer-events-none" />
+      <div className={`absolute inset-0 bg-[radial-gradient(var(--bg-dot)_1.5px,transparent_1.5px)] bg-[size:24px_24px] opacity-70 pointer-events-none`}
+        style={{
+          '--bg-dot': isDark ? '#2E2B25' : '#E8E2D6'
+        } as React.CSSProperties}
+      />
+      <div className="absolute inset-0 pointer-events-none"
+        style={{
+          background: isDark 
+            ? 'radial-gradient(ellipse at center, rgba(26,24,21,0.3) 0%, #12110F 80%)'
+            : 'radial-gradient(ellipse at center, rgba(250,248,244,0.3) 0%, #FAF8F4 80%)'
+        }}
+      />
       
       <Viewfinder />
 
@@ -132,11 +149,13 @@ export default function PublicCardClient({ card }: PublicCardClientProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -30 }}
             transition={{ duration: 0.25 }}
-            className="w-[320px] h-[500px] bg-surface rounded-[24px] card-shadow z-10 flex flex-col border border-border-default overflow-hidden relative paper-grain"
+            className={`w-[320px] h-[500px] rounded-[24px] card-shadow z-10 flex flex-col border overflow-hidden relative paper-grain ${
+              isDark ? 'bg-[#1A1815] border-white/10' : 'bg-surface border-border-default'
+            }`}
           >
             {/* Native card handle spacer */}
             <div className="w-full flex justify-center py-3 shrink-0">
-              <div className="w-10 h-1.5 bg-border-default rounded-full" />
+              <div className={`w-10 h-1.5 rounded-full ${isDark ? 'bg-white/10' : 'bg-border-default'}`} />
             </div>
             <div className="flex-1 overflow-y-auto no-scrollbar">
               {renderSkeleton()}
@@ -152,7 +171,9 @@ export default function PublicCardClient({ card }: PublicCardClientProps) {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 0.6, y: 0 }}
               transition={{ delay: 0.8 }}
-              className="text-[9px] text-muted-text font-bold uppercase tracking-widest pointer-events-none text-center bg-surface border border-border-default px-3.5 py-1.5 rounded-full font-sans"
+              className={`text-[9px] font-bold uppercase tracking-widest pointer-events-none text-center border px-3.5 py-1.5 rounded-full font-sans ${
+                isDark ? 'bg-[#282520] border-white/10 text-[#A69F90]' : 'bg-surface border-border-default text-muted-text'
+              }`}
             >
               Premium Digital Experience
             </motion.div>

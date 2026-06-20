@@ -9,6 +9,7 @@ export interface BusinessCardData {
   email: string;
   whatsapp: string;
   socials: Array<{ label: 'Instagram' | 'LinkedIn' | 'Twitter' | 'GitHub' | 'YouTube' | 'TikTok' | 'Website'; url: string }>;
+  theme?: 'light' | 'dark';
 }
 
 export interface MenuItem {
@@ -34,6 +35,7 @@ export interface RestaurantMenuData {
   currency: string;
   categories: MenuCategory[];
   displayMode?: 'card' | 'list';
+  theme?: 'light' | 'dark';
 }
 
 
@@ -54,6 +56,7 @@ export interface EventCardData {
   rsvpButtonText: string;
   maxGuests?: number;
   rsvps: EventRsvp[];
+  theme?: 'light' | 'dark';
 }
 
 export interface LinkCardData {
@@ -61,12 +64,14 @@ export interface LinkCardData {
   profileImage: string;
   bio: string;
   links: Array<{ id: string; label: string; url: string; secondaryText?: string; theme?: 'default' | 'outline' | 'accent' }>;
+  theme?: 'light' | 'dark';
 }
 
 export interface WiFiCardData {
   networkName: string;
   password?: string;
   security: 'WPA' | 'WEP' | 'none';
+  theme?: 'light' | 'dark';
 }
 
 export interface CatalogProduct {
@@ -84,6 +89,7 @@ export interface ProductCatalogData {
   bannerImage: string;
   contactNumber?: string; // For auto-WhatsApp checkout inquiry
   products: CatalogProduct[];
+  theme?: 'light' | 'dark';
 }
 
 export const INITIAL_BUSINESS_DATA: BusinessCardData = {
@@ -94,6 +100,7 @@ export const INITIAL_BUSINESS_DATA: BusinessCardData = {
   phone: '+1 (555) 019-2834',
   email: 'charlotte@studioarcs.com',
   whatsapp: '+15550192834',
+  theme: 'light',
   socials: [
     { label: 'LinkedIn', url: 'https://linkedin.com' },
     { label: 'Instagram', url: 'https://instagram.com' },
@@ -108,6 +115,7 @@ export const INITIAL_MENU_DATA: RestaurantMenuData = {
   description: 'Contemporary Italian fare crafted from locally sourced organic ingredients.',
   currency: '$',
   displayMode: 'card',
+  theme: 'light',
   categories: [
     {
       id: 'cat-1',
@@ -165,6 +173,7 @@ export const INITIAL_EVENT_DATA: EventCardData = {
   description: 'Join us for an exclusive unveiling of Charlotte Dubois latest solo exhibition "Chroma and Space". Curated drinks, live chamber jazz, and conversations with the artist.',
   rsvpButtonText: 'Request Invitation / RSVP',
   maxGuests: 75,
+  theme: 'light',
   rsvps: []
 };
 
@@ -172,6 +181,7 @@ export const INITIAL_LINK_DATA: LinkCardData = {
   displayName: 'Charlotte Dubois',
   profileImage: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=300&h=300',
   bio: 'Principal Designer & Visual Artist | Sharing thoughts, projects, and design systems.',
+  theme: 'light',
   links: [
     {
       id: 'link-1',
@@ -200,7 +210,8 @@ export const INITIAL_LINK_DATA: LinkCardData = {
 export const INITIAL_WIFI_DATA: WiFiCardData = {
   networkName: 'StudioArcs_Guest_5G',
   password: 'spaceandchroma',
-  security: 'WPA'
+  security: 'WPA',
+  theme: 'light'
 };
 
 export const INITIAL_CATALOG_DATA: ProductCatalogData = {
@@ -208,6 +219,7 @@ export const INITIAL_CATALOG_DATA: ProductCatalogData = {
   catalogDescription: 'Exclusive, limited-edition screenprints signed by the artist. Worldwide shipping.',
   bannerImage: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&q=80&w=600&h=300',
   contactNumber: '15550192834',
+  theme: 'light',
   products: [
     {
       id: 'prod-1',
