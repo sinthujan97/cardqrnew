@@ -274,7 +274,7 @@ const INTRO_CONTENT: Record<TemplateType, { title: string; desc: string }> = {
         </section>
 
         {/* Right Side: Simulator Preview (Desktop only) */}
-        <section className="hidden md:flex w-[380px] border-l border-border-default bg-background flex-col justify-center py-6 shrink-0 h-full overflow-y-auto no-scrollbar">
+        <section className="hidden md:flex w-[380px] xl:w-[720px] border-l border-border-default bg-background flex-col xl:flex-row items-center xl:justify-center gap-12 py-8 px-6 shrink-0 h-full overflow-y-auto no-scrollbar">
           <PhoneMockup dark={false}>
             <div className="relative w-full h-full flex-1 flex flex-col items-center justify-center overflow-hidden bg-background">
               
@@ -303,6 +303,9 @@ const INTRO_CONTENT: Record<TemplateType, { title: string; desc: string }> = {
               </div>
             </div>
           </PhoneMockup>
+
+          {/* New vertical/skyscraper ad slot beside or stacked below */}
+          <AdSlot slotId={`${template}-workspace-sidebar`} variant="vertical" />
         </section>
       </main>
 
@@ -320,7 +323,7 @@ const INTRO_CONTENT: Record<TemplateType, { title: string; desc: string }> = {
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <div className="flex-1 overflow-y-auto pb-6">
+            <div className="flex-1 overflow-y-auto pb-6 flex flex-col items-center gap-12">
               <PhoneMockup animate={false} dark={false}>
                 <div className="relative w-full h-full flex-1 flex flex-col items-center justify-center overflow-hidden bg-background">
                   
@@ -344,6 +347,9 @@ const INTRO_CONTENT: Record<TemplateType, { title: string; desc: string }> = {
                   </div>
                 </div>
               </PhoneMockup>
+
+              {/* Stacked below mobile preview with clear spacing */}
+              <AdSlot slotId={`${template}-workspace-sidebar`} variant="vertical" />
             </div>
           </div>
         </div>

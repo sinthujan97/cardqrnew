@@ -43,5 +43,13 @@ export const ADSENSE_CONFIG = {
     'link-workspace': 'ad-unit-placeholder',
     'wifi-workspace': 'ad-unit-placeholder',
     'catalog-workspace': 'ad-unit-placeholder',
+
+    // Workspace Builder Creator Pages - Sidebar slots (vertical skyscraper)
+    'business-workspace-sidebar': 'ad-unit-placeholder',
+    'menu-workspace-sidebar': 'ad-unit-placeholder',
+    'event-workspace-sidebar': 'ad-unit-placeholder',
+    'link-workspace-sidebar': 'ad-unit-placeholder',
+    'wifi-workspace-sidebar': 'ad-unit-placeholder',
+    'catalog-workspace-sidebar': 'ad-unit-placeholder',
   } as Record<string, string>
 };

@@ -5,11 +5,47 @@ import { ADSENSE_CONFIG } from '@/lib/adConfig';
 
 interface AdSlotProps {
   slotId: string;
+  variant?: 'horizontal' | 'vertical';
 }
 
-export default function AdSlot({ slotId }: AdSlotProps) {
+export default function AdSlot({ slotId, variant = 'horizontal' }: AdSlotProps) {
   const adUnitCode = ADSENSE_CONFIG.AD_UNITS[slotId] || 'ad-unit-placeholder';
   const publisherId = ADSENSE_CONFIG.PUBLISHER_ID;
+
+  if (variant === 'vertical') {
+    return (
+      <div className="flex flex-col items-center gap-1.5 select-none shrink-0">
+        {/* Required by Google AdSense policy: Ads must be clearly labeled */}
+        <span className="text-[9px] font-mono tracking-widest text-muted-text/50 uppercase">
+          Advertisement
+        </span>
+
+        {/* Skyscraper container matching a standard 300x600 unit */}
+        <div className="w-[300px] min-h-[600px] bg-surface-2/30 paper-grain border border-border-default rounded-xl flex items-center justify-center relative overflow-hidden">
+          {/* TODO: Once approved, replace the placeholder below with the real AdSense <ins> tag:
+              
+              <ins className="adsbygoogle"
+                   style={{ display: 'block', width: '300px', height: '600px' }}
+                   data-ad-client={publisherId}
+                   data-ad-slot={adUnitCode}
+                   data-ad-format="vertical"
+                   data-full-width-responsive="false"></ins>
+              <script>
+                   (adsbygoogle = window.adsbygoogle || []).push({});
+              </script>
+          */}
+          <div className="flex flex-col items-center gap-1 text-center px-4">
+            <span className="text-[10px] font-mono text-muted-text/45 uppercase tracking-wider">
+              Ad space
+            </span>
+            <span className="text-[8px] font-mono text-muted-text/30">
+              ID: {slotId}
+            </span>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full flex flex-col items-center gap-1.5 py-8 select-none my-6">
