@@ -27,7 +27,7 @@ export default function Page() {
       heroTitle="Turn Your Business Card Into a Digital Profile"
       heroDescription="Let prospects save your contact card with a single scan. Add profile photos, jobs position, phone numbers, and instant WhatsApp chat links."
       ctaText="Create Business QR"
-      ctaLink="/create?t=business"
+      ctaLink="/create/business"
       tagline="Save Contacts Instantly with vCard"
       templateId="business-card"
     />

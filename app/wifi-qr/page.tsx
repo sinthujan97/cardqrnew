@@ -27,7 +27,7 @@ export default function Page() {
       heroTitle="Secure WiFi Access Cards with Instant Scans"
       heroDescription="Avoid spelling out complex router network passwords. Place a clean, stylized WiFi card on tables so guests can connect securely in seconds."
       ctaText="Create WiFi QR Card"
-      ctaLink="/create?t=wifi"
+      ctaLink="/create/wifi"
       tagline="Tap-to-connect wireless sharing"
       templateId="wifi-sharing"
     />

@@ -27,7 +27,7 @@ export default function Page() {
       heroTitle="Consolidate Your Bio Links on One Scan Card"
       heroDescription="Rebrand standard bio-links. Print a clean, minimalist QR code on your product tags, banners, or portfolios to direct clients to all your social coordinates."
       ctaText="Create Bio Link QR"
-      ctaLink="/create?t=link"
+      ctaLink="/create/link"
       tagline="Premium social link hub profiles"
       templateId="link-hub"
     />

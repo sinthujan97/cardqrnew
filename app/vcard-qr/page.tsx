@@ -27,7 +27,7 @@ export default function Page() {
       heroTitle="Share Your Contact Card Over vCard QR Codes"
       heroDescription="Give clients access to your complete contact details in one scan. Enable direct contact downloads to phonebooks without manual typing."
       ctaText="Create vCard QR"
-      ctaLink="/create?t=business"
+      ctaLink="/create/business"
       tagline="Mobile-Optimized contact sharing"
       templateId="business-card"
     />

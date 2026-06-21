@@ -27,7 +27,7 @@ export default function Page() {
       heroTitle="Showcase Shop Collections in a Clean QR Catalog"
       heroDescription="Rebrand physical catalogs. Add grids of product cards, item pricing tags, and enable instant mobile checkout workflows directly inside the page preview."
       ctaText="Create Catalog QR Card"
-      ctaLink="/create?t=catalog"
+      ctaLink="/create/catalog"
       tagline="Mobile-first product showcases"
       templateId="product-catalog"
     />

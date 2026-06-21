@@ -27,7 +27,7 @@ export default function Page() {
       heroTitle="Dynamic QR Codes That You Can Edit Anytime"
       heroDescription="Never reprint your QR codes again. Update target links, descriptions, passwords, or menu prices behind the scenes with our Secret Edit Links."
       ctaText="Create Dynamic QR"
-      ctaLink="/create"
+      ctaLink="/create/menu"
       tagline="Flexible, editable QR destinations"
       templateId="restaurant-menu"
     />

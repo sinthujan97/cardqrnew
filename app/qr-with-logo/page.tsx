@@ -27,7 +27,7 @@ export default function Page() {
       heroTitle="Create Custom QR Codes with Your Logo"
       heroDescription="Upload your business or profile logo directly inside your workspace. Rebrand your QR destination and stand out on packaging, menus, and flyers."
       ctaText="Generate Branded QR"
-      ctaLink="/create"
+      ctaLink="/create/business"
       tagline="Upload custom logo badges instantly"
       templateId="business-card"
     />

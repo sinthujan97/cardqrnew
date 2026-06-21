@@ -27,7 +27,7 @@ export default function Page() {
       heroTitle="Turn Your Table QR Codes Into Contactless Menus"
       heroDescription="Upgrade from boring, bloated PDF menus to interactive mobile card menus. Allow customers to browse starters, mains, and add items directly to a waiter order list."
       ctaText="Create Restaurant QR Menu"
-      ctaLink="/create?t=menu"
+      ctaLink="/create/menu"
       tagline="Editorial restaurant menu layouts"
       templateId="restaurant-menu"
     />

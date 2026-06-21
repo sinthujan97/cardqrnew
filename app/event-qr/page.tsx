@@ -27,7 +27,7 @@ export default function Page() {
       heroTitle="Share Event Cards with Custom RSVP Collections"
       heroDescription="Simplify event check-ins. Print QR codes on physical invitations to let guests RSVP, view dynamic calendar schedules, and get maps directions instantly."
       ctaText="Create Event QR Card"
-      ctaLink="/create?t=event"
+      ctaLink="/create/event"
       tagline="Prerendered event invitations"
       templateId="event-card"
     />
