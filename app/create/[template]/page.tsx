@@ -52,7 +52,22 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!meta) return {};
   return {
     title: meta.title,
-    description: meta.description
+    description: meta.description,
+    alternates: {
+      canonical: `https://getcardqr.com/create/${template}`
+    },
+    openGraph: {
+      title: meta.title,
+      description: meta.description,
+      url: `https://getcardqr.com/create/${template}`,
+      images: [{ url: 'https://getcardqr.com/og-image.png', width: 1200, height: 630 }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: meta.title,
+      description: meta.description,
+      images: ['https://getcardqr.com/og-image.png'],
+    }
   };
 }
 

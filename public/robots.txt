@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /edit/
+Disallow: /actions/
+Sitemap: https://getcardqr.com/sitemap.xml

@@ -56,10 +56,21 @@ export async function generateMetadata({ params }: PublicCardPageProps): Promise
   return {
     title,
     description: desc,
+    alternates: {
+      canonical: `https://getcardqr.com/c/${resolvedParams.slug}`
+    },
     openGraph: {
       title,
       description: desc,
-      type: 'website'
+      type: 'website',
+      url: `https://getcardqr.com/c/${resolvedParams.slug}`,
+      images: [{ url: 'https://getcardqr.com/og-image.png', width: 1200, height: 630 }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description: desc,
+      images: ['https://getcardqr.com/og-image.png'],
     }
   };
 }

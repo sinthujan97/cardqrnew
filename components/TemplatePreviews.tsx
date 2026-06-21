@@ -965,7 +965,7 @@ export function WifiPreview({ data }: { data: WiFiCardData }) {
         <div className={`rounded-2xl p-2.5 shadow-xl select-none ring-4 border bg-white ${
           isDark ? 'ring-accent/15 border-accent/30' : 'ring-accent/10 border-accent/20'
         }`}>
-          <CardCornerQR value={wifiValue} size={110} dark={true} />
+          <CardCornerQR value={wifiValue} size={110} dark={false} />
         </div>
       </div>
 

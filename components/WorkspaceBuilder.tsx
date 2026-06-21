@@ -8,6 +8,7 @@ import {
   Briefcase, Utensils, Calendar as CalendarIcon, Link2, Wifi, 
   ShoppingBag, Sparkles, Send, Check, AlertTriangle, X, ChevronRight, Eye, QrCode
 } from 'lucide-react';
+import Image from 'next/image';
 import { getInitialData, TemplateType } from '@/lib/templates';
 import { CardData } from '@/lib/db';
 import TemplateForm from '@/components/TemplateForms';
@@ -171,9 +172,7 @@ const INTRO_CONTENT: Record<TemplateType, { title: string; desc: string }> = {
       <header className="h-16 px-6 bg-surface/75 backdrop-blur-md border-b border-border-default flex items-center justify-between shrink-0 sticky top-0 z-40">
         <div className="flex items-center gap-2">
           {/* Styled Brand Logo Badge */}
-          <div className="w-8 h-8 rounded-xl bg-accent flex items-center justify-center shadow-sm">
-            <QrCode className="w-4.5 h-4.5 text-white" />
-          </div>
+          <Image src="/logo.svg" alt="CardQR" width={32} height={32} className="rounded-xl border border-border-default/50" />
           <Link href="/" className="text-base font-bold tracking-tight text-primary flex items-center gap-1 font-heading">
             Card<span className="text-muted-text font-normal">QR</span>
           </Link>

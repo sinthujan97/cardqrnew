@@ -12,6 +12,9 @@ import PhoneMockup from '@/components/PhoneMockup';
 import QRGenerator from '@/components/QRGenerator';
 import TemplatesDropdown from '@/components/TemplatesDropdown';
 import AdSlot from '@/components/AdSlot';
+import Image from 'next/image';
+import TemplatePreview from '@/components/TemplatePreviews';
+import { getInitialData, TemplateType } from '@/lib/templates';
 
 const getTemplateSEOPath = (id: string) => {
   switch (id) {
@@ -101,6 +104,7 @@ interface SEOLandingPageProps {
   bulletTitle?: string;
   bulletDescription?: string;
   templateId?: string;
+  showQRWidget?: boolean;
 }
 
 export default function SEOLandingPage({
@@ -112,13 +116,25 @@ export default function SEOLandingPage({
   tagline = "Create a beautiful QR destination in 60 seconds",
   bulletTitle = "Create and Deploy in Seconds",
   bulletDescription = "CardQR streamlines publication into 4 linear steps. No accounts required to get started.",
-  templateId
+  templateId,
+  showQRWidget = false
 }: SEOLandingPageProps) {
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
   const [inputUrl, setInputUrl] = useState(prefillUrl);
 
   const toggleFaq = (index: number) => {
     setActiveFaq(activeFaq === index ? null : index);
+  };
+
+  const getTemplateType = (): TemplateType => {
+    if (!templateId) return 'business';
+    if (templateId === 'business-card' || templateId === 'business') return 'business';
+    if (templateId === 'restaurant-menu' || templateId === 'menu') return 'menu';
+    if (templateId === 'event-card' || templateId === 'event') return 'event';
+    if (templateId === 'link-hub' || templateId === 'link') return 'link';
+    if (templateId === 'wifi-sharing' || templateId === 'wifi') return 'wifi';
+    if (templateId === 'product-catalog' || templateId === 'catalog') return 'catalog';
+    return 'business';
   };
 
   return (
@@ -128,9 +144,7 @@ export default function SEOLandingPage({
       <nav className="h-16 px-6 bg-surface/75 backdrop-blur-md border-b border-border-default flex items-center justify-between sticky top-0 z-50">
         <div className="flex items-center gap-2">
           {/* Styled Brand Logo Badge */}
-          <div className="w-8 h-8 rounded-xl bg-accent flex items-center justify-center shadow-sm">
-            <QrCode className="w-4.5 h-4.5 text-white" />
-          </div>
+          <Image src="/logo.svg" alt="CardQR" width={32} height={32} className="rounded-xl border border-border-default/50" />
           <Link href="/" className="text-base font-bold tracking-tight text-primary flex items-center gap-1 font-heading">
             Card<span className="text-muted-text font-normal">QR</span>
           </Link>
@@ -177,74 +191,73 @@ export default function SEOLandingPage({
 
         {/* Right Visual Column (Interactive Instant QR Generator Widget) */}
         <div className="flex-1 w-full max-w-md lg:max-w-none flex justify-center">
-          <div className="w-full max-w-sm bg-surface border border-border-default rounded-2xl p-6 shadow-sm relative overflow-hidden stamp-press">
-            
-            <div className="relative z-10 flex flex-col gap-4.5">
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-accent-dim text-accent flex items-center justify-center">
-                  <LinkIcon className="w-4 h-4" />
-                </div>
-                <h3 className="text-xs font-bold text-primary tracking-tight font-sans">Instant URL to QR Code</h3>
-              </div>
-
-              {/* URL Input */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] font-bold text-muted-text uppercase tracking-wider font-mono">Paste your Web URL</label>
+          {showQRWidget ? (
+            <div className="w-full max-w-sm bg-surface border border-border-default rounded-2xl p-6 shadow-sm relative overflow-hidden stamp-press">
+              <div className="relative z-10 flex flex-col gap-4.5">
                 <div className="flex items-center gap-2">
-                  <input
-                    type="text"
-                    value={inputUrl}
-                    onChange={(e) => setInputUrl(e.target.value)}
-                    placeholder="e.g. https://my-website.com"
-                    className="flex-1 h-9 px-3 text-xs border border-border-default rounded-xl focus:outline-none focus:border-accent font-medium text-primary bg-surface-2 shadow-2xs font-mono"
-                  />
-                  {inputUrl && (
-                    <button
-                      onClick={() => setInputUrl('')}
-                      className="h-9 px-2 text-[10px] font-bold border border-border-default rounded-xl hover:bg-surface-2/80 cursor-pointer text-muted-text bg-surface"
-                    >
-                      Clear
-                    </button>
+                  <div className="w-7 h-7 rounded-lg bg-accent-dim text-accent flex items-center justify-center">
+                    <LinkIcon className="w-4 h-4" />
+                  </div>
+                  <h3 className="text-xs font-bold text-primary tracking-tight font-sans">Instant URL to QR Code</h3>
+                </div>
+
+                {/* URL Input */}
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[10px] font-bold text-muted-text uppercase tracking-wider font-mono">Paste your Web URL</label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={inputUrl}
+                      onChange={(e) => setInputUrl(e.target.value)}
+                      placeholder="e.g. https://my-website.com"
+                      className="flex-1 h-9 px-3 text-xs border border-border-default rounded-xl focus:outline-none focus:border-accent font-medium text-primary bg-surface-2 shadow-2xs font-mono"
+                    />
+                    {inputUrl && (
+                      <button
+                        onClick={() => setInputUrl('')}
+                        className="h-9 px-2 text-[10px] font-bold border border-border-default rounded-xl hover:bg-surface-2/80 cursor-pointer text-muted-text bg-surface"
+                      >
+                        Clear
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Dynamic QR Output Zone */}
+                <div className="border-t border-border-default pt-4.5 flex flex-col items-center min-h-[220px] justify-center">
+                  {inputUrl.trim() ? (
+                    <div className="p-4 bg-white border border-border-default rounded-xl shadow-2xs relative">
+                      <div className="absolute top-1 left-1.5 text-[7px] font-mono text-muted-text/30 select-none">PROOF</div>
+                      <QRGenerator value={inputUrl.trim()} size={160} showDownloads={true} />
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center text-center text-muted-text/30 gap-3 py-6">
+                      <div className="w-14 h-14 rounded-full border border-dashed border-border-default flex items-center justify-center bg-surface-2">
+                        <QrCode className="w-6 h-6 text-muted-text/45" />
+                      </div>
+                      <div>
+                        <span className="text-[10px] font-bold text-muted-text uppercase block font-mono">QR Code Preview</span>
+                        <span className="text-[9px] text-muted-text/80 max-w-[200px] mt-1 block text-center">
+                          Enter any link or URL path above to generate a downloadable high-resolution code.
+                        </span>
+                      </div>
+                    </div>
                   )}
                 </div>
               </div>
-
-              {/* Dynamic QR Output Zone */}
-              <div className="border-t border-border-default pt-4.5 flex flex-col items-center min-h-[220px] justify-center">
-                {inputUrl.trim() ? (
-                  <div className="p-4 bg-white border border-border-default rounded-xl shadow-2xs relative">
-                    <div className="absolute top-1 left-1.5 text-[7px] font-mono text-muted-text/30 select-none">PROOF</div>
-                    <QRGenerator value={inputUrl.trim()} size={160} showDownloads={true} />
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center text-center text-muted-text/30 gap-3 py-6">
-                    <div className="w-14 h-14 rounded-full border border-dashed border-border-default flex items-center justify-center bg-surface-2">
-                      <QrCode className="w-6 h-6 text-muted-text/45" />
-                    </div>
-                    <div>
-                      <span className="text-[10px] font-bold text-muted-text uppercase block font-mono">QR Code Preview</span>
-                      <span className="text-[9px] text-muted-text/80 max-w-[200px] mt-1 block text-center">
-                        Enter any link or URL path above to generate a downloadable high-resolution code.
-                      </span>
-                    </div>
-                  </div>
-                )}
-              </div>
             </div>
-          </div>
+          ) : (
+            <PhoneMockup animate={true} dark={false} className="w-full">
+              <TemplatePreview type={getTemplateType()} data={{ ...getInitialData(getTemplateType()), theme: 'light' }} slug="preview" />
+            </PhoneMockup>
+          )}
         </div>
 
       </section>
 
       {/* 1b. HERO AD SLOT */}
-      <div className="w-full flex justify-center pb-4 px-6 max-w-7xl mx-auto select-none">
-        {templateId ? (
-          <AdSlot slotId={`${templateId}-intro`} />
-        ) : (
-          <div className="w-full max-w-[728px] h-[90px] border border-border-default bg-surface-2/50 rounded-xl flex items-center justify-center text-[10px] text-muted-text font-mono tracking-wider">
-            ADVERTISEMENT
-          </div>
-        )}
+      <div className="w-full flex justify-center px-6 max-w-7xl mx-auto select-none">
+        <AdSlot slotId={templateId ? `${templateId}-intro` : "landing-intro"} />
       </div>
 
       {/* 2. TEMPLATE SHOWCASE */}
@@ -298,10 +311,8 @@ export default function SEOLandingPage({
       </section>
 
       {/* 2b. IN-CONTENT AD SLOT */}
-      <div className="w-full flex justify-center py-6 px-6 max-w-7xl mx-auto select-none">
-        <div className="w-full max-w-[728px] h-[90px] border border-border-default bg-surface-2/50 rounded-xl flex items-center justify-center text-[10px] text-muted-text font-mono tracking-wider">
-          ADVERTISEMENT
-        </div>
+      <div className="w-full flex justify-center px-6 max-w-7xl mx-auto select-none">
+        <AdSlot slotId={templateId ? `${templateId}-mid` : "landing-mid"} />
       </div>
 
       {/* 3. HOW IT WORKS */}

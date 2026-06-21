@@ -3,7 +3,22 @@ import SEOLandingPage from '@/components/SEOLandingPage';
 
 export const metadata: Metadata = {
   title: "Event QR Code Generator - Share Invites and RSVPs | CardQR",
-  description: "Create custom event QR codes linking to maps navigation, calendar schedules, agenda descriptors, and immediate RSVP signups."
+  description: "Create custom event QR codes linking to maps navigation, calendar schedules, agenda descriptors, and immediate RSVP signups.",
+  alternates: {
+    canonical: "https://getcardqr.com/event-qr"
+  },
+  openGraph: {
+    title: "Event QR Code Generator - Share Invites and RSVPs | CardQR",
+    description: "Create custom event QR codes linking to maps navigation, calendar schedules, agenda descriptors, and immediate RSVP signups.",
+    url: "https://getcardqr.com/event-qr",
+    images: [{ url: 'https://getcardqr.com/og-image.png', width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: "Event QR Code Generator - Share Invites and RSVPs | CardQR",
+    description: "Create custom event QR codes linking to maps navigation, calendar schedules, agenda descriptors, and immediate RSVP signups.",
+    images: ['https://getcardqr.com/og-image.png'],
+  }
 };
 
 export default function Page() {
@@ -13,7 +28,6 @@ export default function Page() {
       heroDescription="Simplify event check-ins. Print QR codes on physical invitations to let guests RSVP, view dynamic calendar schedules, and get maps directions instantly."
       ctaText="Create Event QR Card"
       ctaLink="/create?t=event"
-      prefillUrl="https://cardqr.com/c/exhibition-rsvp"
       tagline="Prerendered event invitations"
       templateId="event-card"
     />

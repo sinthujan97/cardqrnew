@@ -13,6 +13,7 @@ import QRGenerator from '@/components/QRGenerator';
 import TemplatesDropdown from '@/components/TemplatesDropdown';
 import TemplatePreview from '@/components/TemplatePreviews';
 import AdSlot from '@/components/AdSlot';
+import Image from 'next/image';
 import {
   INITIAL_BUSINESS_DATA,
   INITIAL_MENU_DATA,
@@ -218,9 +219,7 @@ export default function LandingPage() {
       <nav className="h-16 px-6 bg-surface/75 backdrop-blur-md border-b border-border-default flex items-center justify-between sticky top-0 z-50">
         <div className="flex items-center gap-2">
           {/* Styled Brand Logo Badge */}
-          <div className="w-8 h-8 rounded-xl bg-accent flex items-center justify-center shadow-sm">
-            <QrCode className="w-4.5 h-4.5 text-white" />
-          </div>
+          <Image src="/logo.svg" alt="CardQR" width={32} height={32} className="rounded-xl border border-border-default/50" />
           <Link href="/" className="text-base font-bold tracking-tight text-primary flex items-center gap-1 font-heading">
             Card<span className="text-muted-text font-normal">QR</span>
           </Link>
