@@ -181,7 +181,7 @@ export default async function Page({ params }: Props) {
       {/* Navbar */}
       <nav className="h-16 px-6 bg-surface/75 backdrop-blur-md border-b border-border-default flex items-center justify-between sticky top-0 z-50">
         <div className="flex items-center gap-2">
-          <Image src="/logo.svg" alt="CardQR" width={32} height={32} className="rounded-xl border border-border-default/50" />
+          <Image src="/logo.svg" alt="CardQR" width={32} height={32} priority className="rounded-xl border border-border-default/50" />
           <Link href="/" className="text-base font-bold tracking-tight text-primary flex items-center gap-1 font-heading">
             Card<span className="text-muted-text font-normal">QR</span>
           </Link>

@@ -172,7 +172,7 @@ const INTRO_CONTENT: Record<TemplateType, { title: string; desc: string }> = {
       <header className="h-16 px-6 bg-surface/75 backdrop-blur-md border-b border-border-default flex items-center justify-between shrink-0 sticky top-0 z-40">
         <div className="flex items-center gap-2">
           {/* Styled Brand Logo Badge */}
-          <Image src="/logo.svg" alt="CardQR" width={32} height={32} className="rounded-xl border border-border-default/50" />
+          <Image src="/logo.svg" alt="CardQR" width={32} height={32} priority className="rounded-xl border border-border-default/50" />
           <Link href="/" className="text-base font-bold tracking-tight text-primary flex items-center gap-1 font-heading">
             Card<span className="text-muted-text font-normal">QR</span>
           </Link>
@@ -187,6 +187,7 @@ const INTRO_CONTENT: Record<TemplateType, { title: string; desc: string }> = {
           {/* Mobile Preview Trigger */}
           <button
             onClick={() => setShowMobilePreview(true)}
+            aria-label="Open mobile card preview"
             className="md:hidden h-9 px-3 border border-border-default rounded-xl text-xs font-bold bg-surface hover:bg-surface-2 flex items-center gap-1.5 cursor-pointer text-primary"
           >
             <Eye className="w-3.5 h-3.5" /> Preview
@@ -317,6 +318,7 @@ const INTRO_CONTENT: Record<TemplateType, { title: string; desc: string }> = {
               <span className="text-xs font-bold text-primary">Live Mobile Simulator</span>
               <button 
                 onClick={() => setShowMobilePreview(false)}
+                aria-label="Close mobile preview"
                 className="w-7 h-7 rounded-full bg-surface-2 flex items-center justify-center text-primary cursor-pointer"
               >
                 <X className="w-4 h-4" />

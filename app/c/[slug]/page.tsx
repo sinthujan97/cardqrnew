@@ -56,6 +56,10 @@ export async function generateMetadata({ params }: PublicCardPageProps): Promise
   return {
     title,
     description: desc,
+    // Prevent the workspace preview page from being indexed
+    ...(resolvedParams.slug === 'preview' && {
+      robots: { index: false, follow: false },
+    }),
     alternates: {
       canonical: `https://getcardqr.com/c/${resolvedParams.slug}`
     },

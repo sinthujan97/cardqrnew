@@ -10,33 +10,43 @@ export const ADSENSE_CONFIG = {
   // TODO: Replace with real AdSense publisher ID once approved
   PUBLISHER_ID: 'ca-pub-placeholder',
   
-  // 12 slot IDs (6 pages x 2 slots per page)
   AD_UNITS: {
-    // Business Card Template Page (/business-card-qr)
-    'business-card-intro': 'ad-unit-placeholder', // Slot A (after intro)
-    'business-card-lower': 'ad-unit-placeholder', // Slot B (before FAQ / lower page)
+    // ── Business Card Template Page (/business-card-qr) ──────────────────────
+    'business-card-intro': 'ad-unit-placeholder', // Slot A — after hero
+    'business-card-mid': 'ad-unit-placeholder',   // Slot B — between template cards & steps
+    'business-card-lower': 'ad-unit-placeholder', // Slot C — before FAQ
 
-    // Restaurant Menu Template Page (/restaurant-menu-qr)
-    'restaurant-menu-intro': 'ad-unit-placeholder', // Slot A (after intro)
-    'restaurant-menu-lower': 'ad-unit-placeholder', // Slot B (before FAQ / lower page)
+    // ── Restaurant Menu Template Page (/restaurant-menu-qr) ──────────────────
+    'restaurant-menu-intro': 'ad-unit-placeholder',
+    'restaurant-menu-mid': 'ad-unit-placeholder',
+    'restaurant-menu-lower': 'ad-unit-placeholder',
 
-    // Event Template Page (/event-qr)
-    'event-card-intro': 'ad-unit-placeholder', // Slot A (after intro)
-    'event-card-lower': 'ad-unit-placeholder', // Slot B (before FAQ / lower page)
+    // ── Event Template Page (/event-qr) ──────────────────────────────────────
+    'event-card-intro': 'ad-unit-placeholder',
+    'event-card-mid': 'ad-unit-placeholder',
+    'event-card-lower': 'ad-unit-placeholder',
 
-    // Link Hub Template Page (/link-hub-qr)
-    'link-hub-intro': 'ad-unit-placeholder', // Slot A (after intro)
-    'link-hub-lower': 'ad-unit-placeholder', // Slot B (before FAQ / lower page)
+    // ── Link Hub Template Page (/link-hub-qr) ────────────────────────────────
+    'link-hub-intro': 'ad-unit-placeholder',
+    'link-hub-mid': 'ad-unit-placeholder',
+    'link-hub-lower': 'ad-unit-placeholder',
 
-    // WiFi Sharing Template Page (/wifi-qr)
-    'wifi-sharing-intro': 'ad-unit-placeholder', // Slot A (after intro)
-    'wifi-sharing-lower': 'ad-unit-placeholder', // Slot B (before FAQ / lower page)
+    // ── WiFi Sharing Template Page (/wifi-qr) ────────────────────────────────
+    'wifi-sharing-intro': 'ad-unit-placeholder',
+    'wifi-sharing-mid': 'ad-unit-placeholder',
+    'wifi-sharing-lower': 'ad-unit-placeholder',
 
-    // Product Catalog Template Page (/product-catalog-qr)
-    'product-catalog-intro': 'ad-unit-placeholder', // Slot A (after intro)
-    'product-catalog-lower': 'ad-unit-placeholder', // Slot B (before FAQ / lower page)
+    // ── Product Catalog Template Page (/product-catalog-qr) ─────────────────
+    'product-catalog-intro': 'ad-unit-placeholder',
+    'product-catalog-mid': 'ad-unit-placeholder',
+    'product-catalog-lower': 'ad-unit-placeholder',
 
-    // Workspace Builder Creator Pages (/create?t=X)
+    // ── Generic SEO landing pages without templateId ─────────────────────────
+    // Used by /url-to-qr, /vcard-qr, /qr-with-logo, /dynamic-qr-code
+    'landing-intro': 'ad-unit-placeholder',
+    'landing-mid': 'ad-unit-placeholder',
+
+    // ── Workspace Builder — inline slot (shown above form) ───────────────────
     'business-workspace': 'ad-unit-placeholder',
     'menu-workspace': 'ad-unit-placeholder',
     'event-workspace': 'ad-unit-placeholder',
@@ -44,7 +54,7 @@ export const ADSENSE_CONFIG = {
     'wifi-workspace': 'ad-unit-placeholder',
     'catalog-workspace': 'ad-unit-placeholder',
 
-    // Workspace Builder Creator Pages - Sidebar slots (vertical skyscraper)
+    // ── Workspace Builder — vertical sidebar slot (beside preview) ───────────
     'business-workspace-sidebar': 'ad-unit-placeholder',
     'menu-workspace-sidebar': 'ad-unit-placeholder',
     'event-workspace-sidebar': 'ad-unit-placeholder',
@@ -52,7 +62,7 @@ export const ADSENSE_CONFIG = {
     'wifi-workspace-sidebar': 'ad-unit-placeholder',
     'catalog-workspace-sidebar': 'ad-unit-placeholder',
 
-    // Homepage Ad Slots
+    // ── Homepage ──────────────────────────────────────────────────────────────
     'homepage-post-hero': 'ad-unit-placeholder',
     'homepage-post-steps': 'ad-unit-placeholder',
     'homepage-pre-faq': 'ad-unit-placeholder',

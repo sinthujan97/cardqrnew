@@ -219,7 +219,7 @@ export default function LandingPage() {
       <nav className="h-16 px-6 bg-surface/75 backdrop-blur-md border-b border-border-default flex items-center justify-between sticky top-0 z-50">
         <div className="flex items-center gap-2">
           {/* Styled Brand Logo Badge */}
-          <Image src="/logo.svg" alt="CardQR" width={32} height={32} className="rounded-xl border border-border-default/50" />
+          <Image src="/logo.svg" alt="CardQR" width={32} height={32} priority className="rounded-xl border border-border-default/50" />
           <Link href="/" className="text-base font-bold tracking-tight text-primary flex items-center gap-1 font-heading">
             Card<span className="text-muted-text font-normal">QR</span>
           </Link>
@@ -530,6 +530,8 @@ export default function LandingPage() {
                 <div key={idx} className="border border-border-default rounded-2xl overflow-hidden bg-surface shadow-2xs">
                   <button
                     onClick={() => toggleFaq(idx)}
+                    aria-expanded={isOpen}
+                    aria-controls={`faq-answer-${idx}`}
                     className="w-full px-5 py-4 flex items-center justify-between text-left transition-all hover:bg-surface-2/80 cursor-pointer"
                   >
                     <span className="text-xs font-bold text-primary">{faq.question}</span>
@@ -537,7 +539,7 @@ export default function LandingPage() {
                   </button>
                   
                   {isOpen && (
-                    <div className="px-5 pb-5 pt-1 text-xs text-muted-text leading-relaxed font-medium">
+                    <div id={`faq-answer-${idx}`} role="region" className="px-5 pb-5 pt-1 text-xs text-muted-text leading-relaxed font-medium">
                       {faq.answer}
                     </div>
                   )}

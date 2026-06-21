@@ -14,7 +14,7 @@ export default function AdSlot({ slotId, variant = 'horizontal' }: AdSlotProps) 
 
   if (variant === 'vertical') {
     return (
-      <div className="flex flex-col items-center gap-1.5 select-none shrink-0">
+      <div className="flex flex-col items-center gap-1.5 select-none shrink-0" aria-hidden="true">
         {/* Required by Google AdSense policy: Ads must be clearly labeled */}
         <span className="text-[9px] font-mono tracking-widest text-muted-text/50 uppercase">
           Advertisement
@@ -48,7 +48,7 @@ export default function AdSlot({ slotId, variant = 'horizontal' }: AdSlotProps) 
   }
 
   return (
-    <div className="w-full flex flex-col items-center gap-1.5 py-8 select-none my-6">
+    <div className="w-full flex flex-col items-center gap-1.5 py-8 select-none my-6" aria-hidden="true">
       {/* Required by Google AdSense policy: Ads must be clearly labeled */}
       <span className="text-[9px] font-mono tracking-widest text-muted-text/50 uppercase">
         Advertisement
