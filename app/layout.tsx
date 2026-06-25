@@ -89,6 +89,11 @@ export const metadata: Metadata = {
       "Create premium, native-feeling mobile cards linked to custom QR codes in seconds.",
     images: ["https://getcardqr.com/og-image.png"],
   },
+  verification: {
+    other: {
+      "google-adsense-account": "ca-pub-2616045881002465",
+    },
+  },
 };
 
 export const viewport: Viewport = {
