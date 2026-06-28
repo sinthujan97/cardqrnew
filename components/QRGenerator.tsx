@@ -86,11 +86,11 @@ export default function QRGenerator({ value, size = 200, showDownloads = true }:
           {/* Quick Copy Link */}
           <button
             onClick={copyLink}
-            className="w-full h-10 px-4 flex items-center justify-between text-xs font-medium bg-[#F4F4F5] hover:bg-[#E4E4E7] active:bg-[#D4D4D8] text-primary rounded-xl transition-all"
+            className="w-full h-10 px-4 flex items-center justify-between text-xs font-medium bg-surface-2 hover:bg-border-default active:bg-border-emphasis text-primary rounded-xl transition-all"
           >
             <span className="truncate mr-4">{value}</span>
             {copied ? (
-              <span className="flex items-center gap-1 text-[#10B981] font-semibold shrink-0">
+              <span className="flex items-center gap-1 text-success font-semibold shrink-0">
                 <Check className="w-3.5 h-3.5" /> Copied
               </span>
             ) : (
@@ -102,13 +102,13 @@ export default function QRGenerator({ value, size = 200, showDownloads = true }:
           <div className="grid grid-cols-2 gap-2">
             <button
               onClick={downloadPNG}
-              className="h-10 text-xs font-semibold bg-primary hover:bg-accent active:bg-black text-white rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+              className="h-10 text-xs font-semibold bg-primary hover:bg-accent active:bg-accent text-background rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer"
             >
               <Download className="w-3.5 h-3.5" /> PNG
             </button>
             <button
               onClick={downloadSVG}
-              className="h-10 text-xs font-semibold bg-white hover:bg-[#F4F4F5] active:bg-[#E4E4E7] border border-black/10 text-primary rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+              className="h-10 text-xs font-semibold bg-surface hover:bg-surface-2 active:bg-border-default border border-border-default text-primary rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer"
             >
               <Download className="w-3.5 h-3.5" /> SVG
             </button>

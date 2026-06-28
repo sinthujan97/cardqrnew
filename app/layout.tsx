@@ -111,7 +111,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${fraunces.variable} ${outfit.variable} ${jetbrainsMono.variable} h-full bg-[#FAF8F4] antialiased`}
+      className={`${fraunces.variable} ${outfit.variable} ${jetbrainsMono.variable} h-full bg-background antialiased`}
       suppressHydrationWarning
     >
       <head>
@@ -129,6 +129,14 @@ export default function RootLayout({
         className="min-h-full flex flex-col selection:bg-accent selection:text-white"
         suppressHydrationWarning
       >
+        {/* Theme boot script — applies saved/system theme before paint to avoid flash */}
+        <Script
+          id="theme-boot"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('cardqr-theme');if(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark');}}catch(e){}})();`,
+          }}
+        />
         <Script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2616045881002465"

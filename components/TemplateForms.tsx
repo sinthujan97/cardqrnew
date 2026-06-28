@@ -522,7 +522,7 @@ export function MenuForm({ data, onChange }: FormProps<any>) {
 
         <div className="flex flex-col gap-6">
           {data.categories?.map((cat: any) => (
-            <div key={cat.id} className="p-5 rounded-2xl border border-border-default bg-[#FAF8F4]/40 text-primary">
+            <div key={cat.id} className="p-5 rounded-2xl border border-border-default bg-surface-2/40 text-primary">
               <div className="flex gap-2 items-center justify-between mb-3">
                 <input
                   type="text"

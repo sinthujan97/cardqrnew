@@ -188,7 +188,7 @@ export function BusinessPreview({ data, slug = '' }: { data: BusinessCardData; s
               transform: 'translateZ(20px) translateX(calc(var(--tilt-y) * -1.5px)) translateY(calc(var(--tilt-x) * -1.5px))',
             }}
           >
-            <img src={data.photo} alt={data.name} className="w-full h-full object-cover" />
+            <img crossOrigin="anonymous" src={data.photo} alt={data.name} className="w-full h-full object-cover" />
           </div>
         )}
 
@@ -377,7 +377,7 @@ export function MenuPreview({ data, slug = '' }: { data: RestaurantMenuData; slu
       {/* 1. Cover Image Banner */}
       <div className={`relative w-full h-24 shrink-0 border-b ${isDark ? 'bg-black/40 border-white/10' : 'bg-surface border-border-default'}`}>
         {data.coverImage ? (
-          <img src={data.coverImage} alt="Cover" className="w-full h-full object-cover" />
+          <img crossOrigin="anonymous" src={data.coverImage} alt="Cover" className="w-full h-full object-cover" />
         ) : (
           <div className={`w-full h-full ${isDark ? 'bg-[#1A1815] opacity-80' : 'bg-[#FAF8F4]'} paper-grain`} />
         )}
@@ -388,7 +388,7 @@ export function MenuPreview({ data, slug = '' }: { data: RestaurantMenuData; slu
         <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 z-20">
           {data.logo ? (
             <div className={`w-12 h-12 rounded-full overflow-hidden border-2 bg-zinc-900 shadow-md ${isDark ? 'border-[#1A1815]' : 'border-[#FAF8F4]'}`}>
-              <img src={data.logo} alt="Logo" className="w-full h-full object-cover" />
+              <img crossOrigin="anonymous" src={data.logo} alt="Logo" className="w-full h-full object-cover" />
             </div>
           ) : (
             <div className={`w-12 h-12 rounded-full border-2 flex items-center justify-center font-bold text-xs shadow-md ${
@@ -544,7 +544,7 @@ export function MenuPreview({ data, slug = '' }: { data: RestaurantMenuData; slu
                         isDark ? 'bg-[#1A1815] border-white/10' : 'bg-[#FAF8F4] border-border-default'
                       }`}>
                         {dish.image ? (
-                          <img src={dish.image} alt={dish.name} className="w-full h-full object-cover" />
+                          <img crossOrigin="anonymous" src={dish.image} alt={dish.name} className="w-full h-full object-cover" />
                         ) : (
                           <div className={`w-full h-full flex items-center justify-center ${isDark ? 'text-white/10' : 'text-muted-text/20'}`}>
                             <ShoppingBag className="w-5 h-5" />
@@ -755,7 +755,7 @@ export function EventPreview({ data, slug = '' }: { data: EventCardData; slug?: 
         isDark ? 'bg-[#282520] border-white/15' : 'bg-surface border-border-default'
       }`}>
         {data.banner ? (
-          <img src={data.banner} alt={data.title} className="w-full h-full object-cover" />
+          <img crossOrigin="anonymous" src={data.banner} alt={data.title} className="w-full h-full object-cover" />
         ) : (
           <div className={`w-full h-full flex items-center justify-center ${isDark ? 'text-white/10' : 'text-muted-text/20'}`}>
             <Sparkles className="w-8 h-8" />
@@ -789,9 +789,9 @@ export function EventPreview({ data, slug = '' }: { data: EventCardData; slug?: 
           isDark ? 'bg-[#282520] border-white/15' : 'bg-surface border-border-default'
         }`}>
           <div className="flex -space-x-2.5 overflow-hidden">
-            <img className={`inline-block h-5.5 w-5.5 rounded-full ring-2 ${isDark ? 'ring-[#1A1815]' : 'ring-[#FAF8F4]'}`} src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=60&h=60" alt="Lineup" />
-            <img className={`inline-block h-5.5 w-5.5 rounded-full ring-2 ${isDark ? 'ring-[#1A1815]' : 'ring-[#FAF8F4]'}`} src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=60&h=60" alt="Lineup" />
-            <img className={`inline-block h-5.5 w-5.5 rounded-full ring-2 ${isDark ? 'ring-[#1A1815]' : 'ring-[#FAF8F4]'}`} src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=60&h=60" alt="Lineup" />
+            <img crossOrigin="anonymous" className={`inline-block h-5.5 w-5.5 rounded-full ring-2 ${isDark ? 'ring-[#1A1815]' : 'ring-[#FAF8F4]'}`} src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=60&h=60" alt="Lineup" />
+            <img crossOrigin="anonymous" className={`inline-block h-5.5 w-5.5 rounded-full ring-2 ${isDark ? 'ring-[#1A1815]' : 'ring-[#FAF8F4]'}`} src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=60&h=60" alt="Lineup" />
+            <img crossOrigin="anonymous" className={`inline-block h-5.5 w-5.5 rounded-full ring-2 ${isDark ? 'ring-[#1A1815]' : 'ring-[#FAF8F4]'}`} src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=60&h=60" alt="Lineup" />
           </div>
           <span className={`text-[8px] font-bold ${isDark ? 'text-[#A69F90]' : 'text-muted-text'}`}>Guests & Artist Lineup</span>
         </div>
@@ -836,7 +836,7 @@ export function LinkPreview({ data, slug = '' }: { data: LinkCardData; slug?: st
           }}
         >
           {data.profileImage ? (
-            <img src={data.profileImage} alt={data.displayName} className="w-full h-full object-cover rounded-full" />
+            <img crossOrigin="anonymous" src={data.profileImage} alt={data.displayName} className="w-full h-full object-cover rounded-full" />
           ) : (
             <div className="w-full h-full bg-accent text-white flex items-center justify-center text-xl font-bold rounded-full font-serif">
               {data.displayName ? data.displayName.charAt(0) : 'C'}
@@ -1068,7 +1068,7 @@ export function CatalogPreview({ data, slug = '' }: { data: ProductCatalogData; 
                 }}
               >
                 {currentProduct.image ? (
-                  <img src={currentProduct.image} alt={currentProduct.name} className="w-full h-full object-cover" />
+                  <img crossOrigin="anonymous" src={currentProduct.image} alt={currentProduct.name} className="w-full h-full object-cover" />
                 ) : (
                   <div className={`w-full h-full flex items-center justify-center ${isDark ? 'text-white/10' : 'text-muted-text/20'}`}>
                     <ShoppingBag className="w-8 h-8" />

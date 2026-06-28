@@ -2,9 +2,8 @@ import fs from 'fs';
 import path from 'path';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, QrCode } from 'lucide-react';
-import TemplatesDropdown from '@/components/TemplatesDropdown';
-import Image from 'next/image';
+import { ArrowLeft } from 'lucide-react';
+import SiteNav from '@/components/SiteNav';
 
 // Custom markdown compiler to render HTML matching the stationery theme
 function compileMarkdown(markdown: string): string {
@@ -177,26 +176,8 @@ export default async function Page({ params }: Props) {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#FAF8F4] text-primary selection:bg-accent selection:text-white">
-      {/* Navbar */}
-      <nav className="h-16 px-6 bg-surface/75 backdrop-blur-md border-b border-border-default flex items-center justify-between sticky top-0 z-50">
-        <div className="flex items-center gap-2">
-          <Image src="/logo.svg" alt="CardQR" width={32} height={32} priority className="rounded-xl border border-border-default/50" />
-          <Link href="/" className="text-base font-bold tracking-tight text-primary flex items-center gap-1 font-heading">
-            Card<span className="text-muted-text font-normal">QR</span>
-          </Link>
-        </div>
-        
-        <div className="flex items-center gap-3">
-          <TemplatesDropdown />
-          <Link 
-            href="/create"
-            className="h-9 px-4 bg-accent hover:bg-accent/95 text-white text-xs font-bold rounded-xl flex items-center justify-center transition-all cursor-pointer shadow-xs"
-          >
-            Create Your Card
-          </Link>
-        </div>
-      </nav>
+    <div className="flex flex-col min-h-screen bg-background text-primary selection:bg-accent selection:text-white">
+      <SiteNav />
 
       {/* Main Container */}
       <main className="flex-1 py-12 md:py-16 max-w-3xl mx-auto w-full px-6 flex flex-col gap-6">

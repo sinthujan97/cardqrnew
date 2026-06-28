@@ -8,12 +8,10 @@ import {
   ArrowRight, ShieldCheck, RefreshCw, Zap, Sliders, Check, 
   ChevronDown, Sparkles, Smartphone, QrCode, Coffee, Link as LinkIcon
 } from 'lucide-react';
-import PhoneMockup from '@/components/PhoneMockup';
 import QRGenerator from '@/components/QRGenerator';
-import TemplatesDropdown from '@/components/TemplatesDropdown';
 import TemplatePreview from '@/components/TemplatePreviews';
 import AdSlot from '@/components/AdSlot';
-import Image from 'next/image';
+import SiteNav from '@/components/SiteNav';
 import {
   INITIAL_BUSINESS_DATA,
   INITIAL_MENU_DATA,
@@ -136,9 +134,9 @@ function LiveCardPreview({ id }: { id: string }) {
   // Render a clean placeholder/skeleton when not mounted to ensure CLS = 0
   if (!mounted) {
     return (
-      <div className="w-full flex justify-center items-center py-4 bg-[#FAF8F4]/50 border border-[#E8E2D6]/60 rounded-xl min-h-[340px]">
-        <div 
-          className="relative shadow-sm border border-[#E8E2D6] rounded-2xl overflow-hidden bg-[#FAF8F4] paper-grain animate-pulse"
+      <div className="w-full flex justify-center items-center py-4 bg-surface-2/50 border border-border-default/60 rounded-xl min-h-[340px]">
+        <div
+          className="relative shadow-sm border border-border-default rounded-2xl overflow-hidden bg-surface paper-grain animate-pulse"
           style={{ width: '192px', height: '300px' }}
         >
           {/* Skeleton representation of a card */}
@@ -163,9 +161,9 @@ function LiveCardPreview({ id }: { id: string }) {
   }
 
   return (
-    <div className="w-full flex justify-center items-center py-4 bg-[#FAF8F4]/50 border border-[#E8E2D6]/60 rounded-xl overflow-hidden relative min-h-[340px]">
-      <div 
-        className="relative shadow-sm border border-[#E8E2D6] rounded-2xl overflow-hidden pointer-events-none select-none bg-[#FAF8F4] paper-grain"
+    <div className="w-full flex justify-center items-center py-4 bg-surface-2/50 border border-border-default/60 rounded-xl overflow-hidden relative min-h-[340px]">
+      <div
+        className="relative shadow-sm border border-border-default rounded-2xl overflow-hidden pointer-events-none select-none bg-surface paper-grain"
         style={{
           width: '192px',
           height: '300px',
@@ -215,26 +213,7 @@ export default function LandingPage() {
   return (
     <div className="flex flex-col flex-1 bg-background font-sans selection:bg-accent selection:text-white text-primary">
       
-      {/* Sticky Premium Navbar with Brand Logo */}
-      <nav className="h-16 px-6 bg-surface/75 backdrop-blur-md border-b border-border-default flex items-center justify-between sticky top-0 z-50">
-        <div className="flex items-center gap-2">
-          {/* Styled Brand Logo Badge */}
-          <Image src="/logo.svg" alt="CardQR" width={32} height={32} priority className="rounded-xl border border-border-default/50" />
-          <Link href="/" className="text-base font-bold tracking-tight text-primary flex items-center gap-1 font-heading">
-            Card<span className="text-muted-text font-normal">QR</span>
-          </Link>
-        </div>
-        
-        <div className="flex items-center gap-3">
-          <TemplatesDropdown />
-          <Link 
-            href="/create"
-            className="h-9 px-4 bg-accent hover:bg-accent/95 text-white text-xs font-bold rounded-xl flex items-center justify-center transition-all cursor-pointer shadow-xs"
-          >
-            Create Your Card
-          </Link>
-        </div>
-      </nav>
+      <SiteNav />
 
       {/* 1. HERO SECTION & INSTANT URL GENERATOR */}
       <section className="relative px-6 pt-12 pb-16 md:pt-16 md:pb-20 overflow-hidden max-w-7xl mx-auto w-full flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
@@ -246,18 +225,18 @@ export default function LandingPage() {
             <Sparkles className="w-3 h-3 text-accent" /> Create a beautiful QR destination in 60 seconds
           </div>
 
-          <h1 className="text-3xl md:text-5xl lg:text-6xl font-medium text-primary tracking-tight leading-[1.08] font-heading">
+          <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-primary tracking-tight leading-[1.05] font-heading text-balance">
             Turn Any QR Code Into a Branded Experience
           </h1>
-          
+
           <p className="text-xs md:text-sm text-muted-text leading-relaxed mt-5 max-w-md mx-auto lg:mx-0 font-medium">
             Create digital business cards, menus, event pages, WiFi cards, and link hubs in under a minute. Or convert any web link into a print-ready vector QR code instantly.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 mt-8">
-            <Link 
+            <Link
               href="/create"
-              className="h-11 w-full sm:w-auto px-6 bg-accent hover:bg-accent/95 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer text-center"
+              className="h-12 w-full sm:w-auto px-7 bg-primary hover:opacity-90 text-background text-xs font-bold rounded-full flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer text-center"
             >
               Start Template Creator <ArrowRight className="w-4 h-4" />
             </Link>
@@ -344,9 +323,9 @@ export default function LandingPage() {
             {MOCK_TEMPLATES.map((tpl) => {
               const Icon = tpl.icon;
               return (
-                <div 
+                <div
                   key={tpl.id}
-                  className="bg-surface paper-grain p-6 rounded-2xl border border-border-default hover:border-accent/30 transition-all duration-300 card-shadow select-none flex flex-col justify-between min-h-[420px]"
+                  className="bg-surface paper-grain p-6 rounded-3xl border border-border-default hover:border-accent/30 transition-all duration-300 card-shadow select-none flex flex-col justify-between min-h-[420px]"
                 >
                   <div>
                     {/* Header Info */}
@@ -385,11 +364,11 @@ export default function LandingPage() {
                       Learn More <ArrowRight className="w-3 h-3" />
                     </Link>
                     
-                    <Link 
+                    <Link
                       href={`/create/${tpl.id}`}
-                      className="h-9 px-4 bg-accent hover:bg-accent/95 text-white text-[11px] font-bold rounded-xl flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
+                      className="h-9 px-4 bg-primary hover:opacity-90 text-background text-[11px] font-bold rounded-full flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
                     >
-                      <Sparkles className="w-3.5 h-3.5 text-white" /> Use Template
+                      <Sparkles className="w-3.5 h-3.5" /> Use Template
                     </Link>
                   </div>
                 </div>
@@ -430,10 +409,15 @@ export default function LandingPage() {
               desc: 'Place the QR code on tables, business card backs, or flyers. Update the details anytime online.'
             }
           ].map((item, idx) => (
-            <div key={idx} className="flex flex-col bg-surface p-5 rounded-xl border border-border-default card-shadow relative">
+            <div key={idx} className="flex flex-col bg-surface p-5 rounded-2xl border border-border-default card-shadow relative">
               <div className="text-lg font-medium font-heading italic text-accent mb-2">0{idx + 1}.</div>
               <h3 className="text-xs font-bold text-primary tracking-tight font-sans">{item.title}</h3>
               <p className="text-[11px] text-muted-text leading-relaxed mt-2 font-medium">{item.desc}</p>
+              <div className="step-dots mt-4">
+                {[0, 1, 2, 3].map((dot) => (
+                  <span key={dot} className={dot <= idx ? 'is-filled' : ''} />
+                ))}
+              </div>
             </div>
           ))}
 

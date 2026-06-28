@@ -47,13 +47,13 @@ export default function TemplatesDropdown() {
                 <Link
                   href={item.href}
                   onClick={() => setIsOpen(false)}
-                  className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-[#FAF8F4] text-primary hover:text-accent transition-all group border border-transparent hover:border-border-default/40"
+                  className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-surface-2 text-primary hover:text-accent transition-all group border border-transparent hover:border-border-default/40"
                 >
-                  <div className="w-8 h-8 rounded-lg bg-[#FAF8F4] text-muted-text group-hover:text-accent border border-border-default group-hover:border-accent flex items-center justify-center shrink-0 transition-all duration-200 group-hover:bg-accent-dim">
+                  <div className="w-8 h-8 rounded-lg bg-surface-2 text-muted-text group-hover:text-accent border border-border-default group-hover:border-accent flex items-center justify-center shrink-0 transition-all duration-200 group-hover:bg-accent-dim">
                     <Icon className="w-4 h-4" />
                   </div>
                   <div className="flex flex-col min-w-0">
-                    <span className="text-xs font-bold leading-tight tracking-tight text-[#1C1B19]">{item.label}</span>
+                    <span className="text-xs font-bold leading-tight tracking-tight text-primary">{item.label}</span>
                     <span className="text-[10px] text-muted-text leading-[1.25] mt-0.5">{item.desc}</span>
                   </div>
                 </Link>

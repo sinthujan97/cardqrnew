@@ -10,9 +10,8 @@ import {
 } from 'lucide-react';
 import PhoneMockup from '@/components/PhoneMockup';
 import QRGenerator from '@/components/QRGenerator';
-import TemplatesDropdown from '@/components/TemplatesDropdown';
 import AdSlot from '@/components/AdSlot';
-import Image from 'next/image';
+import SiteNav from '@/components/SiteNav';
 import TemplatePreview from '@/components/TemplatePreviews';
 import { getInitialData, TemplateType } from '@/lib/templates';
 
@@ -140,26 +139,7 @@ export default function SEOLandingPage({
   return (
     <div className="flex flex-col flex-1 bg-background font-sans selection:bg-accent selection:text-white text-primary">
       
-      {/* Sticky Premium Navbar with Brand Logo */}
-      <nav className="h-16 px-6 bg-surface/75 backdrop-blur-md border-b border-border-default flex items-center justify-between sticky top-0 z-50">
-        <div className="flex items-center gap-2">
-          {/* Styled Brand Logo Badge */}
-          <Image src="/logo.svg" alt="CardQR" width={32} height={32} priority className="rounded-xl border border-border-default/50" />
-          <Link href="/" className="text-base font-bold tracking-tight text-primary flex items-center gap-1 font-heading">
-            Card<span className="text-muted-text font-normal">QR</span>
-          </Link>
-        </div>
-        
-        <div className="flex items-center gap-3">
-          <TemplatesDropdown />
-          <Link 
-            href="/create"
-            className="h-9 px-4 bg-accent hover:bg-accent/95 text-white text-xs font-bold rounded-xl flex items-center justify-center transition-all cursor-pointer shadow-xs"
-          >
-            Create Your Card
-          </Link>
-        </div>
-      </nav>
+      <SiteNav />
 
       {/* 1. HERO SECTION & INSTANT URL GENERATOR */}
       <section className="relative px-6 pt-12 pb-16 md:pt-16 md:pb-20 overflow-hidden max-w-7xl mx-auto w-full flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
@@ -171,18 +151,18 @@ export default function SEOLandingPage({
             <Sparkles className="w-3 h-3 text-accent" /> {tagline}
           </div>
 
-          <h1 className="text-3xl md:text-5xl lg:text-6xl font-medium text-primary tracking-tight leading-[1.08] font-heading">
+          <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-primary tracking-tight leading-[1.05] font-heading text-balance">
             {heroTitle}
           </h1>
-          
+
           <p className="text-xs md:text-sm text-muted-text leading-relaxed mt-5 max-w-md mx-auto lg:mx-0 font-medium">
             {heroDescription}
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 mt-8">
-            <Link 
+            <Link
               href={ctaLink}
-              className="h-11 w-full sm:w-auto px-6 bg-accent hover:bg-accent/95 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer text-center"
+              className="h-12 w-full sm:w-auto px-7 bg-primary hover:opacity-90 text-background text-xs font-bold rounded-full flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer text-center"
             >
               {ctaText} <ArrowRight className="w-4 h-4" />
             </Link>
@@ -274,10 +254,10 @@ export default function SEOLandingPage({
             {MOCK_TEMPLATES.map((tpl) => {
               const Icon = tpl.icon;
               return (
-                <Link 
+                <Link
                   href={getTemplateSEOPath(tpl.id)}
                   key={tpl.id}
-                  className="group block bg-surface paper-grain p-5.5 rounded-xl border border-border-default hover:border-accent transition-all duration-300 card-shadow cursor-pointer select-none"
+                  className="group block bg-surface paper-grain p-5.5 rounded-3xl border border-border-default hover:border-accent transition-all duration-300 card-shadow cursor-pointer select-none"
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-9 h-9 rounded-xl bg-accent-dim text-accent border border-accent/15 flex items-center justify-center">
@@ -344,10 +324,15 @@ export default function SEOLandingPage({
               desc: 'Place the QR code on tables, business card backs, or flyers. Update the details anytime online.'
             }
           ].map((item, idx) => (
-            <div key={idx} className="flex flex-col bg-surface p-5 rounded-xl border border-border-default card-shadow relative">
+            <div key={idx} className="flex flex-col bg-surface p-5 rounded-2xl border border-border-default card-shadow relative">
               <div className="text-lg font-medium font-heading italic text-accent mb-2">0{idx + 1}.</div>
               <h3 className="text-xs font-bold text-primary tracking-tight font-sans">{item.title}</h3>
               <p className="text-[11px] text-muted-text leading-relaxed mt-2 font-medium">{item.desc}</p>
+              <div className="step-dots mt-4">
+                {[0, 1, 2, 3].map((dot) => (
+                  <span key={dot} className={dot <= idx ? 'is-filled' : ''} />
+                ))}
+              </div>
             </div>
           ))}
 

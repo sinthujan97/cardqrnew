@@ -18,7 +18,7 @@ function RedirectHandler() {
   }, [t, router]);
 
   return (
-    <div className="min-h-screen bg-[#FAF8F4] flex items-center justify-center text-xs font-mono text-muted-text">
+    <div className="min-h-screen bg-background flex items-center justify-center text-xs font-mono text-muted-text">
       Redirecting to workspace...
     </div>
   );
@@ -26,7 +26,7 @@ function RedirectHandler() {
 
 export default function CreatePage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#FAF8F4] flex items-center justify-center text-xs font-mono text-muted-text">Loading Workspace...</div>}>
+    <Suspense fallback={<div className="min-h-screen bg-background flex items-center justify-center text-xs font-mono text-muted-text">Loading Workspace...</div>}>
       <RedirectHandler />
     </Suspense>
   );

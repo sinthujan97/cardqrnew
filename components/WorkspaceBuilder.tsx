@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import TemplatesDropdown from '@/components/TemplatesDropdown';
+import ThemeToggle from '@/components/ThemeToggle';
 import { 
   Briefcase, Utensils, Calendar as CalendarIcon, Link2, Wifi, 
   ShoppingBag, Sparkles, Send, Check, AlertTriangle, X, ChevronRight, Eye, QrCode
@@ -169,38 +170,41 @@ const INTRO_CONTENT: Record<TemplateType, { title: string; desc: string }> = {
   return (
     <div className="min-h-screen bg-background text-primary flex flex-col font-sans select-none relative">
       {/* Workspace Header */}
-      <header className="h-16 px-6 bg-surface/75 backdrop-blur-md border-b border-border-default flex items-center justify-between shrink-0 sticky top-0 z-40">
+      <header className="h-16 px-4 sm:px-6 bg-surface/90 backdrop-blur-md border-b-2 border-border-default flex items-center justify-between shrink-0 sticky top-0 z-40">
         <div className="flex items-center gap-2">
           {/* Styled Brand Logo Badge */}
           <Image src="/logo.svg" alt="CardQR" width={32} height={32} priority className="rounded-xl border border-border-default/50" />
           <Link href="/" className="text-base font-bold tracking-tight text-primary flex items-center gap-1 font-heading">
             Card<span className="text-muted-text font-normal">QR</span>
           </Link>
-          <span className="text-xs text-border-emphasis">/</span>
-          <span className="text-xs font-bold text-muted-text">
+          <span className="text-xs text-border-emphasis hidden md:inline">/</span>
+          <span className="text-xs font-bold text-muted-text hidden md:inline">
             {isEditMode ? 'Edit Card Workspace' : 'Creator Workspace'}
           </span>
         </div>
         
-        <div className="flex items-center gap-3">
-          <TemplatesDropdown />
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="hidden sm:block">
+            <TemplatesDropdown />
+          </div>
+          <ThemeToggle />
           {/* Mobile Preview Trigger */}
           <button
             onClick={() => setShowMobilePreview(true)}
             aria-label="Open mobile card preview"
-            className="md:hidden h-9 px-3 border border-border-default rounded-xl text-xs font-bold bg-surface hover:bg-surface-2 flex items-center gap-1.5 cursor-pointer text-primary"
+            className="md:hidden h-9 px-2.5 sm:px-3 border border-border-default rounded-full text-xs font-bold bg-surface hover:bg-surface-2 flex items-center gap-1.5 cursor-pointer text-primary whitespace-nowrap"
           >
             <Eye className="w-3.5 h-3.5" /> Preview
           </button>
-          
+
           <button
             onClick={handlePublish}
             disabled={isPublishing || slugStatus === 'taken' || !slug}
-            className="h-9 px-4.5 bg-accent hover:bg-accent/95 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
+            className="h-9 px-3.5 sm:px-4.5 bg-primary hover:opacity-90 text-background text-xs font-bold rounded-full flex items-center gap-1.5 transition-all shadow-xs cursor-pointer whitespace-nowrap disabled:opacity-50"
           >
             {isPublishing ? 'Saving...' : (
               <>
-                <Send className="w-3.5 h-3.5 text-white" /> {isEditMode ? 'Update Card' : 'Publish Card'}
+                <Send className="w-3.5 h-3.5" /> {isEditMode ? <>Update<span className="hidden sm:inline"> Card</span></> : <>Publish<span className="hidden sm:inline"> Card</span></>}
               </>
             )}
           </button>
@@ -212,24 +216,24 @@ const INTRO_CONTENT: Record<TemplateType, { title: string; desc: string }> = {
         {/* Left Side: Customizer Forms */}
         <section className="flex-1 overflow-y-auto px-6 py-8 md:px-12 md:py-10 flex flex-col max-w-3xl bg-background">
           <div className="max-w-xl w-full">
-            <h1 className="text-xl md:text-2xl font-bold tracking-tight text-primary mb-1.5 font-heading">
+            <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-primary mb-2 font-heading text-balance">
               {isEditMode ? 'Update Your Card' : INTRO_CONTENT[template]?.title || 'Design Your Card'}
             </h1>
-            <p className="text-xs text-muted-text">
+            <p className="text-xs text-muted-text font-medium">
               {isEditMode ? 'Modify your fields below. The card changes will update immediately.' : INTRO_CONTENT[template]?.desc || 'Fill in the fields below.'}
             </p>
-            
+
             {/* Slug Path Input */}
-            <div className="mt-6 p-4 rounded-xl border border-border-default bg-surface shadow-2xs">
-              <label className="text-[11px] font-bold text-muted-text tracking-wide uppercase">Your Public URL Route</label>
-              <div className="flex items-center gap-1 mt-2">
-                <span className="text-xs text-muted-text select-none">cardqr.com/c/</span>
+            <div className="mt-6 p-4 rounded-2xl border-2 border-border-emphasis bg-surface card-shadow">
+              <label className="text-[11px] font-extrabold text-primary tracking-wide uppercase">Your Public URL Route</label>
+              <div className="flex items-center gap-1 mt-2.5">
+                <span className="text-xs text-muted-text font-bold select-none">cardqr.com/c/</span>
                 <input
                   type="text"
                   value={slug}
                   onChange={(e) => handleSlugChange(e.target.value)}
                   placeholder="e.g. coffee-hub"
-                  className="flex-1 h-9 px-3 text-xs border border-border-default rounded-lg focus:outline-none focus:border-accent font-bold text-primary bg-surface-2"
+                  className="flex-1 h-10 px-3 text-xs border-2 border-border-default rounded-lg focus:outline-none focus:border-accent font-bold text-primary bg-surface-2"
                 />
               </div>
               <div className="mt-2.5 flex items-center justify-between text-[10px] font-bold">
@@ -254,12 +258,12 @@ const INTRO_CONTENT: Record<TemplateType, { title: string; desc: string }> = {
             )}
 
             {/* Render selected template form */}
-            <div className="mt-8 bg-surface border border-border-default p-6 rounded-2xl shadow-2xs mb-10">
-              <div className="flex items-center gap-2 mb-6 border-b border-border-default pb-4">
-                <div className="w-6 h-6 rounded-md bg-accent-dim text-accent flex items-center justify-center font-bold">
-                  <Sparkles className="w-3.5 h-3.5" />
+            <div className="mt-8 bg-surface border-2 border-border-emphasis p-6 rounded-3xl card-shadow mb-10">
+              <div className="flex items-center gap-2.5 mb-6 border-b-2 border-border-default pb-4">
+                <div className="w-7 h-7 rounded-lg bg-accent text-background flex items-center justify-center font-bold shrink-0">
+                  <Sparkles className="w-4 h-4" />
                 </div>
-                <h2 className="text-xs font-bold tracking-wider text-muted-text uppercase">
+                <h2 className="text-xs font-extrabold tracking-wider text-primary uppercase">
                   {TEMPLATES.find(t => t.id === template)?.label} Customizer
                 </h2>
               </div>
@@ -273,8 +277,8 @@ const INTRO_CONTENT: Record<TemplateType, { title: string; desc: string }> = {
           </div>
         </section>
 
-        {/* Right Side: Simulator Preview (Desktop only) */}
-        <section className="hidden md:flex w-[380px] xl:w-[720px] border-l border-border-default bg-background flex-col xl:flex-row items-center xl:justify-center gap-12 py-8 px-6 shrink-0 h-full overflow-y-auto no-scrollbar">
+        {/* Right Side: Simulator Preview (Desktop only) — fixed in place, never scrolls */}
+        <section className="hidden md:flex w-[380px] xl:w-[720px] border-l-2 border-border-emphasis bg-surface-2/40 flex-col xl:flex-row items-center xl:justify-center gap-12 py-8 px-6 shrink-0 h-full overflow-hidden">
           <PhoneMockup dark={false}>
             <div className="relative w-full h-full flex-1 flex flex-col items-center justify-center overflow-hidden bg-background">
               
@@ -295,11 +299,6 @@ const INTRO_CONTENT: Record<TemplateType, { title: string; desc: string }> = {
               {/* Physical card centered with scale adjustment */}
               <div className="flex-1 flex flex-col items-center justify-center z-10 scale-[0.82] -my-10 origin-center">
                 <PhysicalCard card={{ templateType: template, data: formData, slug: slug || 'preview' }} />
-                
-                {/* Hint indicator */}
-                <span className="text-[8px] text-muted-text font-bold uppercase tracking-wider mt-4">
-                  Interactive Card Preview
-                </span>
               </div>
             </div>
           </PhoneMockup>
@@ -342,9 +341,6 @@ const INTRO_CONTENT: Record<TemplateType, { title: string; desc: string }> = {
 
                   <div className="flex-1 flex flex-col items-center justify-center z-10 scale-[0.82] -my-10 origin-center">
                     <PhysicalCard card={{ templateType: template, data: formData, slug: slug || 'preview' }} />
-                    <span className="text-[8px] text-muted-text font-bold uppercase tracking-wider mt-4">
-                      Interactive Card Preview
-                    </span>
                   </div>
                 </div>
               </PhoneMockup>
@@ -410,7 +406,7 @@ const INTRO_CONTENT: Record<TemplateType, { title: string; desc: string }> = {
                   onClick={() => {
                     navigator.clipboard.writeText(publishResult.editUrl);
                   }}
-                  className="h-9 px-3 bg-accent hover:bg-accent/90 text-zinc-950 text-xs font-bold rounded-lg shrink-0 transition-all cursor-pointer"
+                  className="h-9 px-3 bg-accent hover:bg-accent/90 text-background text-xs font-bold rounded-full shrink-0 transition-all cursor-pointer"
                 >
                   Copy
                 </button>
