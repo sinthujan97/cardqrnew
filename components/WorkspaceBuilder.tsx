@@ -577,8 +577,8 @@ export default function WorkspaceBuilder({ initialQRCode, forcedTemplate }: Work
           <div className="flex-1 w-full min-w-0 h-full flex flex-col items-center gap-4">
             <span className="text-[10px] font-bold text-muted-text uppercase tracking-widest block shrink-0">Live Preview Simulator</span>
 
-            <div className="flex-1 w-full min-h-0 flex items-center justify-center overflow-hidden">
-              <PhoneMockup dark={false} className="!w-auto !max-w-[300px] h-full max-h-[640px]">
+            <div className="flex-1 w-full min-h-0 flex items-center justify-center overflow-hidden py-4">
+              <PhoneMockup dark={false} className="!w-auto !max-w-[260px] h-full max-h-[540px]">
                 <div className="relative w-full h-full flex-1 flex flex-col items-center justify-center overflow-hidden bg-background">
                   {formData ? (
                     <div className="flex-1 flex flex-col items-center justify-center z-10 scale-[0.82] origin-center w-full">

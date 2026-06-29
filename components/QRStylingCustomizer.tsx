@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Download, Upload, Trash2, Palette, Sliders, Image as ImageIcon, LayoutGrid, ShieldCheck, AlertTriangle } from 'lucide-react';
 import { FRAME_STYLES, COLOR_PRESETS, ERROR_CORRECTION_LEVELS } from '@/lib/qr-style-presets';
+import type { ShapeColorRef, ShapeFrameDef } from '@/lib/qr-style-presets';
 import { uploadImageAction } from '@/app/actions/card-actions';
 
 interface QRStylingCustomizerProps {
@@ -37,16 +38,23 @@ export async function renderQRToCanvas(
 
   const frame = config.frame || {};
   const frameMeta = FRAME_STYLES.find((f) => f.id === frame.style) || FRAME_STYLES[0];
+  const bgColor = config.backgroundOptions?.color || '#FFFFFF';
+  const frameColor = frame.color || '#0A0F05';
+  const frameTextColor = frame.textColor || '#FFFFFF';
+  const frameText = frame.text || '';
+
+  if (frameMeta.layout === 'shape' && frameMeta.shape) {
+    const canvas = renderShapeFrameToCanvas(img, frameMeta.shape, { frameColor, frameTextColor, bgColor, frameText: frameText || frameMeta.defaultText || '' });
+    URL.revokeObjectURL(blobUrl);
+    return canvas;
+  }
+
   const isFramed = frameMeta.layout !== 'none';
   const isBanner = frameMeta.layout.startsWith('banner');
   const scale = size / 260;
   const padding = 32 * scale;
   const borderW = isFramed ? 6 * scale : 0;
   const bannerH = isBanner ? 56 * scale : 0;
-  const bgColor = config.backgroundOptions?.color || '#FFFFFF';
-  const frameColor = frame.color || '#0A0F05';
-  const frameTextColor = frame.textColor || '#FFFFFF';
-  const frameText = frame.text || '';
 
   const canvasW = img.width + padding * 2 + borderW * 2;
   const canvasH = img.height + padding * 2 + borderW * 2 + bannerH;
@@ -85,6 +93,71 @@ export async function renderQRToCanvas(
   return canvas;
 }
 
+/** Composites a Shape-layout frame (outline + QR + accents + caption) onto a fresh canvas, using
+ * the exact same path data the live preview renders, via Path2D instead of <svg><path>. */
+function renderShapeFrameToCanvas(
+  img: HTMLImageElement,
+  shape: ShapeFrameDef,
+  opts: { frameColor: string; frameTextColor: string; bgColor: string; frameText: string }
+): HTMLCanvasElement | null {
+  const { frameColor, frameTextColor, bgColor, frameText } = opts;
+  const [, , vbWStr, vbHStr] = shape.viewBox.split(' ');
+  const vbW = parseFloat(vbWStr);
+  const vbH = parseFloat(vbHStr);
+  const scaleFactor = img.width / shape.qrInset.size;
+
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.round(vbW * scaleFactor);
+  canvas.height = Math.round(vbH * scaleFactor);
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return null;
+
+  ctx.save();
+  ctx.scale(scaleFactor, scaleFactor);
+
+  const resolve = (ref?: ShapeColorRef) => resolveShapeColor(ref, frameColor, bgColor, frameTextColor);
+
+  // 1. Outline silhouette
+  ctx.fillStyle = shape.outlineFill === 'background' ? bgColor : frameColor;
+  ctx.fill(new Path2D(shape.outlinePath));
+  if (shape.outlineStroke) {
+    ctx.strokeStyle = frameColor;
+    ctx.lineWidth = 2.5;
+    ctx.stroke(new Path2D(shape.outlinePath));
+  }
+
+  // 2. QR window
+  ctx.fillStyle = bgColor;
+  ctx.fillRect(shape.qrInset.x, shape.qrInset.y, shape.qrInset.size, shape.qrInset.size);
+  ctx.drawImage(img, shape.qrInset.x, shape.qrInset.y, shape.qrInset.size, shape.qrInset.size);
+
+  // 3. Accents (ribbons, spiral dots, handles, banner strips, etc)
+  shape.accentPaths?.forEach((a) => {
+    const path = new Path2D(a.d);
+    if (a.fill) {
+      ctx.fillStyle = resolve(a.fill);
+      ctx.fill(path);
+    }
+    if (a.stroke) {
+      ctx.strokeStyle = resolve(a.stroke);
+      ctx.lineWidth = a.strokeWidth || 2;
+      ctx.stroke(path);
+    }
+  });
+
+  // 4. Caption
+  if (shape.bannerText && frameText) {
+    ctx.fillStyle = frameTextColor;
+    ctx.font = `900 ${shape.bannerText.fontSize || 10}px sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(frameText.toUpperCase(), shape.bannerText.x, shape.bannerText.y);
+  }
+
+  ctx.restore();
+  return canvas;
+}
+
 export function canvasToDataUrl(canvas: HTMLCanvasElement, format: 'png' | 'jpeg'): string {
   const mime = format === 'jpeg' ? 'image/jpeg' : 'image/png';
   return canvas.toDataURL(mime, 0.92);
@@ -95,6 +168,82 @@ export async function downloadQRDirect(config: any, format: 'svg', filename: str
   const QRCodeStyling = (await import('qr-code-styling')).default;
   const instance = new QRCodeStyling(config);
   await instance.download({ name: filename, extension: format });
+}
+
+function resolveShapeColor(ref: ShapeColorRef | undefined, frameColor: string, bgColor: string, frameTextColor: string) {
+  if (ref === 'frame') return frameColor;
+  if (ref === 'background') return bgColor;
+  if (ref === 'text') return frameTextColor;
+  return 'none';
+}
+
+function ShapeFramePreview({
+  shape, frameColor, frameTextColor, bgColor, text, qrRef,
+}: {
+  shape: ShapeFrameDef;
+  frameColor: string;
+  frameTextColor: string;
+  bgColor: string;
+  text: string;
+  qrRef: React.RefObject<HTMLDivElement | null>;
+}) {
+  const [, , vbWStr, vbHStr] = shape.viewBox.split(' ');
+  const vbW = parseFloat(vbWStr);
+  const vbH = parseFloat(vbHStr);
+  const pct = (v: number, total: number) => `${(v / total) * 100}%`;
+  const resolve = (ref?: ShapeColorRef) => resolveShapeColor(ref, frameColor, bgColor, frameTextColor);
+
+  return (
+    <div className="relative" style={{ width: 260, aspectRatio: `${vbW} / ${vbH}` }}>
+      <svg viewBox={shape.viewBox} className="absolute inset-0 w-full h-full" preserveAspectRatio="none">
+        <path
+          d={shape.outlinePath}
+          fill={shape.outlineFill === 'background' ? bgColor : frameColor}
+          stroke={shape.outlineStroke ? frameColor : 'none'}
+          strokeWidth={shape.outlineStroke ? 2.5 : 0}
+        />
+      </svg>
+
+      <div
+        className="absolute overflow-hidden flex items-center justify-center"
+        style={{
+          left: pct(shape.qrInset.x, vbW),
+          top: pct(shape.qrInset.y, vbH),
+          width: pct(shape.qrInset.size, vbW),
+          height: pct(shape.qrInset.size, vbH),
+          background: bgColor,
+        }}
+      >
+        <div ref={qrRef} className="w-full h-full" />
+      </div>
+
+      <svg viewBox={shape.viewBox} className="absolute inset-0 w-full h-full pointer-events-none">
+        {shape.accentPaths?.map((a, i) => (
+          <path
+            key={i}
+            d={a.d}
+            fill={a.fill ? resolve(a.fill) : 'none'}
+            stroke={a.stroke ? resolve(a.stroke) : 'none'}
+            strokeWidth={a.strokeWidth || 0}
+          />
+        ))}
+        {shape.bannerText && text && (
+          <text
+            x={shape.bannerText.x}
+            y={shape.bannerText.y}
+            fontSize={shape.bannerText.fontSize || 10}
+            fill={frameTextColor}
+            textAnchor="middle"
+            dominantBaseline="middle"
+            fontWeight={900}
+            style={{ textTransform: 'uppercase', letterSpacing: 0.5 }}
+          >
+            {text}
+          </text>
+        )}
+      </svg>
+    </div>
+  );
 }
 
 export default function QRStylingCustomizer({ value, onChange, initialOptions }: QRStylingCustomizerProps) {
@@ -161,7 +310,7 @@ export default function QRStylingCustomizer({ value, onChange, initialOptions }:
   }, [
     value, dotType, dotColor, bgColor, cornerSquareType, cornerSquareColor, cornerDotType, cornerDotColor,
     useGradient, gradientType, gradientColor1, gradientColor2, logoFile, logoSize, hideBackgroundDots,
-    logoMargin, errorCorrectionLevel,
+    logoMargin, errorCorrectionLevel, frameStyle,
   ]);
 
   // Construct options dictionary
@@ -286,23 +435,34 @@ export default function QRStylingCustomizer({ value, onChange, initialOptions }:
         <span className="text-[10px] font-bold text-muted-text uppercase tracking-widest mb-4">Live Styled QR</span>
 
         {/* Render Container */}
-        <div
-          className="p-4 flex flex-col items-center justify-center shadow-lg transition-transform duration-300 hover:scale-[1.02]"
-          style={{
-            background: bgColor,
-            border: frameMeta.layout !== 'none' ? `6px solid ${frameColor}` : 'none',
-          }}
-        >
-          <div ref={qrRef} className="w-[260px] h-[260px] overflow-hidden flex items-center justify-center" />
-          {frameMeta.layout.startsWith('banner') && (
-            <div
-              className="w-[260px] mt-3 py-2.5 text-center text-sm font-black uppercase tracking-wider"
-              style={{ background: frameColor, color: frameTextColor }}
-            >
-              {frameText || frameMeta.defaultText || 'SCAN ME'}
-            </div>
-          )}
-        </div>
+        {frameMeta.layout === 'shape' && frameMeta.shape ? (
+          <ShapeFramePreview
+            shape={frameMeta.shape}
+            frameColor={frameColor}
+            frameTextColor={frameTextColor}
+            bgColor={bgColor}
+            text={frameText || frameMeta.defaultText || ''}
+            qrRef={qrRef}
+          />
+        ) : (
+          <div
+            className="p-4 flex flex-col items-center justify-center shadow-lg transition-transform duration-300 hover:scale-[1.02]"
+            style={{
+              background: bgColor,
+              border: frameMeta.layout !== 'none' ? `6px solid ${frameColor}` : 'none',
+            }}
+          >
+            <div ref={qrRef} className="w-[260px] h-[260px] overflow-hidden flex items-center justify-center" />
+            {frameMeta.layout.startsWith('banner') && (
+              <div
+                className="w-[260px] mt-3 py-2.5 text-center text-sm font-black uppercase tracking-wider"
+                style={{ background: frameColor, color: frameTextColor }}
+              >
+                {frameText || frameMeta.defaultText || 'SCAN ME'}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Quick format download buttons */}
         <div className="w-full mt-5 grid grid-cols-3 gap-2">
@@ -766,7 +926,7 @@ export default function QRStylingCustomizer({ value, onChange, initialOptions }:
                   </div>
                 </div>
 
-                {frameMeta.layout.startsWith('banner') && (
+                {(frameMeta.layout.startsWith('banner') || (frameMeta.layout === 'shape' && frameMeta.shape?.bannerText)) && (
                   <>
                     <div>
                       <label className="text-[10px] font-bold text-muted-text uppercase tracking-wider block mb-2">Banner Text</label>
