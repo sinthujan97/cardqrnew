@@ -12,7 +12,7 @@ import {
   Mail, MessageSquare, Phone, MapPin,
   CreditCard, ExternalLink, QrCode, Link as LinkIcon
 } from 'lucide-react';
-import QRGenerator from '@/components/QRGenerator';
+import QRStylingCustomizer from '@/components/QRStylingCustomizer';
 
 const Youtube = (props: any) => (
   <svg className={props.className} fill="currentColor" viewBox="0 0 24 24">
@@ -172,7 +172,7 @@ export default function Homepage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.6 }}
-          className="boxy mt-16 w-full max-w-sm bg-surface rounded-none p-6 relative overflow-hidden"
+          className={`boxy mt-16 w-full bg-surface rounded-none p-6 relative overflow-hidden ${heroUrl.trim() ? 'max-w-3xl' : 'max-w-sm'}`}
         >
           <div className="relative z-10 flex flex-col gap-4.5">
             <div className="flex items-center gap-2">
@@ -203,12 +203,12 @@ export default function Homepage() {
               </div>
             </div>
 
-            <div className="border-t border-border-default pt-4.5 flex flex-col items-center min-h-[220px] justify-center">
-              {heroUrl.trim() ? (
-                <div className="p-4 bg-white border border-border-default rounded-none">
-                  <QRGenerator value={heroUrl.trim()} size={160} showDownloads={true} />
-                </div>
-              ) : (
+            {heroUrl.trim() ? (
+              <div className="border-t border-border-default pt-4.5">
+                <QRStylingCustomizer value={heroUrl.trim()} />
+              </div>
+            ) : (
+              <div className="border-t border-border-default pt-4.5 flex flex-col items-center min-h-[220px] justify-center">
                 <div className="flex flex-col items-center text-center text-muted-text/40 gap-3 py-6">
                   <div className="w-14 h-14 rounded-none border border-dashed border-border-default flex items-center justify-center bg-surface-2">
                     <QrCode className="w-6 h-6 text-muted-text/50" />
@@ -216,12 +216,12 @@ export default function Homepage() {
                   <div>
                     <span className="text-[10px] font-bold text-muted-text uppercase block font-mono">QR Code Preview</span>
                     <span className="text-[9px] text-muted-text/80 max-w-[200px] mt-1 block text-center">
-                      Enter any link above to generate a downloadable high-resolution code.
+                      Enter any link above to generate a downloadable high-resolution code, with custom logo, colors, and frames.
                     </span>
                   </div>
                 </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </motion.div>
       </section>

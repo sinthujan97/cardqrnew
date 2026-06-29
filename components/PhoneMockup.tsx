@@ -22,12 +22,9 @@ export default function PhoneMockup({ children, className = '', animate = true, 
   } as const;
 
   const content = (
-    <div className={`relative mx-auto w-full max-w-[340px] aspect-[9/19.5] bg-[#09090B] rounded-[48px] p-3 premium-border card-shadow select-none ${className}`}>
-      {/* Outer Phone Bezel Trim */}
-      <div className="absolute inset-0 rounded-[48px] border-[4px] border-[#27272A] pointer-events-none z-30" />
-      
+    <div className={`boxy relative mx-auto w-full max-w-[340px] aspect-[9/19.5] bg-[#09090B] rounded-none p-3 select-none ${className}`}>
       {/* Phone Screen Case */}
-      <div className={`relative w-full h-full rounded-[38px] overflow-hidden flex flex-col z-20 ${dark ? 'bg-black' : 'bg-white'}`}>
+      <div className={`relative w-full h-full rounded-none overflow-hidden flex flex-col z-20 ${dark ? 'bg-black' : 'bg-white'}`}>
         
         {/* Status Bar */}
         <div className={`w-full h-10 px-6 pt-3 flex items-center justify-between text-[11px] font-medium select-none z-30 ${dark ? 'text-white bg-black' : 'text-black bg-white'}`}>

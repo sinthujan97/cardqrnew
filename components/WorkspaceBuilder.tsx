@@ -4,17 +4,17 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import TemplatesDropdown from '@/components/TemplatesDropdown';
-import { 
-  Sparkles, Send, Check, AlertTriangle, X, ChevronRight, Eye, QrCode,
-  ArrowRight, ArrowLeft, Download, Copy, Share2
+import {
+  Sparkles, Check, AlertTriangle, X, ChevronRight, Eye, QrCode,
+  ArrowRight, ArrowLeft, Download, FileText, BarChart3, ClipboardCheck
 } from 'lucide-react';
 import Image from 'next/image';
 import { getInitialData } from '@/lib/templates';
 import TemplateForm from '@/components/TemplateForms';
 import PhysicalCard from '@/components/PhysicalCard';
 import PhoneMockup from '@/components/PhoneMockup';
-import QRStylingCustomizer from '@/components/QRStylingCustomizer';
-import { createQRCodeAction, updateQRCodeAction, checkSlugAvailability } from '@/app/actions/card-actions';
+import QRStylingCustomizer, { renderQRToCanvas, canvasToDataUrl, downloadQRDirect } from '@/components/QRStylingCustomizer';
+import { createQRCodeAction, updateQRCodeAction, checkSlugAvailability, uploadImageAction } from '@/app/actions/card-actions';
 import AdSlot from '@/components/AdSlot';
 
 interface WorkspaceBuilderProps {
@@ -45,9 +45,14 @@ export default function WorkspaceBuilder({ initialQRCode, forcedTemplate }: Work
   const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
   const [qrStyleOptions, setQrStyleOptions] = useState<any>(null);
   const [createdId, setCreatedId] = useState<string>(initialQRCode?.id || '');
-  
+
   const [showMobilePreview, setShowMobilePreview] = useState(false);
   const [validationError, setValidationError] = useState('');
+
+  // Step 3: final rendered QR + downloads
+  const [qrPreviewDataUrl, setQrPreviewDataUrl] = useState<string>('');
+  const [isFinalizingQR, setIsFinalizingQR] = useState(false);
+  const [isPdfGenerating, setIsPdfGenerating] = useState(false);
 
   // Sync with URL query parameter t
   useEffect(() => {
@@ -176,6 +181,104 @@ export default function WorkspaceBuilder({ initialQRCode, forcedTemplate }: Work
 
   const isDynamic = DYNAMIC_TYPES.includes(template);
 
+  // Step 2 -> Step 3: render the final styled QR locally (always works), then best-effort
+  // persist it to Blob + Supabase for dynamic cards with a saved row.
+  const handleContinueToDownload = async () => {
+    setIsFinalizingQR(true);
+    try {
+      if (qrStyleOptions) {
+        const canvas = await renderQRToCanvas(qrStyleOptions, { format: 'png', targetSize: 1000 });
+        if (canvas) {
+          const dataUrl = canvasToDataUrl(canvas, 'png');
+          setQrPreviewDataUrl(dataUrl);
+
+          if (isDynamic && createdId) {
+            try {
+              const uploadRes = await uploadImageAction(dataUrl, `qr-${slug || createdId}.png`);
+              if (uploadRes.success && uploadRes.data) {
+                await updateQRCodeAction(
+                  createdId,
+                  slug,
+                  template,
+                  formData,
+                  uploadRes.data,
+                  qrStyleOptions.logoBlobUrl,
+                  template === 'restaurant-menu' ? formData.categories : undefined
+                );
+              }
+            } catch (uploadErr) {
+              console.error('QR image Blob persistence failed (download/preview still work locally):', uploadErr);
+            }
+          }
+        }
+      }
+    } catch (err) {
+      console.error('QR finalize render failed:', err);
+    } finally {
+      setIsFinalizingQR(false);
+      setStep(3);
+    }
+  };
+
+  const handleSizedDownload = async (format: 'png' | 'jpeg' | 'svg', sizePx?: number) => {
+    if (!qrStyleOptions) return;
+    if (format === 'svg') {
+      await downloadQRDirect(qrStyleOptions, 'svg', 'cardqr-code');
+      return;
+    }
+    const canvas = await renderQRToCanvas(qrStyleOptions, { format, targetSize: sizePx });
+    if (!canvas) return;
+    const a = document.createElement('a');
+    a.href = canvasToDataUrl(canvas, format);
+    a.download = `cardqr-code${sizePx ? `-${sizePx}px` : ''}.${format === 'jpeg' ? 'jpg' : 'png'}`;
+    a.click();
+  };
+
+  const handlePdfDownload = async () => {
+    if (!qrStyleOptions) return;
+    setIsPdfGenerating(true);
+    try {
+      const canvas = await renderQRToCanvas(qrStyleOptions, { format: 'png', targetSize: 1000 });
+      if (!canvas) return;
+      const qrPngDataUrl = canvasToDataUrl(canvas, 'png');
+      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://getcardqr.com';
+      const link = isDynamic ? `${origin}/c/${slug}` : getStaticQRValue();
+      const res = await fetch('/api/generate-pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ qrPngDataUrl, label: slug || template, url: link }),
+      });
+      if (!res.ok) throw new Error('PDF generation failed');
+      const blob = await res.blob();
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'cardqr-code.pdf';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    } catch (err) {
+      console.error(err);
+      alert('Failed to generate PDF. Please try again.');
+    } finally {
+      setIsPdfGenerating(false);
+    }
+  };
+
+  const handleCopyQRImage = async () => {
+    if (!qrStyleOptions) return;
+    try {
+      const canvas = await renderQRToCanvas(qrStyleOptions, { format: 'png' });
+      if (!canvas) return;
+      canvas.toBlob(async (blob) => {
+        if (!blob) return;
+        await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+        alert('QR image copied to clipboard!');
+      }, 'image/png');
+    } catch (err) {
+      console.error('Clipboard copy failed:', err);
+      alert('Could not copy image. Your browser may not support this feature.');
+    }
+  };
+
   return (
     <div className="h-screen bg-background text-primary flex flex-col font-sans select-none relative overflow-hidden">
       {/* Workspace Header */}
@@ -211,22 +314,20 @@ export default function WorkspaceBuilder({ initialQRCode, forcedTemplate }: Work
 
         <div className="flex items-center gap-3">
           <TemplatesDropdown />
-          {step === 1 && (
-            <button
-              onClick={() => setShowMobilePreview(true)}
-              className="md:hidden h-9 px-3 border border-white/5 bg-surface hover:bg-surface-2 rounded-none text-xs font-bold flex items-center gap-1.5 cursor-pointer text-primary"
-            >
-              <Eye className="w-3.5 h-3.5" /> Preview
-            </button>
-          )}
+          <button
+            onClick={() => setShowMobilePreview(true)}
+            className="md:hidden h-9 px-3 border border-white/5 bg-surface hover:bg-surface-2 rounded-none text-xs font-bold flex items-center gap-1.5 cursor-pointer text-primary"
+          >
+            <Eye className="w-3.5 h-3.5" /> Preview
+          </button>
         </div>
       </header>
 
       {/* Main Workspace Layout */}
       <main className="flex-1 flex overflow-hidden">
         {/* Left Control Column */}
-        <section className="flex-1 overflow-y-auto px-4 py-6 md:px-12 md:py-8 flex flex-col max-w-3xl bg-background">
-          <div className="max-w-xl w-full">
+        <section className="no-scrollbar flex-1 overflow-y-auto px-4 py-6 md:px-12 md:py-8 flex flex-col max-w-3xl bg-background">
+          <div className={`w-full ${step === 1 ? 'max-w-xl' : 'max-w-2xl mx-auto'}`}>
             {/* Step Content Headers */}
             {step === 1 && (
               <div>
@@ -239,7 +340,7 @@ export default function WorkspaceBuilder({ initialQRCode, forcedTemplate }: Work
               </div>
             )}
             {step === 2 && (
-              <div>
+              <div className="text-center">
                 <h1 className="text-xl md:text-2xl font-bold tracking-tight text-primary mb-1">
                   2. Customize QR Code Style
                 </h1>
@@ -249,7 +350,7 @@ export default function WorkspaceBuilder({ initialQRCode, forcedTemplate }: Work
               </div>
             )}
             {step === 3 && (
-              <div>
+              <div className="text-center">
                 <h1 className="text-xl md:text-2xl font-bold tracking-tight text-primary mb-1">
                   3. Export & Download
                 </h1>
@@ -332,10 +433,11 @@ export default function WorkspaceBuilder({ initialQRCode, forcedTemplate }: Work
                     <ArrowLeft className="w-4 h-4" /> Back to Content
                   </button>
                   <button
-                    onClick={() => setStep(3)}
+                    onClick={handleContinueToDownload}
+                    disabled={isFinalizingQR}
                     className="boxy flex-1 h-11 bg-accent hover:brightness-105 text-accent-foreground rounded-none text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer"
                   >
-                    Continue to Download <ArrowRight className="w-4 h-4" />
+                    {isFinalizingQR ? 'Finalizing...' : 'Continue to Download'} <ArrowRight className="w-4 h-4" />
                   </button>
                 </div>
               </div>
@@ -344,6 +446,56 @@ export default function WorkspaceBuilder({ initialQRCode, forcedTemplate }: Work
             {/* STEP 3 WIDGETS */}
             {step === 3 && (
               <div className="mt-6 space-y-6">
+                {/* Large final QR preview */}
+                <div className="boxy p-6 bg-surface rounded-none flex flex-col items-center gap-3">
+                  <span className="text-[10px] font-bold text-muted-text uppercase tracking-widest">Your Final QR Code</span>
+                  {qrPreviewDataUrl ? (
+                    <img src={qrPreviewDataUrl} alt="Final QR Code" className="w-[400px] h-[400px] max-w-full object-contain bg-white" />
+                  ) : (
+                    <div className="w-full max-w-[400px] aspect-square flex items-center justify-center text-xs text-muted-text">
+                      {isFinalizingQR ? 'Preparing final image...' : 'Rendering...'}
+                    </div>
+                  )}
+                </div>
+
+                {/* Scan count (edit mode only) */}
+                {initialQRCode && typeof initialQRCode.scan_count === 'number' && (
+                  <div className="boxy-sm p-3.5 bg-surface rounded-none flex items-center gap-2.5">
+                    <BarChart3 className="w-4 h-4 text-cyan shrink-0" />
+                    <span className="text-xs font-bold text-primary">{initialQRCode.scan_count} total scans</span>
+                  </div>
+                )}
+
+                {/* Download grid */}
+                <div className="boxy p-5 bg-surface rounded-none space-y-3">
+                  <span className="text-[10px] font-bold text-muted-text uppercase tracking-wider block">Download Options</span>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                    <button onClick={() => handleSizedDownload('png', 500)} className="h-11 text-[10px] font-bold bg-surface-2 border border-white/5 rounded-none flex items-center justify-center gap-1.5 cursor-pointer hover:bg-surface-2/70">
+                      <Download className="w-3.5 h-3.5 text-cyan" /> PNG 500px
+                    </button>
+                    <button onClick={() => handleSizedDownload('png', 1000)} className="h-11 text-[10px] font-bold bg-surface-2 border border-white/5 rounded-none flex items-center justify-center gap-1.5 cursor-pointer hover:bg-surface-2/70">
+                      <Download className="w-3.5 h-3.5 text-cyan" /> PNG 1000px
+                    </button>
+                    <button onClick={() => handleSizedDownload('png', 2000)} className="h-11 text-[10px] font-bold bg-surface-2 border border-white/5 rounded-none flex items-center justify-center gap-1.5 cursor-pointer hover:bg-surface-2/70">
+                      <Download className="w-3.5 h-3.5 text-cyan" /> PNG 2000px
+                    </button>
+                    <button onClick={() => handleSizedDownload('svg')} className="h-11 text-[10px] font-bold bg-surface-2 border border-white/5 rounded-none flex items-center justify-center gap-1.5 cursor-pointer hover:bg-surface-2/70">
+                      <Download className="w-3.5 h-3.5 text-accent" /> SVG Vector
+                    </button>
+                    <button onClick={() => handleSizedDownload('jpeg')} className="h-11 text-[10px] font-bold bg-surface-2 border border-white/5 rounded-none flex items-center justify-center gap-1.5 cursor-pointer hover:bg-surface-2/70">
+                      <Download className="w-3.5 h-3.5 text-emerald-400" /> JPEG
+                    </button>
+                    <button onClick={handlePdfDownload} disabled={isPdfGenerating} className="h-11 text-[10px] font-bold bg-surface-2 border border-white/5 rounded-none flex items-center justify-center gap-1.5 cursor-pointer hover:bg-surface-2/70">
+                      <FileText className="w-3.5 h-3.5 text-amber-400" /> {isPdfGenerating ? 'Generating...' : 'PDF (A4)'}
+                    </button>
+                  </div>
+
+                  <button onClick={handleCopyQRImage} className="w-full h-10 mt-2 bg-surface-2 border border-white/5 rounded-none text-xs font-bold text-primary flex items-center justify-center gap-1.5 cursor-pointer hover:bg-white/5">
+                    <ClipboardCheck className="w-4 h-4 text-cyan" /> Copy QR Image to Clipboard
+                  </button>
+                </div>
+
+                {/* Share + payload link */}
                 <div className="p-5 bg-surface border border-white/8 rounded-none space-y-4">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
@@ -389,7 +541,8 @@ export default function WorkspaceBuilder({ initialQRCode, forcedTemplate }: Work
                   </div>
                 </div>
 
-                <div className="flex gap-3">
+                {/* Nav buttons */}
+                <div className="flex flex-col sm:flex-row gap-3">
                   <button
                     onClick={() => setStep(2)}
                     className="boxy flex-1 h-11 hover:bg-surface-2 rounded-none text-xs font-bold text-primary flex items-center justify-center gap-1.5 cursor-pointer bg-surface"
@@ -397,10 +550,16 @@ export default function WorkspaceBuilder({ initialQRCode, forcedTemplate }: Work
                     <ArrowLeft className="w-4 h-4" /> Edit QR Design
                   </button>
                   <Link
-                    href="/"
+                    href="/create"
+                    className="boxy flex-1 h-11 bg-accent hover:brightness-105 text-accent-foreground rounded-none text-xs font-bold flex items-center justify-center gap-1.5"
+                  >
+                    <Sparkles className="w-4 h-4" /> Create Another QR Code
+                  </Link>
+                  <Link
+                    href="/#templates"
                     className="boxy flex-1 h-11 bg-surface hover:bg-surface-2 rounded-none text-xs font-bold text-primary flex items-center justify-center gap-1"
                   >
-                    Return to Homepage
+                    Browse All Templates
                   </Link>
                 </div>
 
@@ -413,13 +572,13 @@ export default function WorkspaceBuilder({ initialQRCode, forcedTemplate }: Work
           </div>
         </section>
 
-        {/* Right Flat Phone Mockup Column (Only for Step 1 content editing) */}
-        {step === 1 && (
-          <section className="hidden md:flex w-[380px] xl:w-[480px] border-l border-white/8 bg-surface/20 flex-col items-center gap-4 py-6 px-6 shrink-0 h-full overflow-hidden">
+        {/* Right Flat Phone Mockup Column (all 3 steps) */}
+        <section className="hidden md:flex w-[380px] xl:w-[700px] border-l border-white/8 bg-surface/20 flex-col xl:flex-row items-center justify-center gap-4 py-6 px-6 shrink-0 h-full overflow-hidden">
+          <div className="flex-1 w-full min-w-0 h-full flex flex-col items-center gap-4">
             <span className="text-[10px] font-bold text-muted-text uppercase tracking-widest block shrink-0">Live Preview Simulator</span>
 
-            <div className="flex-1 w-full min-h-0 flex items-center justify-center">
-              <PhoneMockup dark={false} className="!w-auto !max-w-[340px] h-full max-h-full">
+            <div className="flex-1 w-full min-h-0 flex items-center justify-center overflow-hidden">
+              <PhoneMockup dark={false} className="!w-auto !max-w-[300px] h-full max-h-[640px]">
                 <div className="relative w-full h-full flex-1 flex flex-col items-center justify-center overflow-hidden bg-background">
                   {formData ? (
                     <div className="flex-1 flex flex-col items-center justify-center z-10 scale-[0.82] origin-center w-full">
@@ -431,12 +590,16 @@ export default function WorkspaceBuilder({ initialQRCode, forcedTemplate }: Work
                 </div>
               </PhoneMockup>
             </div>
-          </section>
-        )}
+          </div>
+
+          <div className="hidden xl:flex shrink-0">
+            <AdSlot slotId="workspace-preview-sidebar" variant="vertical" />
+          </div>
+        </section>
       </main>
 
-      {/* Mobile Preview Bottom Drawer (Step 1 mobile viewing) */}
-      {showMobilePreview && step === 1 && (
+      {/* Mobile Preview Bottom Drawer (all 3 steps) */}
+      {showMobilePreview && (
         <div className="fixed inset-0 bg-black/90 z-50 flex flex-col justify-end md:hidden">
           <div className="absolute inset-0" onClick={() => setShowMobilePreview(false)} />
           <div className="relative bg-surface border-t-2 border-foreground rounded-t-none p-4 flex flex-col gap-4 max-h-[85%] z-20 overflow-hidden">

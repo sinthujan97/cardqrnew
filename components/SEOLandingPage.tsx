@@ -9,7 +9,7 @@ import {
   ChevronDown, Sparkles, Smartphone, QrCode, Coffee, Link as LinkIcon
 } from 'lucide-react';
 import PhoneMockup from '@/components/PhoneMockup';
-import QRGenerator from '@/components/QRGenerator';
+import QRStylingCustomizer from '@/components/QRStylingCustomizer';
 import AdSlot from '@/components/AdSlot';
 import SiteNav from '@/components/SiteNav';
 import TemplatePreview from '@/components/TemplatePreviews';
@@ -172,7 +172,7 @@ export default function SEOLandingPage({
         {/* Right Visual Column (Interactive Instant QR Generator Widget) */}
         <div className="flex-1 w-full max-w-md lg:max-w-none flex justify-center">
           {showQRWidget ? (
-            <div className="boxy w-full max-w-sm bg-surface rounded-none p-6 relative overflow-hidden">
+            <div className={`boxy w-full bg-surface rounded-none p-6 relative overflow-hidden ${inputUrl.trim() ? 'max-w-2xl' : 'max-w-sm'}`}>
               <div className="relative z-10 flex flex-col gap-4.5">
                 <div className="flex items-center gap-2">
                   <div className="w-7 h-7 rounded-none bg-accent-dim text-accent flex items-center justify-center">
@@ -204,13 +204,12 @@ export default function SEOLandingPage({
                 </div>
 
                 {/* Dynamic QR Output Zone */}
-                <div className="border-t border-border-default pt-4.5 flex flex-col items-center min-h-[220px] justify-center">
-                  {inputUrl.trim() ? (
-                    <div className="p-4 bg-white border border-border-default rounded-none relative">
-                      <div className="absolute top-1 left-1.5 text-[7px] font-mono text-muted-text/30 select-none">PROOF</div>
-                      <QRGenerator value={inputUrl.trim()} size={160} showDownloads={true} />
-                    </div>
-                  ) : (
+                {inputUrl.trim() ? (
+                  <div className="border-t border-border-default pt-4.5">
+                    <QRStylingCustomizer value={inputUrl.trim()} />
+                  </div>
+                ) : (
+                  <div className="border-t border-border-default pt-4.5 flex flex-col items-center min-h-[220px] justify-center">
                     <div className="flex flex-col items-center text-center text-muted-text/30 gap-3 py-6">
                       <div className="w-14 h-14 rounded-none border border-dashed border-border-default flex items-center justify-center bg-surface-2">
                         <QrCode className="w-6 h-6 text-muted-text/45" />
@@ -222,8 +221,8 @@ export default function SEOLandingPage({
                         </span>
                       </div>
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
             </div>
           ) : (

@@ -39,7 +39,7 @@ export default function SiteNav() {
       {/* Right side: Badge, theme toggle, and CTA */}
       <div className="flex items-center gap-3">
         {/* "Free — No Signup" badge */}
-        <span className="hidden sm:inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-none border border-emerald-500/30">
+        <span className="hidden md:inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-none border border-emerald-500/30">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
           Free — No Signup
         </span>
@@ -48,7 +48,7 @@ export default function SiteNav() {
 
         <Link
           href="/create/website-url"
-          className="boxy h-9 px-4 bg-accent hover:brightness-105 text-accent-foreground text-xs font-bold rounded-none flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap"
+          className="boxy hidden md:flex h-9 px-4 bg-accent hover:brightness-105 text-accent-foreground text-xs font-bold rounded-none items-center justify-center gap-1 cursor-pointer whitespace-nowrap"
         >
           <span>Create Free QR Card</span>
           <ArrowRight className="w-3.5 h-3.5" />
@@ -90,6 +90,14 @@ export default function SiteNav() {
             className="text-xs font-bold text-muted-text hover:text-primary py-1.5 block"
           >
             FAQs
+          </Link>
+          <Link
+            href="/create/website-url"
+            onClick={() => setMobileMenuOpen(false)}
+            className="boxy h-10 px-4 bg-accent text-accent-foreground text-xs font-bold rounded-none flex items-center justify-center gap-1.5 cursor-pointer"
+          >
+            <span>Create Free QR Card</span>
+            <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
       )}

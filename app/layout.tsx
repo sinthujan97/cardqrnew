@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono, Bricolage_Grotesque } from "next/font/google";
 import Script from "next/script";
+import AdSenseLoader from "@/components/AdSenseLoader";
 import "./globals.css";
 
 
@@ -135,12 +136,7 @@ export default function RootLayout({
             __html: `(function(){try{var t=localStorage.getItem('cardqr-theme');if(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark');}}catch(e){}})();`,
           }}
         />
-        <Script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2616045881002465"
-          crossOrigin="anonymous"
-          strategy="afterInteractive"
-        />
+        <AdSenseLoader />
         {children}
       </body>
     </html>
