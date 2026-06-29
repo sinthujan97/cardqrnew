@@ -1164,6 +1164,415 @@ export function CatalogPreview({ data, slug = '' }: { data: ProductCatalogData; 
 }
 
 // -------------------------------------------------------------
+// NEW TEMPLATE PREVIEWS (website-url, pdf, images, video, etc.)
+// -------------------------------------------------------------
+
+export function WebsiteUrlPreview({ data, slug = '' }: { data: any; slug?: string }) {
+  const url = data.url || 'https://example.com';
+  const title = data.title || 'Visit Website';
+  
+  return (
+    <div className="p-6 flex flex-col items-center justify-center min-h-[380px] text-center text-primary font-sans select-none">
+      <div className="w-16 h-16 rounded-2xl bg-accent/10 flex items-center justify-center mb-6 border border-accent/20 shadow-sm animate-pulse">
+        <Globe className="w-8 h-8 text-accent" />
+      </div>
+      
+      <h2 className="text-lg font-bold tracking-tight text-white">{title}</h2>
+      <p className="text-[11px] text-muted-text mt-1.5 break-all max-w-[220px] font-mono">{url}</p>
+      
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="w-full h-11 bg-accent hover:bg-accent/90 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-2 mt-8 transition-all shadow-md"
+      >
+        <span>Open Website</span>
+        <ExternalLink className="w-3.5 h-3.5" />
+      </a>
+    </div>
+  );
+}
+
+export function PdfPreview({ data, slug = '' }: { data: any; slug?: string }) {
+  const title = data.title || 'Document.pdf';
+  const desc = data.description || 'Scan to view PDF document';
+  
+  return (
+    <div className="p-6 flex flex-col items-center justify-center min-h-[380px] text-center text-primary select-none">
+      <div className="w-16 h-16 rounded-2xl bg-red-500/10 flex items-center justify-center mb-6 border border-red-500/20 shadow-sm">
+        <Share2 className="w-8 h-8 text-red-500" />
+      </div>
+      
+      <h2 className="text-base font-bold tracking-tight text-white line-clamp-1">{title}</h2>
+      <p className="text-[11px] text-muted-text mt-2 max-w-[240px] line-clamp-3">{desc}</p>
+      
+      {data.pdfUrl ? (
+        <a
+          href={data.pdfUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-full h-11 bg-red-500 hover:bg-red-600 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-2 mt-8 transition-all shadow-md border-0"
+        >
+          <Share2 className="w-3.5 h-3.5" />
+          <span>Download PDF Document</span>
+        </a>
+      ) : (
+        <button
+          disabled
+          className="w-full h-11 bg-white/5 border border-white/10 text-muted-text text-xs font-bold rounded-xl flex items-center justify-center gap-2 mt-8"
+        >
+          <span>No Document Uploaded</span>
+        </button>
+      )}
+    </div>
+  );
+}
+
+export function ImagesPreview({ data, slug = '' }: { data: any; slug?: string }) {
+  const images = data.images || [];
+  const title = data.galleryTitle || 'Image Gallery';
+  
+  return (
+    <div className="p-6 flex flex-col min-h-[380px] text-primary select-none">
+      <h2 className="text-sm font-bold tracking-tight text-white text-center mb-4">{title}</h2>
+      
+      {images.length > 0 ? (
+        <div className="grid grid-cols-2 gap-2 max-h-[260px] overflow-y-auto pr-1 no-scrollbar">
+          {images.map((url: string, idx: number) => (
+            <div key={idx} className="aspect-square rounded-xl overflow-hidden border border-white/5 bg-white/5 relative">
+              {url ? (
+                <img src={url} alt={`Gallery ${idx}`} className="w-full h-full object-cover" crossOrigin="anonymous" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-[10px] text-muted-text">Empty</div>
+              )}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="flex-1 flex flex-col items-center justify-center text-center py-10">
+          <Plus className="w-8 h-8 text-muted-text/30 mb-2" />
+          <span className="text-[10px] text-muted-text">No images in gallery</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function VideoPreview({ data, slug = '' }: { data: any; slug?: string }) {
+  const url = data.videoUrl || '';
+  const title = data.title || 'Video Player';
+  const desc = data.description || '';
+  
+  return (
+    <div className="p-6 flex flex-col min-h-[380px] text-primary select-none">
+      <h2 className="text-sm font-bold text-white mb-2">{title}</h2>
+      
+      <div className="w-full aspect-video rounded-xl bg-white/5 border border-white/5 overflow-hidden flex items-center justify-center relative">
+        {url ? (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+            <span className="w-12 h-12 rounded-full bg-accent/20 border border-accent flex items-center justify-center text-accent animate-pulse font-bold text-xs">PLAY</span>
+          </div>
+        ) : (
+          <span className="text-[10px] text-muted-text">No Video URL Configured</span>
+        )}
+      </div>
+
+      <p className="text-[10px] text-muted-text mt-3 line-clamp-3">{desc}</p>
+    </div>
+  );
+}
+
+export function SimpleTextPreview({ data, slug = '' }: { data: any; slug?: string }) {
+  return (
+    <div className="p-6 flex flex-col min-h-[380px] text-primary select-none">
+      <h2 className="text-sm font-bold text-white mb-3 border-b border-white/5 pb-2">{data.title || 'Text Description'}</h2>
+      <div className="flex-1 text-[11px] text-muted-text leading-relaxed whitespace-pre-wrap overflow-y-auto max-h-[250px] no-scrollbar">
+        {data.text || 'Write your custom text on the left to see it render here.'}
+      </div>
+    </div>
+  );
+}
+
+export function FacebookPagePreview({ data, slug = '' }: { data: any; slug?: string }) {
+  const url = data.url || 'https://facebook.com';
+  return (
+    <div className="p-6 flex flex-col items-center justify-center min-h-[380px] text-center text-primary select-none">
+      <div className="w-16 h-16 rounded-2xl bg-blue-600/10 flex items-center justify-center mb-6 border border-blue-600/20 shadow-sm">
+        <Share2 className="w-8 h-8 text-blue-600" />
+      </div>
+      
+      <h2 className="text-base font-bold tracking-tight text-white">Visit Facebook Page</h2>
+      <p className="text-[10px] text-muted-text mt-1 max-w-[200px] break-all font-mono">{url}</p>
+      
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-2 mt-8 transition-all border-0"
+      >
+        <span>Go to Facebook</span>
+      </a>
+    </div>
+  );
+}
+
+export function AppDownloadPreview({ data, slug = '' }: { data: any; slug?: string }) {
+  const name = data.appName || 'My Premium App';
+  const desc = data.appDescription || 'Get our mobile app on iOS and Android';
+  
+  return (
+    <div className="p-6 flex flex-col items-center justify-center min-h-[380px] text-center text-primary select-none">
+      {data.logo ? (
+        <img src={data.logo} alt="App logo" className="w-16 h-16 rounded-2xl object-cover border border-white/10 mb-5 bg-white" crossOrigin="anonymous" />
+      ) : (
+        <div className="w-16 h-16 rounded-2xl bg-accent/10 border border-accent/20 flex items-center justify-center mb-5">
+          <ShoppingBag className="w-8 h-8 text-accent" />
+        </div>
+      )}
+      
+      <h2 className="text-base font-bold tracking-tight text-white">{name}</h2>
+      <p className="text-[10px] text-muted-text mt-2 max-w-[220px] line-clamp-3">{desc}</p>
+      
+      <div className="w-full flex flex-col gap-2 mt-6">
+        <a
+          href={data.appStoreUrl || '#'}
+          target="_blank"
+          className="h-10 bg-white/5 hover:bg-white/10 text-white rounded-lg flex items-center justify-center text-[10px] font-bold border border-white/10 transition-colors"
+        >
+          Download for iOS
+        </a>
+        <a
+          href={data.playStoreUrl || '#'}
+          target="_blank"
+          className="h-10 bg-white/5 hover:bg-white/10 text-white rounded-lg flex items-center justify-center text-[10px] font-bold border border-white/10 transition-colors"
+        >
+          Download for Android
+        </a>
+      </div>
+    </div>
+  );
+}
+
+export function GoogleReviewPreview({ data, slug = '' }: { data: any; slug?: string }) {
+  const name = data.businessName || 'Our Business';
+  const url = data.url || 'https://google.com';
+  
+  return (
+    <div className="p-6 flex flex-col items-center justify-center min-h-[380px] text-center text-primary select-none">
+      <div className="w-14 h-14 rounded-full bg-yellow-500/10 flex items-center justify-center mb-5 border border-yellow-500/20">
+        <Star className="w-7 h-7 text-yellow-500 fill-yellow-500" />
+      </div>
+      
+      <h2 className="text-base font-bold text-white">{name}</h2>
+      <div className="flex gap-1 justify-center my-3">
+        {[...Array(5)].map((_, i) => (
+          <Star key={i} className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+        ))}
+      </div>
+      <p className="text-[10px] text-muted-text max-w-[200px] mb-6">Leave us a review on Google. We appreciate your feedback!</p>
+      
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="w-full h-11 bg-yellow-500 hover:bg-yellow-600 text-black text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-md border-0"
+      >
+        <span>Write a Review</span>
+      </a>
+    </div>
+  );
+}
+
+export function InstagramProfilePreview({ data, slug = '' }: { data: any; slug?: string }) {
+  const rawUrl = data.url || 'https://instagram.com';
+  const url = rawUrl.startsWith('http') ? rawUrl : `https://instagram.com/${rawUrl}`;
+  
+  return (
+    <div className="p-6 flex flex-col items-center justify-center min-h-[380px] text-center text-primary select-none">
+      <div className="w-16 h-16 rounded-2xl bg-pink-500/10 flex items-center justify-center mb-6 border border-pink-500/20">
+        <InstagramIcon className="w-8 h-8 text-pink-500" />
+      </div>
+      
+      <h2 className="text-base font-bold tracking-tight text-white">Instagram Profile</h2>
+      <p className="text-[10px] text-muted-text mt-1 max-w-[200px] break-all font-mono">{url}</p>
+      
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="w-full h-11 bg-gradient-to-r from-pink-500 to-purple-600 hover:opacity-90 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-2 mt-8 transition-all border-0 shadow-md"
+      >
+        <span>View Profile</span>
+      </a>
+    </div>
+  );
+}
+
+export function EmailPreview({ data }: { data: any }) {
+  return (
+    <div className="p-5 flex flex-col min-h-[380px] text-primary select-none font-sans">
+      <div className="flex items-center gap-2 border-b border-white/5 pb-3.5 mb-4">
+        <Mail className="w-4 h-4 text-accent" />
+        <span className="text-[10px] font-bold text-muted-text uppercase tracking-widest">Email Draft</span>
+      </div>
+
+      <div className="space-y-3 flex-1">
+        <div className="p-2.5 bg-white/5 rounded-lg border border-white/5">
+          <span className="text-[9px] font-semibold text-muted-text uppercase block">To</span>
+          <span className="text-[10px] text-white font-mono break-all block mt-0.5">{data.emailAddress || 'sales@company.com'}</span>
+        </div>
+        <div className="p-2.5 bg-white/5 rounded-lg border border-white/5">
+          <span className="text-[9px] font-semibold text-muted-text uppercase block">Subject</span>
+          <span className="text-[10px] text-white font-bold block mt-0.5">{data.subject || 'Inquiry'}</span>
+        </div>
+        <div className="p-2.5 bg-white/5 rounded-lg border border-white/5 flex-1 min-h-[140px]">
+          <span className="text-[9px] font-semibold text-muted-text uppercase block">Body Message</span>
+          <p className="text-[10px] text-muted-text mt-1 whitespace-pre-wrap leading-relaxed">{data.body || 'Email content draft...'}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function SmsPreview({ data }: { data: any }) {
+  return (
+    <div className="p-5 flex flex-col min-h-[380px] text-primary select-none font-sans">
+      <div className="flex items-center gap-2 border-b border-white/5 pb-3.5 mb-4">
+        <MessageSquare className="w-4 h-4 text-cyan" />
+        <span className="text-[10px] font-bold text-muted-text uppercase tracking-widest">SMS Message</span>
+      </div>
+
+      <div className="flex-1 flex flex-col justify-end">
+        <div className="bg-[#1C1C24] p-3 rounded-2xl border border-white/5 max-w-[200px] mb-3">
+          <span className="text-[9px] text-muted-text block mb-1">To: {data.phoneNumber || '+15550192834'}</span>
+          <p className="text-[10px] text-white leading-relaxed">{data.message || 'Send message details...'}</p>
+        </div>
+        <span className="text-[7.5px] text-muted-text block mb-4 ml-2">Delivered via QR code scan</span>
+      </div>
+    </div>
+  );
+}
+
+export function PhoneCallPreview({ data }: { data: any }) {
+  const phone = data.phoneNumber || '+1 (555) 019-2834';
+  return (
+    <div className="p-6 flex flex-col items-center justify-center min-h-[380px] text-center text-primary select-none">
+      <div className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center mb-6 border border-emerald-500/20">
+        <Phone className="w-7 h-7 text-emerald-500" />
+      </div>
+      
+      <h2 className="text-sm font-bold text-muted-text uppercase tracking-widest">Dial Phone Number</h2>
+      <p className="text-xl font-bold tracking-tight text-white mt-3 font-mono">{phone}</p>
+      
+      <a
+        href={`tel:${phone}`}
+        className="w-full h-11 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-2 mt-8 transition-all border-0 shadow-md"
+      >
+        <Phone className="w-3.5 h-3.5" />
+        <span>Dial Number Now</span>
+      </a>
+    </div>
+  );
+}
+
+export function LocationPreview({ data }: { data: any }) {
+  const address = data.address || '1600 Amphitheatre Pkwy, CA';
+  const lat = data.latitude || '37.4220';
+  const lng = data.longitude || '-122.0841';
+  
+  return (
+    <div className="p-6 flex flex-col min-h-[380px] text-primary select-none">
+      <div className="flex items-center gap-2 border-b border-white/5 pb-3 mb-4">
+        <MapPin className="w-4 h-4 text-rose-500" />
+        <span className="text-[10px] font-bold text-muted-text uppercase tracking-widest">Geographical Location</span>
+      </div>
+
+      <div className="flex-1 flex flex-col gap-4">
+        <div className="w-full aspect-video bg-white/5 border border-white/5 rounded-xl overflow-hidden relative flex items-center justify-center">
+          <div className="absolute w-2 h-2 rounded-full bg-rose-500 animate-ping" />
+          <div className="absolute w-1.5 h-1.5 rounded-full bg-rose-500" />
+          <span className="text-[8px] text-muted-text absolute bottom-2 font-mono">Lat: {lat} | Lng: {lng}</span>
+        </div>
+
+        <div>
+          <span className="text-[8px] text-muted-text uppercase font-bold">Address</span>
+          <p className="text-[10px] text-white font-medium mt-1 leading-relaxed">{address}</p>
+        </div>
+
+        <a
+          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-full h-10 bg-[#1C1C24] hover:bg-white/5 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-2 transition-all border border-white/5"
+        >
+          <MapPin className="w-3.5 h-3.5 text-rose-500" />
+          <span>Open in Google Maps</span>
+        </a>
+      </div>
+    </div>
+  );
+}
+
+export function YoutubeChannelPreview({ data }: { data: any }) {
+  const rawUrl = data.url || 'https://youtube.com';
+  const url = rawUrl.startsWith('http') ? rawUrl : `https://youtube.com/${rawUrl}`;
+  
+  return (
+    <div className="p-6 flex flex-col items-center justify-center min-h-[380px] text-center text-primary select-none">
+      <div className="w-16 h-16 rounded-2xl bg-red-600/10 flex items-center justify-center mb-6 border border-red-600/20">
+        <YoutubeIcon className="w-8 h-8 text-red-600" />
+      </div>
+      
+      <h2 className="text-base font-bold tracking-tight text-white font-sans">YouTube Channel</h2>
+      <p className="text-[10px] text-muted-text mt-1 max-w-[200px] break-all font-mono">{url}</p>
+      
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="w-full h-11 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-2 mt-8 transition-all border-0 shadow-md"
+      >
+        <YoutubeIcon className="w-3.5 h-3.5" />
+        <span>Open Channel</span>
+      </a>
+    </div>
+  );
+}
+
+export function PaymentPreview({ data }: { data: any }) {
+  const url = data.paymentUrl || 'https://paypal.me';
+  const title = data.title || 'Premium Checkout';
+  const amount = data.amount || '0.00';
+  
+  return (
+    <div className="p-6 flex flex-col min-h-[380px] text-primary select-none font-sans justify-between">
+      <div>
+        <div className="flex items-center gap-2 border-b border-white/5 pb-3 mb-4">
+          <Star className="w-4 h-4 text-emerald-400 fill-emerald-400" />
+          <span className="text-[10px] font-bold text-muted-text uppercase tracking-widest">Payment Request</span>
+        </div>
+
+        <div className="p-4 bg-[#1C1C24] border border-white/5 rounded-2xl text-center">
+          <span className="text-[9px] text-muted-text block uppercase tracking-wider">Total Amount</span>
+          <span className="text-3xl font-extrabold tracking-tight text-white block mt-1.5 font-mono">${amount}</span>
+          <span className="text-[10px] text-muted-text block mt-3 font-semibold">{title}</span>
+        </div>
+      </div>
+
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="w-full h-11 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-2 mt-6 transition-all border-0 shadow-md"
+      >
+        <span>Complete Payment</span>
+        <ArrowRight className="w-3.5 h-3.5" />
+      </a>
+    </div>
+  );
+}
+
+// -------------------------------------------------------------
 // MAIN MULTI-PREVIEW DISPATCHER
 // -------------------------------------------------------------
 export default function TemplatePreview({ 
@@ -1171,23 +1580,56 @@ export default function TemplatePreview({
   data,
   slug = ''
 }: { 
-  type: 'business' | 'menu' | 'event' | 'link' | 'wifi' | 'catalog';
+  type: any;
   data: any;
   slug?: string;
 }) {
   switch (type) {
     case 'business':
+    case 'business-card':
       return <BusinessPreview data={data as BusinessCardData} slug={slug} />;
     case 'menu':
+    case 'restaurant-menu':
       return <MenuPreview data={data as RestaurantMenuData} slug={slug} />;
     case 'event':
       return <EventPreview data={data as EventCardData} slug={slug} />;
     case 'link':
+    case 'social-media':
       return <LinkPreview data={data as LinkCardData} slug={slug} />;
     case 'wifi':
       return <WifiPreview data={data as WiFiCardData} />;
     case 'catalog':
       return <CatalogPreview data={data as ProductCatalogData} slug={slug} />;
+    case 'website-url':
+      return <WebsiteUrlPreview data={data} slug={slug} />;
+    case 'pdf':
+      return <PdfPreview data={data} slug={slug} />;
+    case 'images':
+      return <ImagesPreview data={data} slug={slug} />;
+    case 'video':
+      return <VideoPreview data={data} slug={slug} />;
+    case 'simple-text':
+      return <SimpleTextPreview data={data} slug={slug} />;
+    case 'facebook-page':
+      return <FacebookPagePreview data={data} slug={slug} />;
+    case 'app-download':
+      return <AppDownloadPreview data={data} slug={slug} />;
+    case 'google-review':
+      return <GoogleReviewPreview data={data} slug={slug} />;
+    case 'instagram-profile':
+      return <InstagramProfilePreview data={data} slug={slug} />;
+    case 'email':
+      return <EmailPreview data={data} />;
+    case 'sms':
+      return <SmsPreview data={data} />;
+    case 'phone-call':
+      return <PhoneCallPreview data={data} />;
+    case 'location':
+      return <LocationPreview data={data} />;
+    case 'youtube-channel':
+      return <YoutubeChannelPreview data={data} />;
+    case 'payment':
+      return <PaymentPreview data={data} />;
     default:
       return <div className="p-5 text-center text-xs">Invalid template selection</div>;
   }

@@ -240,13 +240,136 @@ export const INITIAL_CATALOG_DATA: ProductCatalogData = {
   ]
 };
 
-export const getInitialData = (type: TemplateType) => {
+export const INITIAL_WEBSITE_URL: any = {
+  url: 'https://example.com',
+  title: 'My Portfolio Website'
+};
+
+export const INITIAL_PDF: any = {
+  title: 'Annual Product Guide.pdf',
+  description: 'Download the complete catalog of screenprints, exhibitions, and pricing details.',
+  pdfUrl: ''
+};
+
+export const INITIAL_IMAGES: any = {
+  galleryTitle: 'Studio Exhibition Gallery',
+  images: [
+    'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?auto=format&fit=crop&q=80&w=300&h=300',
+    'https://images.unsplash.com/photo-1579783928621-7a13d66a6211?auto=format&fit=crop&q=80&w=300&h=300'
+  ]
+};
+
+export const INITIAL_VIDEO: any = {
+  title: 'Exhibition Launch Presentation',
+  description: 'A behind-the-scenes walkthrough of Charlotte Dubois latest art launch and design systems.',
+  videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+};
+
+export const INITIAL_SIMPLE_TEXT: any = {
+  title: 'Quick Studio Notice',
+  text: 'The gallery will be closed for private viewings on Mondays. For reservations, please contact us via phone or email.'
+};
+
+export const INITIAL_FACEBOOK: any = {
+  url: 'https://facebook.com/studioarcs'
+};
+
+export const INITIAL_APP_DOWNLOAD: any = {
+  appName: 'Studio Arcs App',
+  appDescription: 'Browse portfolios, check prices, and submit customized commissions.',
+  logo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=120&h=120',
+  appStoreUrl: 'https://apps.apple.com',
+  playStoreUrl: 'https://play.google.com'
+};
+
+export const INITIAL_GOOGLE_REVIEW: any = {
+  businessName: 'Studio Arcs Gallery',
+  url: 'https://search.google.com/local/writereview'
+};
+
+export const INITIAL_INSTAGRAM: any = {
+  url: 'https://instagram.com/studioarcs'
+};
+
+export const INITIAL_EMAIL: any = {
+  emailAddress: 'contact@studioarcs.com',
+  subject: 'Art Commission Inquiry',
+  body: 'Hello, I would like to get a quote for a custom screenprint.'
+};
+
+export const INITIAL_SMS: any = {
+  phoneNumber: '+15550192834',
+  message: 'Hello Charlotte, I scanned your QR code and would like to connect.'
+};
+
+export const INITIAL_PHONE_CALL: any = {
+  phoneNumber: '+15550192834'
+};
+
+export const INITIAL_LOCATION: any = {
+  address: '1600 Amphitheatre Pkwy, Mountain View, CA',
+  latitude: '37.4220',
+  longitude: '-122.0841'
+};
+
+export const INITIAL_YOUTUBE: any = {
+  url: 'https://youtube.com/@studioarcs'
+};
+
+export const INITIAL_PAYMENT: any = {
+  paymentUrl: 'https://paypal.me/studioarcs/50',
+  title: 'Exhibition Reservation Deposit',
+  amount: '50.00'
+};
+
+export const getInitialData = (type: string) => {
   switch (type) {
-    case 'business': return INITIAL_BUSINESS_DATA;
-    case 'menu': return INITIAL_MENU_DATA;
-    case 'event': return INITIAL_EVENT_DATA;
-    case 'link': return INITIAL_LINK_DATA;
-    case 'wifi': return INITIAL_WIFI_DATA;
-    case 'catalog': return INITIAL_CATALOG_DATA;
+    case 'business':
+    case 'business-card':
+      return INITIAL_BUSINESS_DATA;
+    case 'menu':
+    case 'restaurant-menu':
+      return INITIAL_MENU_DATA;
+    case 'event':
+      return INITIAL_EVENT_DATA;
+    case 'link':
+    case 'social-media':
+      return INITIAL_LINK_DATA;
+    case 'wifi':
+      return INITIAL_WIFI_DATA;
+    case 'catalog':
+      return INITIAL_CATALOG_DATA;
+    case 'website-url':
+      return INITIAL_WEBSITE_URL;
+    case 'pdf':
+      return INITIAL_PDF;
+    case 'images':
+      return INITIAL_IMAGES;
+    case 'video':
+      return INITIAL_VIDEO;
+    case 'simple-text':
+      return INITIAL_SIMPLE_TEXT;
+    case 'facebook-page':
+      return INITIAL_FACEBOOK;
+    case 'app-download':
+      return INITIAL_APP_DOWNLOAD;
+    case 'google-review':
+      return INITIAL_GOOGLE_REVIEW;
+    case 'instagram-profile':
+      return INITIAL_INSTAGRAM;
+    case 'email':
+      return INITIAL_EMAIL;
+    case 'sms':
+      return INITIAL_SMS;
+    case 'phone-call':
+      return INITIAL_PHONE_CALL;
+    case 'location':
+      return INITIAL_LOCATION;
+    case 'youtube-channel':
+      return INITIAL_YOUTUBE;
+    case 'payment':
+      return INITIAL_PAYMENT;
+    default:
+      return {};
   }
 };

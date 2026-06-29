@@ -35,13 +35,13 @@ function compileMarkdown(markdown: string): string {
 
     if (line.startsWith('# ')) {
       if (inList) { result += listType === 'ul' ? '</ul>\n' : '</ol>\n'; inList = false; listType = null; }
-      result += `<h1 class="text-2xl md:text-3xl font-heading font-medium text-primary mt-8 mb-4 border-b border-border-default pb-2">${line.slice(2)}</h1>\n`;
+      result += `<h1 class="heading-display text-2xl md:text-3xl text-primary mt-8 mb-4 border-b border-border-default pb-2">${line.slice(2)}</h1>\n`;
     } else if (line.startsWith('## ')) {
       if (inList) { result += listType === 'ul' ? '</ul>\n' : '</ol>\n'; inList = false; listType = null; }
-      result += `<h2 class="text-lg md:text-xl font-heading font-medium text-primary mt-8 mb-3">${line.slice(3)}</h2>\n`;
+      result += `<h2 class="heading-display text-lg md:text-xl text-primary mt-8 mb-3">${line.slice(3)}</h2>\n`;
     } else if (line.startsWith('### ')) {
       if (inList) { result += listType === 'ul' ? '</ul>\n' : '</ol>\n'; inList = false; listType = null; }
-      result += `<h3 class="text-base font-heading font-medium text-primary mt-6 mb-2">${line.slice(4)}</h3>\n`;
+      result += `<h3 class="heading-display text-base text-primary mt-6 mb-2">${line.slice(4)}</h3>\n`;
     } else if (line.startsWith('- ') || line.startsWith('* ')) {
       if (!inList || listType !== 'ul') {
         if (inList) { result += listType === 'ul' ? '</ul>\n' : '</ol>\n'; }
@@ -176,7 +176,7 @@ export default async function Page({ params }: Props) {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-background text-primary selection:bg-accent selection:text-white">
+    <div className="flex flex-col min-h-screen bg-background text-primary selection:bg-accent selection:text-accent-foreground">
       <SiteNav />
 
       {/* Main Container */}
@@ -190,7 +190,7 @@ export default async function Page({ params }: Props) {
           </Link>
         </div>
 
-        <article className="bg-surface paper-grain p-8 md:p-12 rounded-3xl border border-border-default shadow-2xs">
+        <article className="boxy bg-surface paper-grain p-8 md:p-12 rounded-none">
           <div 
             className="prose max-w-none prose-stone prose-sm md:prose-base leading-relaxed text-muted-text"
             dangerouslySetInnerHTML={{ __html: page.contentHtml }}
@@ -203,7 +203,7 @@ export default async function Page({ params }: Props) {
         <div className="max-w-7xl mx-auto w-full flex flex-col md:flex-row justify-between gap-8 md:gap-4">
           <div className="flex flex-col gap-2 max-w-xs">
             <div className="flex items-center gap-1.5">
-              <span className="font-black text-primary text-sm font-heading">CardQR</span>
+              <span className="heading-display text-primary text-sm">CardQR</span>
               <span className="text-[10px]">© 2026 CardQR Inc.</span>
             </div>
             <p className="text-[10px] text-muted-text/80 leading-relaxed font-medium">

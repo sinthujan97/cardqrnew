@@ -179,3 +179,120 @@ export async function submitRsvpAction(
     return { success: false, error: error.message || 'An unexpected error occurred' };
   }
 }
+
+// -------------------------------------------------------------
+// NEW QR_CODES AND MENU_ITEMS SERVER ACTIONS
+// -------------------------------------------------------------
+
+import { getQRCodeBySlug, getQRCodeById, saveQRCode, saveMenuItems, getMenuItemsByQRCodeId } from '@/lib/db';
+
+export async function createQRCodeAction(
+  slug: string,
+  name: string,
+  content: any,
+  qr_image_url?: string,
+  logo_url?: string,
+  menuItems?: any[]
+): Promise<ActionResponse<{ id: string; slug: string }>> {
+  try {
+    const cleanSlug = slug.toLowerCase().replace(/[^a-z0-9-]/g, '').trim();
+    if (!cleanSlug) {
+      return { success: false, error: 'URL Slug is required' };
+    }
+    
+    // Check if slug is taken (in either cards or qr_codes table)
+    const existingCard = await getCardBySlug(cleanSlug);
+    const existingQR = await getQRCodeBySlug(cleanSlug);
+    if (existingCard || existingQR) {
+      return { success: false, error: 'URL Slug is already in use by another card' };
+    }
+    
+    const qrCode = await saveQRCode({
+      slug: cleanSlug,
+      name,
+      content,
+      qr_image_url,
+      logo_url
+    });
+
+    if (menuItems && menuItems.length > 0) {
+      const flattenedItems: any[] = [];
+      menuItems.forEach((section: any) => {
+        const items = section.items || [];
+        items.forEach((item: any) => {
+          flattenedItems.push({
+            section_name: section.name,
+            item_name: item.name,
+            description: item.description,
+            price: item.price,
+            image_url: item.image,
+            allergens: item.tags || []
+          });
+        });
+      });
+      await saveMenuItems(qrCode.id, flattenedItems);
+    }
+
+    return {
+      success: true,
+      data: {
+        id: qrCode.id,
+        slug: qrCode.slug
+      }
+    };
+  } catch (error: any) {
+    console.error('Failed to create QR code:', error);
+    return { success: false, error: error.message || 'Failed to create QR code' };
+  }
+}
+
+export async function updateQRCodeAction(
+  id: string,
+  slug: string,
+  name: string,
+  content: any,
+  qr_image_url?: string,
+  logo_url?: string,
+  menuItems?: any[]
+): Promise<ActionResponse<{ id: string; slug: string }>> {
+  try {
+    const qrCode = await saveQRCode({
+      id,
+      slug,
+      name,
+      content,
+      qr_image_url,
+      logo_url
+    });
+
+    if (menuItems && menuItems.length > 0) {
+      const flattenedItems: any[] = [];
+      menuItems.forEach((section: any) => {
+        const items = section.items || [];
+        items.forEach((item: any) => {
+          flattenedItems.push({
+            section_name: section.name,
+            item_name: item.name,
+            description: item.description,
+            price: item.price,
+            image_url: item.image,
+            allergens: item.tags || []
+          });
+        });
+      });
+      await saveMenuItems(qrCode.id, flattenedItems);
+    }
+
+    return {
+      success: true,
+      data: {
+        id: qrCode.id,
+        slug: qrCode.slug
+      }
+    };
+  } catch (error: any) {
+    console.error('Failed to update QR code:', error);
+    return { success: false, error: error.message || 'Failed to update QR code' };
+  }
+}
+

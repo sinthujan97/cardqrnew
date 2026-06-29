@@ -1,573 +1,419 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Briefcase, Utensils, Calendar, Link2, Wifi, ShoppingBag, 
-  ArrowRight, ShieldCheck, RefreshCw, Zap, Sliders, Check, 
-  ChevronDown, Sparkles, Smartphone, QrCode, Coffee, Link as LinkIcon
+import Image from 'next/image';
+import { motion } from 'framer-motion';
+import {
+  Briefcase, Utensils, Calendar, Wifi, ShoppingBag,
+  ArrowRight, ShieldCheck, Zap, Sliders, Check,
+  ChevronDown, Sparkles, Globe, FileText, Image as ImageIcon,
+  Video, AlignLeft, Download, Star,
+  Mail, MessageSquare, Phone, MapPin,
+  CreditCard, ExternalLink, QrCode, Link as LinkIcon
 } from 'lucide-react';
 import QRGenerator from '@/components/QRGenerator';
-import TemplatePreview from '@/components/TemplatePreviews';
+
+const Youtube = (props: any) => (
+  <svg className={props.className} fill="currentColor" viewBox="0 0 24 24">
+    <path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.11C19.528 3.545 12 3.545 12 3.545s-7.528 0-9.388.508a3.003 3.003 0 0 0-2.11 2.11C0 8.022 0 12 0 12s0 3.978.502 5.837a3.003 3.003 0 0 0 2.11 2.11c1.86.508 9.388.508 9.388.508s7.528 0 9.388-.508a3.003 3.003 0 0 0 2.11-2.11C24 15.978 24 12 24 12s0-3.978-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+  </svg>
+);
+
+const Instagram = (props: any) => (
+  <svg className={props.className} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+  </svg>
+);
+
+const Facebook = (props: any) => (
+  <svg className={props.className} fill="currentColor" viewBox="0 0 24 24">
+    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+  </svg>
+);
+
 import AdSlot from '@/components/AdSlot';
 import SiteNav from '@/components/SiteNav';
-import {
-  INITIAL_BUSINESS_DATA,
-  INITIAL_MENU_DATA,
-  INITIAL_EVENT_DATA,
-  INITIAL_LINK_DATA,
-  INITIAL_WIFI_DATA,
-  INITIAL_CATALOG_DATA
-} from '@/lib/templates';
 
-const getTemplateSEOPath = (id: string) => {
-  switch (id) {
-    case 'business': return '/business-card-qr';
-    case 'menu': return '/restaurant-menu-qr';
-    case 'event': return '/event-qr';
-    case 'link': return '/link-hub-qr';
-    case 'wifi': return '/wifi-qr';
-    case 'catalog': return '/product-catalog-qr';
-    default: return '/create';
-  }
-};
+// 20 Templates configuration
+const TEMPLATE_CARDS = [
+  { slug: 'website-url', label: 'Website URL', icon: Globe, cat: 'Business', desc: 'Direct scannable web link.' },
+  { slug: 'business-card', label: 'Business Card', icon: Briefcase, cat: 'Business', desc: 'Digital vCard contact profiles.' },
+  { slug: 'google-review', label: 'Google Review', icon: Star, cat: 'Business', desc: 'Direct review generation page.' },
+  { slug: 'payment', label: 'Payment Link', icon: CreditCard, cat: 'Business', desc: 'Accept payment links directly.' },
+  { slug: 'location', label: 'Map Location', icon: MapPin, cat: 'Business', desc: 'Coordinate navigation mapping.' },
+  { slug: 'restaurant-menu', label: 'Restaurant Menu', icon: Utensils, cat: 'Food & Hospitality', desc: 'Full digital items menu card.' },
+  { slug: 'wifi', label: 'Wi-Fi Sharing', icon: Wifi, cat: 'Food & Hospitality', desc: 'SSID password sharing credentials.' },
+  { slug: 'social-media', label: 'Social Profile Hub', icon: Sparkles, cat: 'Social & Media', desc: 'Unified profiles landing aggregator.' },
+  { slug: 'facebook-page', label: 'Facebook Page', icon: Facebook, cat: 'Social & Media', desc: 'Social page scannable redirect.' },
+  { slug: 'instagram-profile', label: 'Instagram Profile', icon: Instagram, cat: 'Social & Media', desc: 'Scannable link to account.' },
+  { slug: 'youtube-channel', label: 'YouTube Channel', icon: Youtube, cat: 'Social & Media', desc: 'Channel or video direct play.' },
+  { slug: 'email', label: 'Email prefill', icon: Mail, cat: 'Communication', desc: 'Mail to recipient with prefilled fields.' },
+  { slug: 'sms', label: 'SMS text message', icon: MessageSquare, cat: 'Communication', desc: 'SMS dial prompt with prefilled text.' },
+  { slug: 'phone-call', label: 'Phone Call dial', icon: Phone, cat: 'Communication', desc: 'Direct dial shortcut scannable.' },
+  { slug: 'pdf', label: 'PDF Document', icon: FileText, cat: 'Files & Content', desc: 'Upload & share catalog document.' },
+  { slug: 'images', label: 'Image Gallery', icon: ImageIcon, cat: 'Files & Content', desc: 'Bento styled photos carousel.' },
+  { slug: 'video', label: 'Video player', icon: Video, cat: 'Files & Content', desc: 'Play embedded presentation files.' },
+  { slug: 'simple-text', label: 'Plain Text note', icon: AlignLeft, cat: 'Files & Content', desc: 'Static messages read note.' },
+  { slug: 'app-download', label: 'App Download', icon: Download, cat: 'Apps & Events', desc: 'iOS & Play Store download links.' },
+  { slug: 'event', label: 'Event & RSVP', icon: Calendar, cat: 'Apps & Events', desc: 'RSVP confirmations & invites.' },
+];
 
-// FAQS data
 const FAQS = [
   {
-    question: "Do customers need to download an app?",
-    answer: "No. CardQR destinations load directly in the phone's native browser overlay when scanned. The page layout is specifically optimized to look and feel exactly like a native app sheet, bypassing traditional website bars."
+    question: "Do dynamic QR codes track scans?",
+    answer: "Yes! When you use our dynamic templates (like menus, business cards, link hubs, etc.), scans route through cardqr.com/q/[id] to increment the database analytics count before redirecting seamlessly."
   },
   {
-    question: "Can I edit my card details after printing the QR code?",
-    answer: "Yes, completely! When you publish a card, we generate a Secret Edit Link (e.g. cardqr.com/edit/xyz). Bookmark this link. You can use it to update menu items, phone numbers, or WiFI passwords anytime, and the QR code printed on paper stays exactly the same."
+    question: "Is there any sign-up required to create cards?",
+    answer: "No. CardQR allows you to generate completely functional QR codes and custom destinations instantly without email registration."
   },
   {
-    question: "Do my CardQR codes ever expire?",
-    answer: "No, never. Even on our Free plan, generated QR codes and public card URLs remain active forever with unlimited scans. We don't implement hidden scan limits or force shutdowns."
+    question: "Can I edit data after printing QR codes?",
+    answer: "Yes, for all dynamic QR destinations. You get a secret edit link upon creation. Static codes (like direct Wi-Fi credentials or raw URLs) encode values directly onto the paper, so they cannot be updated after printing."
   },
   {
-    question: "Can I use my own custom business branding?",
-    answer: "Yes, with CardQR Pro you can upload custom logos, remove the small 'CardQR' attribution badge, use custom themes, and upload higher-resolution image assets for your backgrounds and products."
+    question: "What download formats are supported?",
+    answer: "We support PNG, SVG, PDF, and JPEG downloads, catering to digital assets, prints, signboards, or professional graphic designers."
+  },
+  {
+    question: "Are the generated codes permanent?",
+    answer: "Yes. All scannable QR codes created with CardQR have unlimited lifetime scans and never expire."
+  },
+  {
+    question: "How do I embed custom logos?",
+    answer: "During Step 2 (QR Customizer), you can choose standard icons or upload your own corporate/personal logo file in SVG, PNG, or JPG formats to be centered automatically."
+  },
+  {
+    question: "Is CardQR free?",
+    answer: "Yes. CardQR is 100% free. We generate revenue through unobtrusive Google AdSense ad slots placed inside our workspace and templates."
   }
 ];
 
-// Core template preview data (Realistic print mockup content)
-const MOCK_TEMPLATES = [
-  {
-    id: 'business',
-    title: 'Business Card',
-    audience: 'For Professionals & Founders',
-    descText: 'Share contact details, job roles, social links, and enable direct vCard contact downloads.',
-    icon: Briefcase
-  },
-  {
-    id: 'menu',
-    title: 'Restaurant Menu',
-    audience: 'For Diners & Cafes',
-    descText: 'Showcase visual categories, menu items, specific pricing, and food details dynamically.',
-    icon: Utensils
-  },
-  {
-    id: 'event',
-    title: 'Event Invite Card',
-    audience: 'For Hosts & Organizers',
-    descText: 'Publish date schedules, venue maps, agenda descriptors, and collect user RSVPs easily.',
-    icon: Calendar
-  },
-  {
-    id: 'link',
-    title: 'Link Hub',
-    audience: 'For Creators & Brands',
-    descText: 'Build a link-in-bio page. Highlight multiple links, portfolio exhibits, and digital assets.',
-    icon: Link2
-  },
-  {
-    id: 'wifi',
-    title: 'WiFi Sharing Card',
-    audience: 'For Hosts & Offices',
-    descText: 'Deploy secure WiFi access points with auto-connect setup and a quick copy network card.',
-    icon: Wifi
-  },
-  {
-    id: 'catalog',
-    title: 'Product Catalog',
-    audience: 'For Retailers & Shops',
-    descText: 'List item cards with pricing, descriptions, and checkout links straight to WhatsApp orders.',
-    icon: ShoppingBag
-  }
-];
+export default function Homepage() {
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [heroUrl, setHeroUrl] = useState('');
 
-
-function LiveCardPreview({ id }: { id: string }) {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // Determine the example data and force theme: 'light'
-  const getExampleData = () => {
-    switch (id) {
-      case 'business':
-        return { ...INITIAL_BUSINESS_DATA, theme: 'light' };
-      case 'menu':
-        return { ...INITIAL_MENU_DATA, theme: 'light' };
-      case 'event':
-        return { ...INITIAL_EVENT_DATA, theme: 'light' };
-      case 'link':
-        return { ...INITIAL_LINK_DATA, theme: 'light' };
-      case 'wifi':
-        return { ...INITIAL_WIFI_DATA, theme: 'light' };
-      case 'catalog':
-        return { ...INITIAL_CATALOG_DATA, theme: 'light' };
-      default:
-        return null;
-    }
-  };
-
-  const data = getExampleData();
-
-  if (!data) return null;
-
-  // Render a clean placeholder/skeleton when not mounted to ensure CLS = 0
-  if (!mounted) {
-    return (
-      <div className="w-full flex justify-center items-center py-4 bg-surface-2/50 border border-border-default/60 rounded-xl min-h-[340px]">
-        <div
-          className="relative shadow-sm border border-border-default rounded-2xl overflow-hidden bg-surface paper-grain animate-pulse"
-          style={{ width: '192px', height: '300px' }}
-        >
-          {/* Skeleton representation of a card */}
-          <div className="w-full h-full flex flex-col justify-between p-4">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-border-default" />
-              <div className="flex-1 flex flex-col gap-1.5">
-                <div className="h-3 bg-border-default rounded w-2/3" />
-                <div className="h-2 bg-border-default rounded w-1/2" />
-              </div>
-            </div>
-            <div className="flex-1 flex flex-col justify-center gap-3 py-6">
-              <div className="h-3 bg-border-default rounded w-full" />
-              <div className="h-3 bg-border-default rounded w-5/6" />
-              <div className="h-3 bg-border-default rounded w-4/5" />
-            </div>
-            <div className="h-7 bg-border-default rounded-lg w-full" />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="w-full flex justify-center items-center py-4 bg-surface-2/50 border border-border-default/60 rounded-xl overflow-hidden relative min-h-[340px]">
-      <div
-        className="relative shadow-sm border border-border-default rounded-2xl overflow-hidden pointer-events-none select-none bg-surface paper-grain"
-        style={{
-          width: '192px',
-          height: '300px',
-        }}
-      >
-        <div 
-          style={{
-            width: '320px',
-            height: '500px',
-            transform: 'scale(0.6)',
-            transformOrigin: 'top left',
-            pointerEvents: 'none',
-          }}
-          className="absolute inset-0"
-        >
-          <TemplatePreview type={id as any} data={data} slug="preview" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-const renderTemplatePreview = (id: string) => {
-  return <LiveCardPreview id={id} />;
-};
-
-export default function LandingPage() {
-  const [activeFaq, setActiveFaq] = useState<number | null>(null);
-  
-  // Hero Animation Loop State
-  const [heroCardStep, setHeroCardStep] = useState<'scan' | 'sheet'>('scan');
-  
-  // Instant URL to QR Code state
-  const [inputUrl, setInputUrl] = useState('');
-  
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setHeroCardStep(prev => prev === 'scan' ? 'sheet' : 'scan');
-    }, 4500);
-    return () => clearInterval(timer);
-  }, []);
-
-  const toggleFaq = (index: number) => {
-    setActiveFaq(activeFaq === index ? null : index);
+  // Schema markup
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": FAQS.map((faq) => ({
+      "@type": "Question",
+      "name": faq.question,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": faq.answer
+      }
+    }))
   };
 
   return (
-    <div className="flex flex-col flex-1 bg-background font-sans selection:bg-accent selection:text-white text-primary">
-      
+    <div className="min-h-screen bg-background text-primary flex flex-col font-sans select-none relative overflow-x-hidden">
+      {/* JSON-LD Schema */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+
       <SiteNav />
 
-      {/* 1. HERO SECTION & INSTANT URL GENERATOR */}
-      <section className="relative px-6 pt-12 pb-16 md:pt-16 md:pb-20 overflow-hidden max-w-7xl mx-auto w-full flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
-        
-        {/* Left Info Column */}
-        <div className="flex-1 max-w-xl text-center lg:text-left">
-          {/* Tagline Badge */}
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-accent-dim text-accent border border-accent/15 rounded-full text-[10px] font-bold mb-5 uppercase tracking-wide">
-            <Sparkles className="w-3 h-3 text-accent" /> Create a beautiful QR destination in 60 seconds
-          </div>
+      {/* Hero Section */}
+      <section className="relative pt-20 pb-16 px-4 md:px-8 max-w-7xl mx-auto w-full flex flex-col items-center text-center z-10">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="space-y-6 max-w-4xl"
+        >
+          {/* Trust badge */}
+          <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-accent-foreground bg-accent px-3.5 py-1.5 rounded-none border-2 border-hard">
+            <Sparkles className="w-3.5 h-3.5" />
+            Vibrant Designs & Vector Exports
+          </span>
 
-          <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-primary tracking-tight leading-[1.05] font-heading text-balance">
-            Turn Any QR Code Into a Branded Experience
+          <h1 className="heading-display text-4xl sm:text-6xl md:text-7xl text-primary leading-[0.95]">
+            Generate QR Codes <span className="text-accent">Free</span>.<br />
+            No Signup Required.
           </h1>
 
-          <p className="text-xs md:text-sm text-muted-text leading-relaxed mt-5 max-w-md mx-auto lg:mx-0 font-medium">
-            Create digital business cards, menus, event pages, WiFi cards, and link hubs in under a minute. Or convert any web link into a print-ready vector QR code instantly.
+          <p className="text-sm md:text-base text-muted-text max-w-2xl mx-auto leading-relaxed">
+            Create beautiful, custom styled QR codes in 60 seconds. Digital menus, business cards, Wi-Fi credentials, payment links, and files. Complete vector downloads.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 mt-8">
+          <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
             <Link
-              href="/create"
-              className="h-12 w-full sm:w-auto px-7 bg-primary hover:opacity-90 text-background text-xs font-bold rounded-full flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer text-center"
+              href="/create/website-url"
+              className="boxy h-12 px-8 bg-accent hover:brightness-105 text-accent-foreground font-bold rounded-none flex items-center justify-center gap-2"
             >
-              Start Template Creator <ArrowRight className="w-4 h-4" />
+              <span>Create Free QR Card</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+            <Link
+              href="#templates"
+              className="boxy h-12 px-8 bg-surface hover:bg-surface-2 text-primary font-bold rounded-none flex items-center justify-center"
+            >
+              Browse Templates
             </Link>
           </div>
-        </div>
 
-        {/* Right Visual Column (Interactive Instant QR Generator Widget) */}
-        <div className="flex-1 w-full max-w-md lg:max-w-none flex justify-center">
-          <div className="w-full max-w-sm bg-surface border border-border-default rounded-2xl p-6 shadow-sm relative overflow-hidden stamp-press">
-            
-            <div className="relative z-10 flex flex-col gap-4.5">
+          {/* Trust badges */}
+          <div className="flex justify-center items-center gap-6 pt-8 text-[10px] font-bold text-muted-text uppercase tracking-wider">
+            <span className="flex items-center gap-1"><ShieldCheck className="w-4 h-4 text-emerald-500" /> Vector Exports</span>
+            <span className="flex items-center gap-1"><Zap className="w-4 h-4 text-cyan" /> Instant Live</span>
+            <span className="flex items-center gap-1"><Sliders className="w-4 h-4 text-accent" /> Color Customize</span>
+          </div>
+        </motion.div>
+
+        {/* Hero instant URL-to-QR widget */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.6 }}
+          className="boxy mt-16 w-full max-w-sm bg-surface rounded-none p-6 relative overflow-hidden"
+        >
+          <div className="relative z-10 flex flex-col gap-4.5">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-none bg-accent-dim text-accent border border-border-default flex items-center justify-center">
+                <LinkIcon className="w-4 h-4" />
+              </div>
+              <h3 className="text-xs font-bold text-primary tracking-tight font-sans">Instant URL to QR Code</h3>
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[10px] font-bold text-muted-text uppercase tracking-wider font-mono">Paste your Web URL</label>
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-accent-dim text-accent flex items-center justify-center">
-                  <LinkIcon className="w-4 h-4" />
-                </div>
-                <h3 className="text-xs font-bold text-primary tracking-tight font-sans">Instant URL to QR Code</h3>
-              </div>
-
-              {/* URL Input */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] font-bold text-muted-text uppercase tracking-wider font-mono">Paste your Web URL</label>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="text"
-                    value={inputUrl}
-                    onChange={(e) => setInputUrl(e.target.value)}
-                    placeholder="e.g. https://my-website.com"
-                    className="flex-1 h-9 px-3 text-xs border border-border-default rounded-xl focus:outline-none focus:border-accent font-medium text-primary bg-surface-2 shadow-2xs font-mono"
-                  />
-                  {inputUrl && (
-                    <button
-                      onClick={() => setInputUrl('')}
-                      className="h-9 px-2 text-[10px] font-bold border border-border-default rounded-xl hover:bg-surface-2/80 cursor-pointer text-muted-text bg-surface"
-                    >
-                      Clear
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              {/* Dynamic QR Output Zone */}
-              <div className="border-t border-border-default pt-4.5 flex flex-col items-center min-h-[220px] justify-center">
-                {inputUrl.trim() ? (
-                  <div className="p-4 bg-white border border-border-default rounded-xl shadow-2xs relative">
-                    <div className="absolute top-1 left-1.5 text-[7px] font-mono text-muted-text/30 select-none">PROOF</div>
-                    <QRGenerator value={inputUrl.trim()} size={160} showDownloads={true} />
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center text-center text-muted-text/30 gap-3 py-6">
-                    <div className="w-14 h-14 rounded-full border border-dashed border-border-default flex items-center justify-center bg-surface-2">
-                      <QrCode className="w-6 h-6 text-muted-text/45" />
-                    </div>
-                    <div>
-                      <span className="text-[10px] font-bold text-muted-text uppercase block font-mono">QR Code Preview</span>
-                      <span className="text-[9px] text-muted-text/80 max-w-[200px] mt-1 block text-center">
-                        Enter any link or URL path above to generate a downloadable high-resolution code.
-                      </span>
-                    </div>
-                  </div>
+                <input
+                  type="text"
+                  value={heroUrl}
+                  onChange={(e) => setHeroUrl(e.target.value)}
+                  placeholder="e.g. https://my-website.com"
+                  className="flex-1 h-9 px-3 text-xs border border-border-default rounded-none focus:outline-none focus:border-accent font-medium text-primary bg-surface-2 font-mono"
+                />
+                {heroUrl && (
+                  <button
+                    onClick={() => setHeroUrl('')}
+                    className="h-9 px-2 text-[10px] font-bold border border-border-default rounded-none hover:bg-surface-2/80 cursor-pointer text-muted-text bg-surface"
+                  >
+                    Clear
+                  </button>
                 )}
               </div>
             </div>
-          </div>
-        </div>
 
+            <div className="border-t border-border-default pt-4.5 flex flex-col items-center min-h-[220px] justify-center">
+              {heroUrl.trim() ? (
+                <div className="p-4 bg-white border border-border-default rounded-none">
+                  <QRGenerator value={heroUrl.trim()} size={160} showDownloads={true} />
+                </div>
+              ) : (
+                <div className="flex flex-col items-center text-center text-muted-text/40 gap-3 py-6">
+                  <div className="w-14 h-14 rounded-none border border-dashed border-border-default flex items-center justify-center bg-surface-2">
+                    <QrCode className="w-6 h-6 text-muted-text/50" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold text-muted-text uppercase block font-mono">QR Code Preview</span>
+                    <span className="text-[9px] text-muted-text/80 max-w-[200px] mt-1 block text-center">
+                      Enter any link above to generate a downloadable high-resolution code.
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </motion.div>
       </section>
 
-      {/* 1b. HERO AD SLOT */}
-      <div className="w-full max-w-7xl mx-auto px-6 select-none">
-        <AdSlot slotId="homepage-post-hero" />
+      {/* Ad Slot 1 */}
+      <div className="max-w-7xl mx-auto w-full px-4 mb-16">
+        <AdSlot slotId="home-top-banner" />
       </div>
 
-      {/* 2. TEMPLATE SHOWCASE */}
-      <section id="templates" className="px-6 py-20 bg-surface border-t border-b border-border-default w-full">
-        <div className="max-w-7xl mx-auto w-full">
-          <div className="text-center max-w-xl mx-auto mb-14">
-            <h2 className="text-2xl md:text-3xl font-medium text-primary tracking-tight font-heading">6 Core Templates to Cover Any Idea</h2>
-            <p className="text-xs text-muted-text mt-2.5 font-medium">
-              Choose your profile style, fill details, and get your QR code instantly. No manual coding or website builder layout dragging needed.
-            </p>
-          </div>
+      {/* Templates Grid Section */}
+      <section id="templates" className="pt-8 pb-16 px-4 md:px-8 max-w-7xl mx-auto w-full z-10">
+        <div className="text-center mb-12 space-y-2">
+          <h2 className="heading-display text-2xl md:text-3xl text-primary">Choose a Template Category</h2>
+          <p className="text-xs text-muted-text max-w-md mx-auto">Select from our 20 specialized tools designed for fast execution. Click any card to start.</p>
+        </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
-            {MOCK_TEMPLATES.map((tpl) => {
-              const Icon = tpl.icon;
-              return (
-                <div
-                  key={tpl.id}
-                  className="bg-surface paper-grain p-6 rounded-3xl border border-border-default hover:border-accent/30 transition-all duration-300 card-shadow select-none flex flex-col justify-between min-h-[420px]"
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          {TEMPLATE_CARDS.map((card, idx) => {
+            const Icon = card.icon;
+            return (
+              <motion.div
+                key={card.slug}
+                initial={{ opacity: 0, y: 15 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.03, duration: 0.3 }}
+              >
+                <Link
+                  href={`/create/${card.slug}`}
+                  className="boxy group relative block bg-surface hover:bg-surface-2 p-5 rounded-none h-full flex flex-col justify-between"
                 >
                   <div>
-                    {/* Header Info */}
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-accent-dim text-accent border border-accent/15 flex items-center justify-center">
-                          <Icon className="w-5 h-5" />
-                        </div>
-                        <div>
-                          <span className="text-[9px] font-mono tracking-wider text-accent uppercase font-bold">
-                            {tpl.audience}
-                          </span>
-                          <h3 className="text-sm font-bold text-primary tracking-tight font-heading mt-0.5">
-                            {tpl.title}
-                          </h3>
-                        </div>
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="w-9 h-9 rounded-none bg-surface-2 border border-border-default flex items-center justify-center text-muted-text group-hover:text-accent transition-all">
+                        <Icon className="w-4 h-4" />
                       </div>
+                      <span className="text-[8px] font-bold text-cyan bg-cyan/10 px-2 py-0.5 rounded-none uppercase tracking-wider">{card.cat}</span>
                     </div>
-                    
-                    <p className="text-xs text-muted-text mt-3.5 leading-relaxed font-medium">
-                      {tpl.descText}
-                    </p>
-
-                    {/* Realistic Interactive Preview Container */}
-                    <div className="mt-5.5">
-                      {renderTemplatePreview(tpl.id)}
-                    </div>
+                    <h3 className="text-sm font-bold text-primary group-hover:text-accent transition-colors">{card.label}</h3>
+                    <p className="text-[10px] text-muted-text mt-1.5 leading-relaxed font-semibold">{card.desc}</p>
                   </div>
 
-                  {/* Actions Footer */}
-                  <div className="mt-6 pt-4 border-t border-border-default/50 flex items-center justify-between gap-4">
-                    <Link 
-                      href={getTemplateSEOPath(tpl.id)}
-                      className="text-[10px] font-bold text-muted-text hover:text-accent transition-all flex items-center gap-1 font-mono uppercase tracking-wider"
-                    >
-                      Learn More <ArrowRight className="w-3 h-3" />
-                    </Link>
-                    
-                    <Link
-                      href={`/create/${tpl.id}`}
-                      className="h-9 px-4 bg-primary hover:opacity-90 text-background text-[11px] font-bold rounded-full flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
-                    >
-                      <Sparkles className="w-3.5 h-3.5" /> Use Template
-                    </Link>
+                  <div className="mt-5 flex items-center justify-between text-[10px] font-bold text-muted-text group-hover:text-accent transition-colors">
+                    <span>Create Free</span>
+                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                   </div>
-                </div>
-              );
-            })}
+                </Link>
+              </motion.div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* How it Works Stepper */}
+      <section id="how-it-works" className="py-16 px-4 md:px-8 bg-surface/20 border-y border-border-default w-full">
+        <div className="max-w-7xl mx-auto w-full text-center">
+          <h2 className="heading-display text-2xl md:text-3xl text-primary mb-12">How It Works</h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              { step: '01', title: 'Fill Content Details', desc: 'Select any of the 20 templates and input website URLs, document uploads, menus, Wi-Fi credentials, or text.' },
+              { step: '02', title: 'Customize Layout & QR', desc: 'Choose patterns, modify dots, select gradient colors, and upload branding icons to be embedded in the center.' },
+              { step: '03', title: 'Export & Deploy', desc: 'Download high-quality vector print assets in SVG, PDF, PNG, or JPEG formats. Scan and launch instantly.' }
+            ].map((item, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 15 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.05, duration: 0.3 }}
+                className="boxy flex flex-col items-center text-center p-6 bg-surface rounded-none relative"
+              >
+                <span className="heading-display text-3xl text-accent font-mono block mb-4">{item.step}</span>
+                <h3 className="text-base font-bold text-primary mb-2">{item.title}</h3>
+                <p className="text-[11px] text-muted-text leading-relaxed font-semibold max-w-[240px]">{item.desc}</p>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
 
-
-
-      {/* 3. HOW IT WORKS */}
-      <section id="how-it-works" className="px-6 py-20 w-full max-w-7xl mx-auto">
-        <div className="text-center max-w-xl mx-auto mb-16">
-          <h2 className="text-2xl md:text-3xl font-medium text-primary tracking-tight font-heading">Create and Deploy in Seconds</h2>
-          <p className="text-xs text-muted-text mt-2.5 font-medium">
-            CardQR streamlines publication into 4 linear steps. No accounts required to get started.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 relative">
-          
-          {[
-            {
-              title: 'Choose template',
-              desc: 'Select from 6 beautiful target profiles built specifically for restaurants, networking, events, or local stores.'
-            },
-            {
-              title: 'Fill in your info',
-              desc: 'Type your contact handles, upload items, dates, network names, or banner screens. Changes reflect live.'
-            },
-            {
-              title: 'Generate QR instantly',
-              desc: 'Our engine processes details and renders print-ready, high-resolution vector SVG or PNG files.'
-            },
-            {
-              title: 'Print and share',
-              desc: 'Place the QR code on tables, business card backs, or flyers. Update the details anytime online.'
-            }
-          ].map((item, idx) => (
-            <div key={idx} className="flex flex-col bg-surface p-5 rounded-2xl border border-border-default card-shadow relative">
-              <div className="text-lg font-medium font-heading italic text-accent mb-2">0{idx + 1}.</div>
-              <h3 className="text-xs font-bold text-primary tracking-tight font-sans">{item.title}</h3>
-              <p className="text-[11px] text-muted-text leading-relaxed mt-2 font-medium">{item.desc}</p>
-              <div className="step-dots mt-4">
-                {[0, 1, 2, 3].map((dot) => (
-                  <span key={dot} className={dot <= idx ? 'is-filled' : ''} />
-                ))}
-              </div>
-            </div>
-          ))}
-
-        </div>
-      </section>
-
-      {/* 2b. POST-STEPS AD SLOT */}
-      <div className="w-full max-w-7xl mx-auto px-6 select-none">
-        <AdSlot slotId="homepage-post-steps" />
+      {/* Ad Slot 2 */}
+      <div className="max-w-7xl mx-auto w-full px-4 py-8">
+        <AdSlot slotId="home-mid-banner" />
       </div>
 
-      {/* 4. FEATURES GRID SECTION */}
-      <section id="features" className="px-6 py-20 bg-surface border-t border-b border-border-default w-full select-none">
-        <div className="text-center max-w-xl mx-auto mb-16">
-          <h2 className="text-2xl md:text-3xl font-medium text-primary tracking-tight font-heading">Engineered for Fast Real-World Use</h2>
-          <p className="text-xs text-muted-text mt-2.5 font-medium">
-            CardQR handles the hosting, files, QR compiling, and rendering details. You just input info.
-          </p>
+      {/* Features Section */}
+      <section id="features" className="py-16 px-4 md:px-8 max-w-7xl mx-auto w-full z-10">
+        <div className="text-center mb-12 space-y-2">
+          <h2 className="heading-display text-2xl md:text-3xl text-primary">Designed for Modern Teams</h2>
+          <p className="text-xs text-muted-text">Premium utilities that outperform standard generators.</p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto w-full">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
-            {
-              title: "Instant QR Generation",
-              desc: "Get vectors (SVG) or pixel-perfect (PNG) files ready to download and print on posters, paper, or metal badges.",
-              icon: Zap
-            },
-            {
-              title: "Edit Anytime",
-              desc: "Save your Secret Edit link. Modify prices, names, social URLs, or dates instantly. Printed QRs stay the same.",
-              icon: Sliders
-            },
-            {
-              title: "No Login Required",
-              desc: "We skip passwords, onboarding checklists, and accounts. Fill in details and get the QR in 60 seconds flat.",
-              icon: ShieldCheck
-            },
-            {
-              title: "Mobile Optimized",
-              desc: "Every single layout runs mobile-first, ensuring native viewport scaling, drag gestures, and fluid spring animations.",
-              icon: Smartphone
-            },
-            {
-              title: "Printable QR Codes",
-              desc: "QR grids are formatted at high resolution to avoid scanning latency or fuzzy prints.",
-              icon: QrCode
-            },
-            {
-              title: "Professional Templates",
-              desc: "Select structures designed specifically for menus, WiFi cards, art listings, and networking profiles.",
-              icon: Sparkles
-            },
-            {
-              title: "Custom Branding",
-              desc: "Pro users can hide branding elements, configure custom color variables, and upload heavy branding files.",
-              icon: Coffee
-            },
-            {
-              title: "Fast Loading",
-              desc: "We prioritize pure client-side bundles, dynamic image resizing, and CDN delivery to ensure scan loads under 200ms.",
-              icon: RefreshCw
-            }
-          ].map((item, idx) => (
-            <div key={idx} className="bg-surface-2 p-5 rounded-2xl border border-border-default card-shadow flex flex-col justify-between">
-              <div>
-                <div className="w-8.5 h-8.5 rounded-lg bg-accent-dim text-accent border border-accent/15 flex items-center justify-center mb-4">
-                  <item.icon className="w-4.5 h-4.5" />
+            { title: 'Vector formats', desc: 'Download clean vector files in SVG or print-ready PDF formats that look crisp on signboards, packaging, or brochures.', icon: FileText },
+            { title: '100% Free layout', desc: 'CardQR has no subscription fees, scan count caps, hidden shutdowns, or sign-up walls. Simply build, print, and share.', icon: Zap },
+            { title: 'Branding embedding', desc: 'Embed your logo in the middle of any code pattern. We support automatic center-clipping so scanners remain operational.', icon: Sparkles },
+            { title: 'Redirection scan counts', desc: 'Dynamic template QR codes redirect through our short URL route, tracking scan counts inside Supabase database.', icon: Sliders },
+            { title: 'Frosted Glass UI', desc: 'Destination pages look like native app sheets, bypassing messy browser elements on iOS or Android viewports.', icon: Briefcase },
+            { title: 'No App downloads', desc: 'Visitors view menus, cards, and portfolios directly in their phone browsers instantly upon scanning.', icon: Globe }
+          ].map((item, idx) => {
+            const Icon = item.icon;
+            return (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 15 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.04, duration: 0.3 }}
+                className="boxy p-6 bg-surface rounded-none flex items-start gap-4"
+              >
+                <div className="w-10 h-10 rounded-none bg-surface-2 border border-border-default flex items-center justify-center text-accent shrink-0">
+                  <Icon className="w-5 h-5" />
                 </div>
-                <h3 className="text-xs font-bold text-primary tracking-tight">{item.title}</h3>
-                <p className="text-[11px] text-muted-text leading-relaxed mt-2 font-medium">{item.desc}</p>
+                <div>
+                  <h3 className="text-sm font-bold text-primary">{item.title}</h3>
+                  <p className="text-[11px] text-muted-text mt-1.5 leading-relaxed font-semibold">{item.desc}</p>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* FAQ Accordion Section */}
+      <section id="faq" className="py-16 px-4 md:px-8 max-w-3xl mx-auto w-full z-10">
+        <h2 className="heading-display text-2xl md:text-3xl text-primary text-center mb-10">Frequently Asked Questions</h2>
+
+        <div className="space-y-3">
+          {FAQS.map((faq, idx) => {
+            const isOpen = openFaq === idx;
+            return (
+              <div
+                key={idx}
+                className="boxy-sm bg-surface rounded-none overflow-hidden"
+              >
+                <button
+                  onClick={() => setOpenFaq(isOpen ? null : idx)}
+                  className="w-full p-4.5 text-left flex items-center justify-between text-xs font-bold text-primary hover:text-accent transition-colors cursor-pointer"
+                >
+                  <span>{faq.question}</span>
+                  <ChevronDown className={`w-4 h-4 text-muted-text transition-transform duration-300 ${isOpen ? 'rotate-180 text-accent' : ''}`} />
+                </button>
+
+                {isOpen && (
+                  <div className="px-4.5 pb-4.5 text-[11px] text-muted-text leading-relaxed border-t border-border-default pt-3 font-semibold">
+                    {faq.answer}
+                  </div>
+                )}
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 
-      {/* 3b. PRE-FAQ AD SLOT */}
-      <div className="w-full max-w-7xl mx-auto px-6 select-none">
-        <AdSlot slotId="homepage-pre-faq" />
-      </div>
-
-      {/* 5. FAQ */}
-      <section className="px-6 py-20 w-full max-w-7xl mx-auto">
-        <div className="max-w-2xl mx-auto w-full">
-          <div className="text-center mb-14">
-            <h2 className="text-2xl md:text-3xl font-medium text-primary tracking-tight font-heading">Frequently Asked Questions</h2>
-            <p className="text-xs text-muted-text mt-2.5">Clear responses to common workflow questions.</p>
+      {/* Bold lime CTA band */}
+      <section className="cta-band w-full px-4 md:px-8 py-16 md:py-20">
+        <div className="max-w-7xl mx-auto w-full flex flex-col md:flex-row items-center justify-between gap-8">
+          <div className="text-center md:text-left">
+            <span className="text-[10px] font-bold uppercase tracking-widest opacity-70">Join thousands of creators</span>
+            <h2 className="heading-display text-3xl sm:text-5xl mt-2">Get started today</h2>
           </div>
-
-          <div className="flex flex-col gap-3">
-            {FAQS.map((faq, idx) => {
-              const isOpen = activeFaq === idx;
-              return (
-                <div key={idx} className="border border-border-default rounded-2xl overflow-hidden bg-surface shadow-2xs">
-                  <button
-                    onClick={() => toggleFaq(idx)}
-                    aria-expanded={isOpen}
-                    aria-controls={`faq-answer-${idx}`}
-                    className="w-full px-5 py-4 flex items-center justify-between text-left transition-all hover:bg-surface-2/80 cursor-pointer"
-                  >
-                    <span className="text-xs font-bold text-primary">{faq.question}</span>
-                    <ChevronDown className={`w-4 h-4 text-muted-text transition-all ${isOpen ? 'rotate-180' : ''}`} />
-                  </button>
-                  
-                  {isOpen && (
-                    <div id={`faq-answer-${idx}`} role="region" className="px-5 pb-5 pt-1 text-xs text-muted-text leading-relaxed font-medium">
-                      {faq.answer}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
+          <Link
+            href="/create/website-url"
+            className="boxy h-12 px-8 bg-background text-primary font-bold rounded-none flex items-center justify-center gap-2 whitespace-nowrap"
+          >
+            <span>Try CardQR free</span>
+            <ArrowRight className="w-4 h-4" />
+          </Link>
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="py-12 px-6 border-t border-border-default text-xs text-muted-text bg-surface">
-        <div className="max-w-7xl mx-auto w-full flex flex-col md:flex-row justify-between gap-8 md:gap-4">
-          <div className="flex flex-col gap-2 max-w-xs">
-            <div className="flex items-center gap-1.5">
-              <span className="font-black text-primary text-sm font-heading">CardQR</span>
-              <span className="text-[10px]">© 2026 CardQR Inc.</span>
-            </div>
-            <p className="text-[10px] text-muted-text/80 leading-relaxed font-medium">
-              Create premium, native-feeling mobile cards linked to custom QR codes in seconds.
-            </p>
+      {/* Footer */}
+      <footer className="mt-auto border-t border-border-default bg-background py-8 px-4 md:px-8 w-full z-10 text-center font-sans">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="flex items-center gap-2">
+            <Image src="/logo.svg" alt="CardQR Logo" width={24} height={24} className="rounded-none border border-border-emphasis" />
+            <span className="heading-display text-xs text-primary flex items-center gap-0.5">
+              Card<span className="text-accent">QR</span>
+            </span>
           </div>
-          
-          <div className="flex flex-wrap gap-x-8 gap-y-4">
-            <div className="flex flex-col gap-2 min-w-[100px]">
-              <span className="font-mono text-[9px] font-bold text-primary uppercase tracking-wider">Company</span>
-              <Link href="/about" className="hover:text-accent transition-all font-semibold text-[11px]">About Us</Link>
-              <Link href="/contact" className="hover:text-accent transition-all font-semibold text-[11px]">Contact Support</Link>
-            </div>
-            <div className="flex flex-col gap-2 min-w-[100px]">
-              <span className="font-mono text-[9px] font-bold text-primary uppercase tracking-wider">Legal</span>
-              <Link href="/terms-of-service" className="hover:text-accent transition-all font-semibold text-[11px]">Terms of Service</Link>
-              <Link href="/privacy-policy" className="hover:text-accent transition-all font-semibold text-[11px]">Privacy Policy</Link>
-            </div>
-            <div className="flex flex-col gap-2 min-w-[120px]">
-              <span className="font-mono text-[9px] font-bold text-primary uppercase tracking-wider">Guides & Resources</span>
-              <Link href="/wifi-qr-code-generator" className="hover:text-accent transition-all font-semibold text-[11px]">WiFi QR Generator Guide</Link>
-              <Link href="/qr-code-menu-maker" className="hover:text-accent transition-all font-semibold text-[11px]">QR Code Menu Maker</Link>
-              <Link href="/digital-business-card-maker" className="hover:text-accent transition-all font-semibold text-[11px]">Digital Business Card Guide</Link>
-            </div>
+
+          <div className="flex items-center gap-6 text-[10px] font-bold text-muted-text uppercase tracking-wider">
+            <Link href="/qr-code/website-url" className="hover:text-primary transition-colors">Website URL QR</Link>
+            <Link href="/qr-code/restaurant-menu" className="hover:text-primary transition-colors">Menu QR</Link>
+            <Link href="/qr-code/business-card" className="hover:text-primary transition-colors">Business QR</Link>
           </div>
+
+          <span className="text-[10px] text-muted-text/60">© 2026 CardQR Team. All scannables reserved.</span>
         </div>
       </footer>
-
     </div>
   );
 }

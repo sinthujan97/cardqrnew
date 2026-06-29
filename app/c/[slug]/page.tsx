@@ -1,16 +1,9 @@
 import React, { Suspense } from 'react';
 import Link from 'next/link';
 import { Metadata } from 'next';
-import { getCardBySlug } from '@/lib/db';
+import { getCardBySlug, getQRCodeBySlug } from '@/lib/db';
 import PublicCardClient from '@/components/PublicCardClient';
 import { AlertCircle, ArrowLeft } from 'lucide-react';
-
-export const unstable_instant = {
-  prefetch: 'runtime',
-  samples: [
-    { params: { slug: 'preview' } }
-  ]
-};
 
 interface PublicCardPageProps {
   params: Promise<{
@@ -18,10 +11,44 @@ interface PublicCardPageProps {
   }>;
 }
 
-// Generate dynamic SEO metadata matching the card info
+async function loadCardOrQRCode(slug: string) {
+  if (slug === 'preview') {
+    return {
+      templateType: 'business-card',
+      data: getInitialData('business-card'),
+      slug: 'preview'
+    };
+  }
+
+  // 1. Try to find in new schema qr_codes
+  const newQR = await getQRCodeBySlug(slug);
+  if (newQR) {
+    return {
+      templateType: newQR.name,
+      data: newQR.content,
+      slug: newQR.slug
+    };
+  }
+
+  // 2. Fallback to old cards schema
+  const oldCard = await getCardBySlug(slug);
+  if (oldCard) {
+    return {
+      templateType: oldCard.templateType,
+      data: oldCard.data,
+      slug: oldCard.slug
+    };
+  }
+
+  return null;
+}
+
+// Stub helper for static previews loading
+import { getInitialData } from '@/lib/templates';
+
 export async function generateMetadata({ params }: PublicCardPageProps): Promise<Metadata> {
   const resolvedParams = await params;
-  const card = await getCardBySlug(resolvedParams.slug);
+  const card = await loadCardOrQRCode(resolvedParams.slug);
   
   if (!card) {
     return {
@@ -33,30 +60,26 @@ export async function generateMetadata({ params }: PublicCardPageProps): Promise
   let title = 'CardQR Destination';
   let desc = 'A beautiful QR code experience';
 
-  if (card.templateType === 'business') {
+  if (card.templateType === 'business-card' || card.templateType === 'business') {
     title = `${card.data?.name || 'Business Card'} | CardQR`;
     desc = card.data?.position || 'Digital Business Card';
-  } else if (card.templateType === 'menu') {
+  } else if (card.templateType === 'restaurant-menu' || card.templateType === 'menu') {
     title = `${card.data?.restaurantName || 'Restaurant Menu'} | Menu`;
     desc = card.data?.description || 'View our food and drinks selection';
   } else if (card.templateType === 'event') {
     title = `${card.data?.title || 'Event Card'} | RSVP`;
     desc = `${card.data?.date || ''} - ${card.data?.venue || ''}`;
-  } else if (card.templateType === 'link') {
-    title = `${card.data?.displayName || 'Link Hub'} | Links`;
-    desc = card.data?.bio || 'Check out my latest links';
+  } else if (card.templateType === 'social-media' || card.templateType === 'link') {
+    title = `${card.data?.displayName || 'Social Profile Hub'} | Links`;
+    desc = card.data?.bio || 'Check out my profile links';
   } else if (card.templateType === 'wifi') {
     title = `Connect to ${card.data?.networkName || 'WiFi'} | CardQR`;
     desc = 'Instantly copy password to join network';
-  } else if (card.templateType === 'catalog') {
-    title = `${card.data?.catalogTitle || 'Product Catalog'} | Shop`;
-    desc = card.data?.catalogDescription || 'Explore our limited products';
   }
 
   return {
     title,
     description: desc,
-    // Prevent the workspace preview page from being indexed
     ...(resolvedParams.slug === 'preview' && {
       robots: { index: false, follow: false },
     }),
@@ -69,12 +92,6 @@ export async function generateMetadata({ params }: PublicCardPageProps): Promise
       type: 'website',
       url: `https://getcardqr.com/c/${resolvedParams.slug}`,
       images: [{ url: 'https://getcardqr.com/og-image.png', width: 1200, height: 630 }],
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title,
-      description: desc,
-      images: ['https://getcardqr.com/og-image.png'],
     }
   };
 }
@@ -104,7 +121,7 @@ export default async function PublicCardPage({ params }: PublicCardPageProps) {
 }
 
 async function CardLoader({ slug }: { slug: string }) {
-  const card = await getCardBySlug(slug);
+  const card = await loadCardOrQRCode(slug);
 
   if (!card) {
     return (
@@ -113,7 +130,7 @@ async function CardLoader({ slug }: { slug: string }) {
           <AlertCircle className="w-6 h-6" />
         </div>
         
-        <h1 className="text-xl font-bold tracking-tight text-primary">Destination Not Found</h1>
+        <h1 className="heading-display text-xl text-primary">Destination Not Found</h1>
         <p className="text-xs text-muted-text mt-2 max-w-[280px] leading-relaxed">
           The QR destination card you are looking for does not exist or may have been deleted by the owner.
         </p>
@@ -121,7 +138,7 @@ async function CardLoader({ slug }: { slug: string }) {
         <div className="mt-8 flex flex-col gap-2.5 w-full max-w-[200px]">
           <Link
             href="/"
-            className="w-full h-10 bg-primary hover:bg-accent text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+            className="boxy w-full h-10 bg-accent hover:brightness-105 text-accent-foreground text-xs font-bold rounded-none flex items-center justify-center gap-1.5 cursor-pointer"
           >
             <ArrowLeft className="w-4 h-4" /> Go to CardQR Home
           </Link>
@@ -130,5 +147,5 @@ async function CardLoader({ slug }: { slug: string }) {
     );
   }
 
-  return <PublicCardClient card={card} />;
+  return <PublicCardClient card={card as any} />;
 }

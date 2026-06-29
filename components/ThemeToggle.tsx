@@ -23,7 +23,7 @@ export default function ThemeToggle({ className = '' }: { className?: string }) 
     <button
       onClick={toggle}
       aria-label={mounted && isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-      className={`w-9 h-9 shrink-0 rounded-full border border-border-default bg-surface hover:bg-surface-2 text-primary flex items-center justify-center transition-all cursor-pointer ${className}`}
+      className={`boxy-sm w-9 h-9 shrink-0 rounded-none bg-surface hover:bg-surface-2 text-primary flex items-center justify-center cursor-pointer ${className}`}
     >
       {mounted && isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
     </button>

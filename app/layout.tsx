@@ -1,21 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, Outfit, JetBrains_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono, Bricolage_Grotesque } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 
 
 // ── next/font Google font loaders ─────────────────────────────────────────────
 // Fonts are self-hosted at build time — no render-blocking requests to Google.
-const fraunces = Fraunces({
-  subsets: ["latin"],
-  variable: "--font-heading",
-  display: "swap",
-  // Include italic axis so the italic variant works (used in how-it-works section)
-  style: ["normal", "italic"],
-  axes: ["opsz"],
-});
-
-const outfit = Outfit({
+const inter = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
   display: "swap",
@@ -26,6 +17,13 @@ const jetbrainsMono = JetBrains_Mono({
   variable: "--font-mono",
   display: "swap",
   style: ["normal", "italic"],
+});
+
+const bricolageGrotesque = Bricolage_Grotesque({
+  subsets: ["latin"],
+  variable: "--font-heading-display",
+  display: "swap",
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 // ── Shared JSON-LD structured data ────────────────────────────────────────────
@@ -111,7 +109,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${fraunces.variable} ${outfit.variable} ${jetbrainsMono.variable} h-full bg-background antialiased`}
+      className={`${inter.variable} ${jetbrainsMono.variable} ${bricolageGrotesque.variable} h-full bg-background antialiased`}
       suppressHydrationWarning
     >
       <head>
@@ -126,7 +124,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className="min-h-full flex flex-col selection:bg-accent selection:text-white"
+        className="min-h-full flex flex-col selection:bg-accent selection:text-accent-foreground"
         suppressHydrationWarning
       >
         {/* Theme boot script — applies saved/system theme before paint to avoid flash */}

@@ -4,70 +4,66 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import TemplatesDropdown from '@/components/TemplatesDropdown';
-import ThemeToggle from '@/components/ThemeToggle';
 import { 
-  Briefcase, Utensils, Calendar as CalendarIcon, Link2, Wifi, 
-  ShoppingBag, Sparkles, Send, Check, AlertTriangle, X, ChevronRight, Eye, QrCode
+  Sparkles, Send, Check, AlertTriangle, X, ChevronRight, Eye, QrCode,
+  ArrowRight, ArrowLeft, Download, Copy, Share2
 } from 'lucide-react';
 import Image from 'next/image';
-import { getInitialData, TemplateType } from '@/lib/templates';
-import { CardData } from '@/lib/db';
+import { getInitialData } from '@/lib/templates';
 import TemplateForm from '@/components/TemplateForms';
 import PhysicalCard from '@/components/PhysicalCard';
 import PhoneMockup from '@/components/PhoneMockup';
-import QRGenerator from '@/components/QRGenerator';
-import { createCardAction, updateCardAction, checkSlugAvailability } from '@/app/actions/card-actions';
+import QRStylingCustomizer from '@/components/QRStylingCustomizer';
+import { createQRCodeAction, updateQRCodeAction, checkSlugAvailability } from '@/app/actions/card-actions';
 import AdSlot from '@/components/AdSlot';
 
-const TEMPLATES: Array<{ id: TemplateType; label: string; icon: any }> = [
-  { id: 'business', label: 'Business Card', icon: Briefcase },
-  { id: 'menu', label: 'Restaurant Menu', icon: Utensils },
-  { id: 'event', label: 'Event Card', icon: CalendarIcon },
-  { id: 'link', label: 'Link Hub', icon: Link2 },
-  { id: 'wifi', label: 'WiFi Sharing', icon: Wifi },
-  { id: 'catalog', label: 'Product Catalog', icon: ShoppingBag },
-];
-
 interface WorkspaceBuilderProps {
-  initialCard?: CardData;
-  forcedTemplate?: TemplateType;
+  initialQRCode?: any;
+  forcedTemplate?: string;
 }
 
-export default function WorkspaceBuilder({ initialCard, forcedTemplate }: WorkspaceBuilderProps) {
+export default function WorkspaceBuilder({ initialQRCode, forcedTemplate }: WorkspaceBuilderProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const tParam = searchParams.get('t');
   
+  // Dynamic vs Static templates check
+  const DYNAMIC_TYPES = ['restaurant-menu', 'business-card', 'social-media', 'pdf', 'images', 'video', 'event'];
+
   // States
-  const [template, setTemplate] = useState<TemplateType>(
-    initialCard?.templateType || forcedTemplate || 'business'
+  const [template, setTemplate] = useState<string>(
+    initialQRCode?.slug || forcedTemplate || 'website-url'
   );
-  const [formData, setFormData] = useState<any>(initialCard?.data || null);
-  const [slug, setSlug] = useState(initialCard?.slug || '');
+  const [step, setStep] = useState<number>(1);
+  const [formData, setFormData] = useState<any>(initialQRCode?.content || null);
+  const [slug, setSlug] = useState(initialQRCode?.slug || '');
   const [slugStatus, setSlugStatus] = useState<'idle' | 'checking' | 'available' | 'taken'>(
-    initialCard ? 'available' : 'idle'
+    initialQRCode ? 'available' : 'idle'
   );
+  
   const [isPublishing, setIsPublishing] = useState(false);
-  const [publishResult, setPublishResult] = useState<{ publicUrl: string; editUrl: string } | null>(null);
+  const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
+  const [qrStyleOptions, setQrStyleOptions] = useState<any>(null);
+  const [createdId, setCreatedId] = useState<string>(initialQRCode?.id || '');
+  
   const [showMobilePreview, setShowMobilePreview] = useState(false);
   const [validationError, setValidationError] = useState('');
 
-  // Sync with URL query parameter t (only if not forced by dynamic route)
+  // Sync with URL query parameter t
   useEffect(() => {
-    if (!initialCard && !forcedTemplate && tParam) {
-      const validTemplates: TemplateType[] = ['business', 'menu', 'event', 'link', 'wifi', 'catalog'];
-      if (validTemplates.includes(tParam as TemplateType)) {
-        setTemplate(tParam as TemplateType);
-      }
+    if (!initialQRCode && !forcedTemplate && tParam) {
+      setTemplate(tParam);
     }
-  }, [tParam, initialCard, forcedTemplate]);
+  }, [tParam, initialQRCode, forcedTemplate]);
 
   // Handle template initial load or changes (only in create mode)
   useEffect(() => {
-    if (!initialCard) {
+    if (!initialQRCode) {
       setFormData(getInitialData(template));
+      // Reset step
+      setStep(1);
     }
-  }, [template, initialCard]);
+  }, [template, initialQRCode]);
 
   // Clean slug on change and validate
   const handleSlugChange = async (val: string) => {
@@ -78,8 +74,7 @@ export default function WorkspaceBuilder({ initialCard, forcedTemplate }: Worksp
       return;
     }
     
-    // In edit mode, if user changes back to original slug, it's available
-    if (initialCard && cleaned === initialCard.slug) {
+    if (initialQRCode && cleaned === initialQRCode.slug) {
       setSlugStatus('available');
       return;
     }
@@ -89,339 +84,382 @@ export default function WorkspaceBuilder({ initialCard, forcedTemplate }: Worksp
     setSlugStatus(isAvailable ? 'available' : 'taken');
   };
 
-  const handlePublish = async () => {
-    setValidationError('');
+  // Compute Static QR value based on form details
+  const getStaticQRValue = () => {
+    if (!formData) return '';
     
-    if (!slug) {
-      setValidationError('Please choose a URL path slug.');
-      return;
-    }
-    
-    if (slugStatus === 'taken') {
-      setValidationError('This URL path slug is already taken. Please choose another.');
-      return;
-    }
-
-    setIsPublishing(true);
-    try {
-      const origin = window.location.origin;
-      if (initialCard) {
-        // Edit mode update
-        const res = await updateCardAction(initialCard.editToken, formData, slug);
-        if (res.success && res.data) {
-          setPublishResult({
-            publicUrl: `${origin}/c/${res.data.slug}`,
-            editUrl: `${origin}/edit/${res.data.editToken}`
-          });
-        } else {
-          setValidationError(res.error || 'Failed to update card.');
-        }
-      } else {
-        // Create mode publish
-        const res = await createCardAction(slug, template, formData);
-        if (res.success && res.data) {
-          setPublishResult({
-            publicUrl: `${origin}/c/${res.data.slug}`,
-            editUrl: `${origin}/edit/${res.data.editToken}`
-          });
-        } else {
-          setValidationError(res.error || 'Failed to publish card.');
-        }
-      }
-    } catch (err: any) {
-      console.error(err);
-      setValidationError(err.message || 'An error occurred.');
-    } finally {
-      setIsPublishing(false);
+    switch (template) {
+      case 'website-url':
+      case 'facebook-page':
+      case 'youtube-channel':
+        return formData.url || 'https://getcardqr.com';
+      case 'instagram-profile':
+        const rawInsta = formData.url || '';
+        return rawInsta.startsWith('http') ? rawInsta : `https://instagram.com/${rawInsta}`;
+      case 'wifi':
+        return `WIFI:S:${formData.networkName || ''};T:${formData.security || 'WPA'};P:${formData.password || ''};;`;
+      case 'simple-text':
+        return formData.text || '';
+      case 'email':
+        return `mailto:${formData.emailAddress || ''}?subject=${encodeURIComponent(formData.subject || '')}&body=${encodeURIComponent(formData.body || '')}`;
+      case 'sms':
+        return `smsto:${formData.phoneNumber || ''}:${formData.message || ''}`;
+      case 'phone-call':
+        return `tel:${formData.phoneNumber || ''}`;
+      case 'location':
+        return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(formData.address || '')}`;
+      case 'payment':
+        return formData.paymentUrl || '';
+      case 'app-download':
+        return formData.appStoreUrl || formData.playStoreUrl || '';
+      default:
+        return 'https://getcardqr.com';
     }
   };
 
-const INTRO_CONTENT: Record<TemplateType, { title: string; desc: string }> = {
-  business: {
-    title: "Create a Free Digital Business Card",
-    desc: "Design your professional digital business card. Fill in your name, company, job role, and contact details. Prospects can scan the QR code to save your details to their contacts instantly."
-  },
-  menu: {
-    title: "Create a Free QR Code Restaurant Menu",
-    desc: "Build a beautiful online menu for your restaurant, diner, or café. Add item categories, pricing, descriptions, and photos. Update items instantly anytime without reprinting the QR code."
-  },
-  event: {
-    title: "Create a Free Event Invitation Card",
-    desc: "Set up a clean digital landing page for your event or opening. Add date details, venue maps, agenda guides, and let guests submit their RSVP confirmations instantly."
-  },
-  link: {
-    title: "Create a Free Link Hub (Link-in-Bio)",
-    desc: "Build a premium central link-in-bio page for your profile. Highlight multiple links, portfolio galleries, latest articles, and social profiles behind one scannable code."
-  },
-  wifi: {
-    title: "Create a Free WiFi Sharing Card",
-    desc: "Generate a table card or wall sign for guest WiFi credentials. Enter your network SSID and password. Guests scan to connect automatically, with a copy button fallback."
-  },
-  catalog: {
-    title: "Create a Free QR Code Product Catalog",
-    desc: "Create an online boutique display of your products. Add images, descriptions, and prices. Enable customers to submit orders directly to your WhatsApp number."
-  }
-};
+  // Step 1 -> Step 2 transition: save content if dynamic
+  const handleContinueToDesign = async () => {
+    setValidationError('');
+    const isDynamic = DYNAMIC_TYPES.includes(template);
 
-  if (!formData) return null;
+    if (isDynamic) {
+      if (!slug) {
+        setValidationError('Please select a URL path slug for your dynamic card.');
+        return;
+      }
+      if (slugStatus === 'taken') {
+        setValidationError('This URL route path is already taken. Please choose another.');
+        return;
+      }
 
-  const isEditMode = !!initialCard;
+      setIsPublishing(true);
+      try {
+        const origin = typeof window !== 'undefined' ? window.location.origin : 'https://getcardqr.com';
+        
+        let res;
+        if (createdId) {
+          // Update
+          res = await updateQRCodeAction(createdId, slug, template, formData, undefined, undefined, template === 'restaurant-menu' ? formData.categories : undefined);
+        } else {
+          // Create
+          res = await createQRCodeAction(slug, template, formData, undefined, undefined, template === 'restaurant-menu' ? formData.categories : undefined);
+        }
+
+        if (res.success && res.data) {
+          setCreatedId(res.data.id);
+          const redirectUrl = `${origin}/q/${res.data.id}`;
+          setQrCodeUrl(redirectUrl);
+          setStep(2);
+        } else {
+          setValidationError(res.error || 'Failed to save card contents.');
+        }
+      } catch (err: any) {
+        console.error(err);
+        setValidationError(err.message || 'An error occurred.');
+      } finally {
+        setIsPublishing(false);
+      }
+    } else {
+      // For static codes, encode value directly
+      const staticVal = getStaticQRValue();
+      setQrCodeUrl(staticVal);
+      setStep(2);
+    }
+  };
+
+  const handleCopyLink = () => {
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://getcardqr.com';
+    const link = DYNAMIC_TYPES.includes(template) ? `${origin}/c/${slug}` : getStaticQRValue();
+    navigator.clipboard.writeText(link);
+    alert('Link copied to clipboard!');
+  };
+
+  const isDynamic = DYNAMIC_TYPES.includes(template);
 
   return (
-    <div className="min-h-screen bg-background text-primary flex flex-col font-sans select-none relative">
+    <div className="h-screen bg-background text-primary flex flex-col font-sans select-none relative overflow-hidden">
       {/* Workspace Header */}
-      <header className="h-16 px-4 sm:px-6 bg-surface/90 backdrop-blur-md border-b-2 border-border-default flex items-center justify-between shrink-0 sticky top-0 z-40">
+      <header className="h-16 px-4 sm:px-6 bg-surface/80 backdrop-blur-md border-b border-white/8 flex items-center justify-between shrink-0 sticky top-0 z-40">
         <div className="flex items-center gap-2">
-          {/* Styled Brand Logo Badge */}
-          <Image src="/logo.svg" alt="CardQR" width={32} height={32} priority className="rounded-xl border border-border-default/50" />
-          <Link href="/" className="text-base font-bold tracking-tight text-primary flex items-center gap-1 font-heading">
-            Card<span className="text-muted-text font-normal">QR</span>
+          <Image src="/logo.svg" alt="CardQR" width={28} height={28} priority className="rounded-none border border-white/10" />
+          <Link href="/" className="text-sm font-bold tracking-tight text-primary flex items-center gap-0.5 font-heading">
+            Card<span className="text-accent">QR</span>
           </Link>
-          <span className="text-xs text-border-emphasis hidden md:inline">/</span>
-          <span className="text-xs font-bold text-muted-text hidden md:inline">
-            {isEditMode ? 'Edit Card Workspace' : 'Creator Workspace'}
+          <span className="text-xs text-primary/20">/</span>
+          <span className="text-xs font-semibold text-muted-text">
+            {initialQRCode ? 'Edit QR Card' : 'Creator Workspace'}
           </span>
         </div>
-        
-        <div className="flex items-center gap-2 sm:gap-3">
-          <div className="hidden sm:block">
-            <TemplatesDropdown />
-          </div>
-          <ThemeToggle />
-          {/* Mobile Preview Trigger */}
-          <button
-            onClick={() => setShowMobilePreview(true)}
-            aria-label="Open mobile card preview"
-            className="md:hidden h-9 px-2.5 sm:px-3 border border-border-default rounded-full text-xs font-bold bg-surface hover:bg-surface-2 flex items-center gap-1.5 cursor-pointer text-primary whitespace-nowrap"
-          >
-            <Eye className="w-3.5 h-3.5" /> Preview
-          </button>
 
-          <button
-            onClick={handlePublish}
-            disabled={isPublishing || slugStatus === 'taken' || !slug}
-            className="h-9 px-3.5 sm:px-4.5 bg-primary hover:opacity-90 text-background text-xs font-bold rounded-full flex items-center gap-1.5 transition-all shadow-xs cursor-pointer whitespace-nowrap disabled:opacity-50"
-          >
-            {isPublishing ? 'Saving...' : (
-              <>
-                <Send className="w-3.5 h-3.5" /> {isEditMode ? <>Update<span className="hidden sm:inline"> Card</span></> : <>Publish<span className="hidden sm:inline"> Card</span></>}
-              </>
-            )}
-          </button>
+        {/* Top Wizard Steps Progress Bar */}
+        <div className="hidden md:flex items-center gap-6 text-xs font-bold font-sans">
+          <div className="flex items-center gap-2">
+            <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${step >= 1 ? 'bg-accent text-accent-foreground' : 'bg-surface-2 text-muted-text'}`}>1</span>
+            <span className={step >= 1 ? 'text-primary' : 'text-muted-text'}>Content</span>
+          </div>
+          <ChevronRight className="w-3.5 h-3.5 text-muted-text/30" />
+          <div className="flex items-center gap-2">
+            <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${step >= 2 ? 'bg-accent text-accent-foreground' : 'bg-surface-2 text-muted-text'}`}>2</span>
+            <span className={step >= 2 ? 'text-primary' : 'text-muted-text'}>QR Design</span>
+          </div>
+          <ChevronRight className="w-3.5 h-3.5 text-muted-text/30" />
+          <div className="flex items-center gap-2">
+            <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${step >= 3 ? 'bg-accent text-accent-foreground' : 'bg-surface-2 text-muted-text'}`}>3</span>
+            <span className={step >= 3 ? 'text-primary' : 'text-muted-text'}>Download</span>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <TemplatesDropdown />
+          {step === 1 && (
+            <button
+              onClick={() => setShowMobilePreview(true)}
+              className="md:hidden h-9 px-3 border border-white/5 bg-surface hover:bg-surface-2 rounded-none text-xs font-bold flex items-center gap-1.5 cursor-pointer text-primary"
+            >
+              <Eye className="w-3.5 h-3.5" /> Preview
+            </button>
+          )}
         </div>
       </header>
 
-      {/* Main Workspace split */}
+      {/* Main Workspace Layout */}
       <main className="flex-1 flex overflow-hidden">
-        {/* Left Side: Customizer Forms */}
-        <section className="flex-1 overflow-y-auto px-6 py-8 md:px-12 md:py-10 flex flex-col max-w-3xl bg-background">
+        {/* Left Control Column */}
+        <section className="flex-1 overflow-y-auto px-4 py-6 md:px-12 md:py-8 flex flex-col max-w-3xl bg-background">
           <div className="max-w-xl w-full">
-            <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-primary mb-2 font-heading text-balance">
-              {isEditMode ? 'Update Your Card' : INTRO_CONTENT[template]?.title || 'Design Your Card'}
-            </h1>
-            <p className="text-xs text-muted-text font-medium">
-              {isEditMode ? 'Modify your fields below. The card changes will update immediately.' : INTRO_CONTENT[template]?.desc || 'Fill in the fields below.'}
-            </p>
-
-            {/* Slug Path Input */}
-            <div className="mt-6 p-4 rounded-2xl border-2 border-border-emphasis bg-surface card-shadow">
-              <label className="text-[11px] font-extrabold text-primary tracking-wide uppercase">Your Public URL Route</label>
-              <div className="flex items-center gap-1 mt-2.5">
-                <span className="text-xs text-muted-text font-bold select-none">cardqr.com/c/</span>
-                <input
-                  type="text"
-                  value={slug}
-                  onChange={(e) => handleSlugChange(e.target.value)}
-                  placeholder="e.g. coffee-hub"
-                  className="flex-1 h-10 px-3 text-xs border-2 border-border-default rounded-lg focus:outline-none focus:border-accent font-bold text-primary bg-surface-2"
-                />
+            {/* Step Content Headers */}
+            {step === 1 && (
+              <div>
+                <h1 className="text-xl md:text-2xl font-bold tracking-tight text-primary mb-1">
+                  1. Fill Content Details
+                </h1>
+                <p className="text-[11px] text-muted-text font-semibold">
+                  Provide details for your QR code destination sheet below.
+                </p>
               </div>
-              <div className="mt-2.5 flex items-center justify-between text-[10px] font-bold">
-                {slugStatus === 'checking' && <span className="text-muted-text">Verifying URL route availability...</span>}
-                {slugStatus === 'available' && <span className="text-success">✓ Route is available</span>}
-                {slugStatus === 'taken' && <span className="text-danger">✗ Route already in use. Try a different slug.</span>}
-                {slugStatus === 'idle' && <span className="text-muted-text/60">Alphanumeric characters and hyphens only.</span>}
+            )}
+            {step === 2 && (
+              <div>
+                <h1 className="text-xl md:text-2xl font-bold tracking-tight text-primary mb-1">
+                  2. Customize QR Code Style
+                </h1>
+                <p className="text-[11px] text-muted-text font-semibold">
+                  Modify patterns, shapes, colors, and embed logos in the center of your scannable.
+                </p>
               </div>
-            </div>
+            )}
+            {step === 3 && (
+              <div>
+                <h1 className="text-xl md:text-2xl font-bold tracking-tight text-primary mb-1">
+                  3. Export & Download
+                </h1>
+                <p className="text-[11px] text-muted-text font-semibold">
+                  Your scannable is ready. Download in premium vectors or image files.
+                </p>
+              </div>
+            )}
 
-            {/* Template Workspace Ad Slot Placeholder */}
-            <AdSlot slotId={`${template}-workspace`} />
-
-            {/* Template Selector Grid is hidden; selected template is governed by URL query path or dropdown selection */}
-
-            {/* validation banner */}
+            {/* Validation Banner */}
             {validationError && (
-              <div className="mt-6 p-3.5 rounded-xl bg-danger/10 border border-danger/20 text-danger text-xs font-bold flex items-center gap-2">
+              <div className="mt-4 p-3.5 rounded-none bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-semibold flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4 shrink-0" />
                 <span>{validationError}</span>
               </div>
             )}
 
-            {/* Render selected template form */}
-            <div className="mt-8 bg-surface border-2 border-border-emphasis p-6 rounded-3xl card-shadow mb-10">
-              <div className="flex items-center gap-2.5 mb-6 border-b-2 border-border-default pb-4">
-                <div className="w-7 h-7 rounded-lg bg-accent text-background flex items-center justify-center font-bold shrink-0">
-                  <Sparkles className="w-4 h-4" />
+            {/* STEP 1 WIDGETS */}
+            {step === 1 && formData && (
+              <div className="space-y-6 mt-6">
+                {/* Slug URL Input (For dynamic templates only) */}
+                {isDynamic && (
+                  <div className="boxy-sm p-4 rounded-none bg-surface">
+                    <label className="text-[10px] font-bold text-muted-text tracking-wider uppercase block mb-2">Public URL Route slug</label>
+                    <div className="flex items-center gap-1">
+                      <span className="text-xs text-muted-text font-semibold font-mono">cardqr.com/c/</span>
+                      <input
+                        type="text"
+                        value={slug}
+                        onChange={(e) => handleSlugChange(e.target.value)}
+                        placeholder="e.g. delicious-cafe"
+                        className="flex-1 h-9 px-3 text-xs border border-white/5 bg-surface-2 rounded-none focus:outline-none focus:border-accent text-primary font-semibold font-mono"
+                      />
+                    </div>
+                    <div className="mt-2.5 flex items-center justify-between text-[9px] font-bold">
+                      {slugStatus === 'checking' && <span className="text-muted-text">Verifying route availability...</span>}
+                      {slugStatus === 'available' && <span className="text-emerald-400">✓ Route available</span>}
+                      {slugStatus === 'taken' && <span className="text-red-400">✗ Route already in use. Try a different slug.</span>}
+                      {slugStatus === 'idle' && <span className="text-muted-text/50">Characters: a-z, 0-9, hyphen.</span>}
+                    </div>
+                  </div>
+                )}
+
+                {/* Main Form Fields */}
+                <div className="bg-surface border border-white/8 p-5 rounded-none">
+                  <TemplateForm
+                    type={template}
+                    data={formData}
+                    onChange={(newData) => setFormData(newData)}
+                  />
                 </div>
-                <h2 className="text-xs font-extrabold tracking-wider text-primary uppercase">
-                  {TEMPLATES.find(t => t.id === template)?.label} Customizer
-                </h2>
-              </div>
-              
-              <TemplateForm
-                type={template}
-                data={formData}
-                onChange={(newData) => setFormData(newData)}
-              />
-            </div>
-          </div>
-        </section>
 
-        {/* Right Side: Simulator Preview (Desktop only) — fixed in place, never scrolls */}
-        <section className="hidden md:flex w-[380px] xl:w-[720px] border-l-2 border-border-emphasis bg-surface-2/40 flex-col xl:flex-row items-center xl:justify-center gap-12 py-8 px-6 shrink-0 h-full overflow-hidden">
-          <PhoneMockup dark={false}>
-            <div className="relative w-full h-full flex-1 flex flex-col items-center justify-center overflow-hidden bg-background">
-              
-              {/* Viewfinder borders customized for small simulator screen */}
-              <div className="absolute inset-4 pointer-events-none z-0 border border-border-default rounded-2xl">
-                <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-border-emphasis rounded-tl-md" />
-                <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-border-emphasis rounded-tr-md" />
-                <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-border-emphasis rounded-bl-md" />
-                <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-border-emphasis rounded-br-md" />
-                
-                {/* Live Scan Mode label */}
-                <div className="absolute top-2 left-2 flex items-center gap-1 text-[8px] font-bold tracking-wider text-muted-text uppercase">
-                  <span className="w-1.5 h-1.5 rounded-full bg-danger animate-pulse" />
-                  <span>Scan Preview</span>
+                {/* Continue to Step 2 Button */}
+                <div className="pt-2">
+                  <button
+                    onClick={handleContinueToDesign}
+                    disabled={isPublishing}
+                    className="boxy w-full h-11 bg-accent hover:brightness-105 text-accent-foreground text-xs font-bold rounded-none flex items-center justify-center gap-1.5 cursor-pointer"
+                  >
+                    <span>{isPublishing ? 'Saving Details...' : 'Continue to QR Design'}</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
                 </div>
               </div>
+            )}
 
-              {/* Physical card centered with scale adjustment */}
-              <div className="flex-1 flex flex-col items-center justify-center z-10 scale-[0.82] -my-10 origin-center">
-                <PhysicalCard card={{ templateType: template, data: formData, slug: slug || 'preview' }} />
+            {/* STEP 2 WIDGETS */}
+            {step === 2 && (
+              <div className="mt-6 space-y-6">
+                <QRStylingCustomizer
+                  value={qrCodeUrl}
+                  onChange={(opts) => setQrStyleOptions(opts)}
+                />
+
+                <div className="flex gap-3 mt-6">
+                  <button
+                    onClick={() => setStep(1)}
+                    className="boxy flex-1 h-11 hover:bg-surface-2 rounded-none text-xs font-bold text-primary flex items-center justify-center gap-1.5 cursor-pointer bg-surface"
+                  >
+                    <ArrowLeft className="w-4 h-4" /> Back to Content
+                  </button>
+                  <button
+                    onClick={() => setStep(3)}
+                    className="boxy flex-1 h-11 bg-accent hover:brightness-105 text-accent-foreground rounded-none text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer"
+                  >
+                    Continue to Download <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
-            </div>
-          </PhoneMockup>
+            )}
 
-          {/* New vertical/skyscraper ad slot beside or stacked below */}
-          <AdSlot slotId={`${template}-workspace-sidebar`} variant="vertical" />
-        </section>
-      </main>
-
-      {/* Mobile Preview Overlay Bottom Sheet */}
-      {showMobilePreview && (
-        <div className="fixed inset-0 bg-black/80 z-50 flex flex-col justify-end md:hidden">
-          <div className="absolute inset-0" onClick={() => setShowMobilePreview(false)} />
-          <div className="relative bg-surface border-t border-border-emphasis rounded-t-3xl p-4 flex flex-col gap-4 max-h-[90%] z-20 overflow-hidden">
-            <div className="flex items-center justify-between border-b border-border-default pb-3">
-              <span className="text-xs font-bold text-primary">Live Mobile Simulator</span>
-              <button 
-                onClick={() => setShowMobilePreview(false)}
-                aria-label="Close mobile preview"
-                className="w-7 h-7 rounded-full bg-surface-2 flex items-center justify-center text-primary cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-            <div className="flex-1 overflow-y-auto pb-6 flex flex-col items-center gap-12">
-              <PhoneMockup animate={false} dark={false}>
-                <div className="relative w-full h-full flex-1 flex flex-col items-center justify-center overflow-hidden bg-background">
-                  
-                  <div className="absolute inset-4 pointer-events-none z-0 border border-border-default rounded-2xl">
-                    <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-border-emphasis rounded-tl-md" />
-                    <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-border-emphasis rounded-tr-md" />
-                    <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-border-emphasis rounded-bl-md" />
-                    <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-border-emphasis rounded-br-md" />
-                    
-                    <div className="absolute top-2 left-2 flex items-center gap-1 text-[8px] font-bold tracking-wider text-muted-text uppercase">
-                      <span className="w-1.5 h-1.5 rounded-full bg-danger animate-pulse" />
-                      <span>Scan Preview</span>
+            {/* STEP 3 WIDGETS */}
+            {step === 3 && (
+              <div className="mt-6 space-y-6">
+                <div className="p-5 bg-surface border border-white/8 rounded-none space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                      <Check className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-bold text-primary">QR Code Generator Complete!</h3>
+                      <p className="text-[10px] text-muted-text font-semibold">Your custom scannable is ready to deploy.</p>
                     </div>
                   </div>
 
-                  <div className="flex-1 flex flex-col items-center justify-center z-10 scale-[0.82] -my-10 origin-center">
-                    <PhysicalCard card={{ templateType: template, data: formData, slug: slug || 'preview' }} />
+                  <div className="border-t border-white/5 pt-4 space-y-3">
+                    <div>
+                      <span className="text-[9px] font-bold text-muted-text uppercase tracking-wider block mb-1">Redirection Link / Payload</span>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          readOnly
+                          value={isDynamic ? `${typeof window !== 'undefined' ? window.location.origin : 'https://getcardqr.com'}/c/${slug}` : getStaticQRValue()}
+                          className="flex-1 h-9 px-3 text-xs bg-surface-2 border border-white/5 rounded-none text-primary font-mono"
+                        />
+                        <button
+                          onClick={handleCopyLink}
+                          className="h-9 px-4 bg-accent hover:brightness-110 text-accent-foreground text-xs font-bold rounded-none shrink-0 cursor-pointer"
+                        >
+                          Copy
+                        </button>
+                      </div>
+                    </div>
+
+                    {isDynamic && (
+                      <div className="pt-2">
+                        <Link
+                          href={`/c/${slug}`}
+                          target="_blank"
+                          className="w-full h-10 bg-surface-2 border border-white/5 rounded-none hover:bg-white/5 text-xs font-semibold text-primary flex items-center justify-center gap-1.5"
+                        >
+                          <Eye className="w-4 h-4 text-cyan" />
+                          View Live Dynamic Card
+                        </Link>
+                      </div>
+                    )}
                   </div>
                 </div>
-              </PhoneMockup>
 
-              {/* Stacked below mobile preview with clear spacing */}
-              <AdSlot slotId={`${template}-workspace-sidebar`} variant="vertical" />
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Publish Result Modal Overlay */}
-      {publishResult && (
-        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
-          <div className="bg-surface rounded-3xl p-6.5 max-w-sm w-full flex flex-col gap-5 border border-border-emphasis shadow-2xl select-text text-primary">
-            
-            {/* Header */}
-            <div className="flex items-start justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-full bg-success text-zinc-950 flex items-center justify-center shadow-xs">
-                  <Check className="w-4 h-4 stroke-[3]" />
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setStep(2)}
+                    className="boxy flex-1 h-11 hover:bg-surface-2 rounded-none text-xs font-bold text-primary flex items-center justify-center gap-1.5 cursor-pointer bg-surface"
+                  >
+                    <ArrowLeft className="w-4 h-4" /> Edit QR Design
+                  </button>
+                  <Link
+                    href="/"
+                    className="boxy flex-1 h-11 bg-surface hover:bg-surface-2 rounded-none text-xs font-bold text-primary flex items-center justify-center gap-1"
+                  >
+                    Return to Homepage
+                  </Link>
                 </div>
-                <h3 className="text-sm font-bold text-primary">
-                  {isEditMode ? 'Card Updated!' : 'Card Published!'}
-                </h3>
+
+                {/* Ad Slot 3 */}
+                <div className="pt-4">
+                  <AdSlot slotId="create-step3-banner" />
+                </div>
               </div>
-              <button
-                onClick={() => {
-                  setPublishResult(null);
-                  router.push('/');
-                }}
-                className="w-7 h-7 rounded-full bg-surface-2 flex items-center justify-center text-primary cursor-pointer hover:bg-border-emphasis"
+            )}
+          </div>
+        </section>
+
+        {/* Right Flat Phone Mockup Column (Only for Step 1 content editing) */}
+        {step === 1 && (
+          <section className="hidden md:flex w-[380px] xl:w-[480px] border-l border-white/8 bg-surface/20 flex-col items-center gap-4 py-6 px-6 shrink-0 h-full overflow-hidden">
+            <span className="text-[10px] font-bold text-muted-text uppercase tracking-widest block shrink-0">Live Preview Simulator</span>
+
+            <div className="flex-1 w-full min-h-0 flex items-center justify-center">
+              <PhoneMockup dark={false} className="!w-auto !max-w-[340px] h-full max-h-full">
+                <div className="relative w-full h-full flex-1 flex flex-col items-center justify-center overflow-hidden bg-background">
+                  {formData ? (
+                    <div className="flex-1 flex flex-col items-center justify-center z-10 scale-[0.82] origin-center w-full">
+                      <PhysicalCard card={{ templateType: template as any, data: formData, slug: slug || 'preview' }} />
+                    </div>
+                  ) : (
+                    <span className="text-xs text-muted-text">Waiting for details...</span>
+                  )}
+                </div>
+              </PhoneMockup>
+            </div>
+          </section>
+        )}
+      </main>
+
+      {/* Mobile Preview Bottom Drawer (Step 1 mobile viewing) */}
+      {showMobilePreview && step === 1 && (
+        <div className="fixed inset-0 bg-black/90 z-50 flex flex-col justify-end md:hidden">
+          <div className="absolute inset-0" onClick={() => setShowMobilePreview(false)} />
+          <div className="relative bg-surface border-t-2 border-foreground rounded-t-none p-4 flex flex-col gap-4 max-h-[85%] z-20 overflow-hidden">
+            <div className="flex items-center justify-between border-b border-white/5 pb-2.5">
+              <span className="text-xs font-bold text-primary">Live Simulator</span>
+              <button 
+                onClick={() => setShowMobilePreview(false)}
+                className="w-7 h-7 rounded-full bg-white/5 flex items-center justify-center text-primary cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
-
-            {/* QR Code Container */}
-            <div className="py-2 flex justify-center bg-white p-4 rounded-2xl border border-border-default">
-              <QRGenerator value={publishResult.publicUrl} />
+            <div className="flex-1 overflow-y-auto pb-6 flex flex-col items-center">
+              <PhoneMockup animate={false} dark={false}>
+                <div className="relative w-full h-full flex-1 flex flex-col items-center justify-center overflow-hidden bg-background">
+                  {formData && (
+                    <div className="flex-1 flex flex-col items-center justify-center z-10 scale-[0.82] origin-center w-full">
+                      <PhysicalCard card={{ templateType: template as any, data: formData, slug: slug || 'preview' }} />
+                    </div>
+                  )}
+                </div>
+              </PhoneMockup>
             </div>
-
-            {/* Secret URL warning */}
-            <div className="p-3.5 rounded-xl bg-warning/10 border border-warning/20 text-warning text-[10px] leading-relaxed font-bold flex gap-2">
-              <AlertTriangle className="w-5 h-5 shrink-0 text-warning mt-0.5" />
-              <div>
-                <span className="uppercase text-warning block mb-0.5">Critical Action Required</span>
-                Save your edit link below. Anyone with this link can edit your Card. We do not store passwords.
-              </div>
-            </div>
-
-            {/* Edit Link copying */}
-            <div className="flex flex-col gap-1 pt-1.5 border-t border-border-default">
-              <span className="text-[9px] font-extrabold tracking-wider text-muted-text uppercase">Secret Edit URL</span>
-              <div className="flex items-center gap-2 mt-1">
-                <input
-                  type="text"
-                  readOnly
-                  value={publishResult.editUrl}
-                  className="flex-1 h-9 px-2.5 text-[11px] font-mono border border-border-default bg-surface-2 rounded-lg focus:outline-none text-primary"
-                />
-                <button
-                  onClick={() => {
-                    navigator.clipboard.writeText(publishResult.editUrl);
-                  }}
-                  className="h-9 px-3 bg-accent hover:bg-accent/90 text-background text-xs font-bold rounded-full shrink-0 transition-all cursor-pointer"
-                >
-                  Copy
-                </button>
-              </div>
-            </div>
-
-            {/* View public card */}
-            <a
-              href={publishResult.publicUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full h-10 border border-border-default hover:bg-surface-2 rounded-xl flex items-center justify-center gap-1.5 text-xs font-bold text-primary transition-all text-center mt-2 cursor-pointer"
-            >
-              Open Scanned Card <ChevronRight className="w-3.5 h-3.5" />
-            </a>
           </div>
         </div>
       )}
