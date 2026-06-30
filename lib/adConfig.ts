@@ -62,6 +62,9 @@ export const ADSENSE_CONFIG = {
     'wifi-workspace-sidebar': 'ad-unit-placeholder',
     'catalog-workspace-sidebar': 'ad-unit-placeholder',
 
+    // ── Public Card Pages (/c/[slug]) — top-of-page leaderboard ────────────
+    'public-card-top': 'ad-unit-placeholder',
+
     // ── Homepage ──────────────────────────────────────────────────────────────
     'homepage-post-hero': 'ad-unit-placeholder',
     'homepage-post-steps': 'ad-unit-placeholder',

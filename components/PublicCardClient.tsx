@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Camera, RefreshCw, QrCode } from 'lucide-react';
 import { CardData } from '@/lib/db';
 import PhysicalCard from '@/components/PhysicalCard';
+import AdSlot from '@/components/AdSlot';
 
 interface PublicCardClientProps {
   card: CardData;
@@ -113,73 +114,83 @@ export default function PublicCardClient({ card }: PublicCardClientProps) {
   };
 
   return (
-    <div className={`min-h-screen w-full flex items-center justify-center select-none relative overflow-hidden transition-colors duration-300 ${
+    <div className={`min-h-screen w-full flex flex-col select-none transition-colors duration-300 ${
       isDark ? 'bg-[#12110F]' : 'bg-background'
     }`}>
-      {/* Camera-style focus background details */}
-      <div className={`absolute inset-0 bg-[radial-gradient(var(--bg-dot)_1.5px,transparent_1.5px)] bg-[size:24px_24px] opacity-70 pointer-events-none`}
-        style={{
-          '--bg-dot': isDark ? '#2E2B25' : '#E8E2D6'
-        } as React.CSSProperties}
-      />
-      <div className="absolute inset-0 pointer-events-none"
-        style={{
-          background: isDark 
-            ? 'radial-gradient(ellipse at center, rgba(26,24,21,0.3) 0%, #12110F 80%)'
-            : 'radial-gradient(ellipse at center, rgba(250,248,244,0.3) 0%, #FAF8F4 80%)'
-        }}
-      />
-      
-      <Viewfinder />
+      {/* Zone 1: Ad Buffer — fixed height prevents CLS */}
+      <div className={`w-full shrink-0 flex flex-col items-center justify-center py-1 border-b ${
+        isDark ? 'border-white/10 bg-black/40' : 'border-border-default bg-surface/60'
+      }`}>
+        <AdSlot slotId="public-card-top" variant="leaderboard" />
+      </div>
 
-      {/* Background soft blur animation */}
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.6 }}
-        className="absolute inset-0 backdrop-blur-md pointer-events-none z-0"
-      />
+      {/* Zone 2: Card Content — fills remaining viewport */}
+      <div className="flex-1 relative overflow-hidden flex items-center justify-center">
+        {/* Camera-style focus background details */}
+        <div className={`absolute inset-0 bg-[radial-gradient(var(--bg-dot)_1.5px,transparent_1.5px)] bg-[size:24px_24px] opacity-70 pointer-events-none`}
+          style={{
+            '--bg-dot': isDark ? '#2E2B25' : '#E8E2D6'
+          } as React.CSSProperties}
+        />
+        <div className="absolute inset-0 pointer-events-none"
+          style={{
+            background: isDark
+              ? 'radial-gradient(ellipse at center, rgba(26,24,21,0.3) 0%, #12110F 80%)'
+              : 'radial-gradient(ellipse at center, rgba(250,248,244,0.3) 0%, #FAF8F4 80%)'
+          }}
+        />
 
-      <AnimatePresence mode="wait">
-        {isLoading ? (
-          /* Loader Skeleton layout */
-          <motion.div
-            key="skeleton"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -30 }}
-            transition={{ duration: 0.25 }}
-            className={`w-[320px] h-[500px] rounded-[24px] card-shadow z-10 flex flex-col border overflow-hidden relative paper-grain ${
-              isDark ? 'bg-[#1A1815] border-white/10' : 'bg-surface border-border-default'
-            }`}
-          >
-            {/* Native card handle spacer */}
-            <div className="w-full flex justify-center py-3 shrink-0">
-              <div className={`w-10 h-1.5 rounded-full ${isDark ? 'bg-white/10' : 'bg-border-default'}`} />
-            </div>
-            <div className="flex-1 overflow-y-auto no-scrollbar">
-              {renderSkeleton()}
-            </div>
-          </motion.div>
-        ) : (
-          /* Actual Card (Immersive 3D Experience) */
-          <div className="flex flex-col items-center gap-6 z-10">
-            <PhysicalCard card={card} />
-            
-            {/* Soft hint overlay at bottom */}
-            <motion.div 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 0.6, y: 0 }}
-              transition={{ delay: 0.8 }}
-              className={`text-[9px] font-bold uppercase tracking-widest pointer-events-none text-center border px-3.5 py-1.5 rounded-full font-sans ${
-                isDark ? 'bg-[#282520] border-white/10 text-[#A69F90]' : 'bg-surface border-border-default text-muted-text'
+        <Viewfinder />
+
+        {/* Background soft blur animation */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6 }}
+          className="absolute inset-0 backdrop-blur-md pointer-events-none z-0"
+        />
+
+        <AnimatePresence mode="wait">
+          {isLoading ? (
+            /* Loader Skeleton layout */
+            <motion.div
+              key="skeleton"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -30 }}
+              transition={{ duration: 0.25 }}
+              className={`w-[320px] h-[500px] rounded-[24px] card-shadow z-10 flex flex-col border overflow-hidden relative paper-grain ${
+                isDark ? 'bg-[#1A1815] border-white/10' : 'bg-surface border-border-default'
               }`}
             >
-              Premium Digital Experience
+              {/* Native card handle spacer */}
+              <div className="w-full flex justify-center py-3 shrink-0">
+                <div className={`w-10 h-1.5 rounded-full ${isDark ? 'bg-white/10' : 'bg-border-default'}`} />
+              </div>
+              <div className="flex-1 overflow-y-auto no-scrollbar">
+                {renderSkeleton()}
+              </div>
             </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+          ) : (
+            /* Actual Card (Immersive 3D Experience) */
+            <div className="flex flex-col items-center gap-6 z-10">
+              <PhysicalCard card={card} />
+
+              {/* Soft hint overlay at bottom */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 0.6, y: 0 }}
+                transition={{ delay: 0.8 }}
+                className={`text-[9px] font-bold uppercase tracking-widest pointer-events-none text-center border px-3.5 py-1.5 rounded-full font-sans ${
+                  isDark ? 'bg-[#282520] border-white/10 text-[#A69F90]' : 'bg-surface border-border-default text-muted-text'
+                }`}
+              >
+                Premium Digital Experience
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   );
 }
